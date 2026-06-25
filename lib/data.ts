@@ -21,7 +21,7 @@ export const profile = {
   email: "muhammadwaleed2280@gmail.com",
   phone: "+971 50 690 8284",
   linkedin: "https://linkedin.com/in/muhammad-waleed-b43997202",
-  github: "https://github.com/waleedbukhari", // ← update to your real handle
+  github: "https://github.com/WalBuk28",
   availability: "Open to Security Engineering & SOC roles — 2026",
   summary:
     "First-Class BSc Cybersecurity graduate (De Montfort University, Dubai) and hands-on builder. I specialise in threat intelligence, network forensics and SOC automation, and I ship the software to back it up — from a localised, LLM-powered SIEM-Lite platform to ML phishing detectors and C++ security tooling. Internships across Telstra, Mastercard, Deloitte and Receptive Tech, where I cut MTTR, hardened endpoints and contained simulated attacks.",
