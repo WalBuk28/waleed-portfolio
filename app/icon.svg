@@ -1,6 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <rect width="64" height="64" rx="14" fill="#0b0d11"/>
-  <rect x="2" y="2" width="60" height="60" rx="12" fill="none" stroke="#34d399" stroke-opacity="0.5" stroke-width="2"/>
-  <text x="50%" y="54%" dominant-baseline="middle" text-anchor="middle"
-        font-family="ui-monospace, monospace" font-size="34" font-weight="700" fill="#34d399">W</text>
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+  <rect width="32" height="32" rx="7" fill="#0f151b"/>
+  <path d="M16 4l9 3.2v6.9c0 5.7-3.8 10.9-9 12.9-5.2-2-9-7.2-9-12.9V7.2L16 4z" fill="none" stroke="#34d399" stroke-width="1.6"/>
+  <path d="M11.5 15.5l3 3 6-6.5" fill="none" stroke="#38bdf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>

@@ -1,42 +1,48 @@
-import { Icon } from "@/components/ui/Icon";
-import { Reveal, RevealGroup } from "@/components/ui/Reveal";
-import { SectionHeading } from "@/components/ui/SectionHeading";
+"use client";
+
 import { skillGroups } from "@/lib/data";
+import { Icon } from "@/lib/icons";
+import { SectionHeading } from "./ui/SectionHeading";
+import { Reveal, RevealGroup, RevealItem } from "./ui/Reveal";
+import { SkillsRadar } from "./SkillsRadar";
 
 export function Skills() {
   return (
-    <section id="skills" className="relative py-20 sm:py-28">
-      <div className="container-x">
-        <SectionHeading
-          label="Capabilities"
-          title="A full-spectrum security toolkit"
-          description="From the offensive edge to defensive automation and the software that ties it together — the stack I use to find, understand and stop threats."
-        />
+    <section id="skills" className="section scroll-mt-24 py-24">
+      <SectionHeading
+        eyebrow="Capability map"
+        title={<>The stack behind the defence</>}
+        intro="A T-shaped skill set: deep in threat intelligence and network forensics, broad across offensive testing, secure software, applied AI and cloud. The radar is a self-assessment; the columns are the tools I actually reach for."
+      />
 
-        <RevealGroup className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {skillGroups.map((group) => (
-            <Reveal as="div" key={group.title}>
-              <div className="card group h-full p-6 transition-all duration-300 hover:border-emerald-glow/40 hover:bg-ink-800/60">
-                <div className="mb-4 flex items-center gap-3">
-                  <span className="flex h-11 w-11 items-center justify-center rounded-xl border border-ink-700 bg-ink-900 text-emerald-glow transition-colors group-hover:border-emerald-glow/40">
-                    <Icon name={group.icon} className="h-5 w-5" />
+      <div className="mt-12 grid gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:gap-14">
+        {/* radar */}
+        <Reveal className="panel flex items-center justify-center p-6 lg:sticky lg:top-24 lg:self-start">
+          <SkillsRadar />
+        </Reveal>
+
+        {/* grouped skills */}
+        <RevealGroup className="grid gap-4 sm:grid-cols-2">
+          {skillGroups.map((g) => (
+            <RevealItem key={g.title}>
+              <div className="panel group h-full p-5 transition-colors hover:border-emerald-accent/30">
+                <div className="flex items-center gap-3">
+                  <span className="grid h-9 w-9 place-items-center rounded-lg border border-edge bg-raised text-emerald-accent transition-colors group-hover:text-emerald-glow">
+                    <Icon name={g.icon} className="h-4.5 w-4.5" />
                   </span>
-                  <h3 className="text-base font-semibold text-white">
-                    {group.title}
+                  <h3 className="font-display text-sm font-semibold text-ink">
+                    {g.title}
                   </h3>
                 </div>
-                <ul className="flex flex-wrap gap-2">
-                  {group.skills.map((s) => (
-                    <li
-                      key={s}
-                      className="rounded-md border border-ink-700/70 bg-ink-900/50 px-2.5 py-1 text-xs text-zinc-400 transition-colors group-hover:text-zinc-300"
-                    >
+                <ul className="mt-4 flex flex-wrap gap-1.5">
+                  {g.skills.map((s) => (
+                    <li key={s} className="chip">
                       {s}
                     </li>
                   ))}
                 </ul>
               </div>
-            </Reveal>
+            </RevealItem>
           ))}
         </RevealGroup>
       </div>

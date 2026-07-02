@@ -1,8 +1,8 @@
 import { Background } from "@/components/Background";
-import { Nav } from "@/components/Nav";
+import { SiteChrome } from "@/components/SiteChrome";
 import { Hero } from "@/components/Hero";
-import { Skills } from "@/components/Skills";
 import { CaseStudies } from "@/components/CaseStudies";
+import { Skills } from "@/components/Skills";
 import { Experience } from "@/components/Experience";
 import { About } from "@/components/About";
 import { Contact } from "@/components/Contact";
@@ -12,8 +12,8 @@ export default function Home() {
   return (
     <>
       <Background />
-      <Nav />
-      <main>
+      <SiteChrome />
+      <main id="main">
         <Hero />
         <CaseStudies />
         <Skills />

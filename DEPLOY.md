@@ -1,75 +1,56 @@
-# 🚀 Deploy Guide — GitHub + Vercel (free)
+# Deployment
 
-Two ways to ship this site for free. **Option A (Vercel CLI)** is the fastest; **Option B (GitHub → Vercel dashboard)** gives you automatic deploys on every push.
+This repo already deploys to **Vercel** from GitHub
+(`WalBuk28/waleed-portfolio` → walsec.com). Because the Vercel project watches
+the `main` branch, **pushing to GitHub is all you need** — Vercel rebuilds and
+promotes to production automatically.
 
-> The local git repository has already been initialised and committed for you.
-> Replace `YOUR_GITHUB_USERNAME` with your real handle before running the GitHub steps.
-
----
-
-## Option A — Vercel CLI (fastest, ~2 minutes)
+## Option A — push to GitHub (triggers the existing Vercel deploy)
 
 ```bash
-# 1. Install the Vercel CLI globally
+# from the project root
+git add -A
+git commit -m "v2: redesigned portfolio"
+git push origin main
+```
+
+Vercel picks up the push, runs `npm run build`, and promotes to production on
+success. Watch it at: https://vercel.com/walbuk28s-projects
+
+## Option B — deploy straight from the CLI with Vercel
+
+Use this to preview or promote without going through GitHub.
+
+```bash
+# 1. Install the CLI (once)
 npm i -g vercel
 
-# 2. Log in (opens the browser; choose GitHub/email)
+# 2. Authenticate (opens the browser)
 vercel login
 
-# 3. From the project root, create a preview deployment
-#    Accept the defaults — framework auto-detects as "Next.js"
+# 3. Link this folder to the existing Vercel project (once)
+vercel link          # choose scope: walbuk28's projects → waleed-portfolio
+
+# 4a. Deploy a PREVIEW build (unique URL, not production)
 vercel
 
-# 4. Promote to your production URL
+# 4b. Deploy straight to PRODUCTION (walsec.com)
 vercel --prod
 ```
 
-That's it — Vercel prints your live `https://<project>.vercel.app` URL.
-
----
-
-## Option B — Push to GitHub, then import in Vercel (auto-deploys)
-
-### 1. Create the GitHub repo and push
-
-Using the GitHub CLI (recommended):
+## First-time project (only if the Vercel project does NOT exist yet)
 
 ```bash
-# Install once: https://cli.github.com/  then:
-gh auth login
-gh repo create waleed-portfolio --public --source=. --remote=origin --push
+npm i -g vercel
+vercel login
+vercel                # answer the prompts; framework auto-detected as Next.js
+vercel --prod         # promote to production
+# then, in the Vercel dashboard, add the custom domain walsec.com
 ```
 
-Or manually (after creating an empty repo on github.com):
+## Notes
 
-```bash
-git remote add origin https://github.com/YOUR_GITHUB_USERNAME/waleed-portfolio.git
-git branch -M main
-git push -u origin main
-```
-
-### 2. Import into Vercel
-
-1. Go to **https://vercel.com/new**
-2. Click **Import** next to your `waleed-portfolio` repo
-3. Framework preset auto-detects **Next.js** — leave all settings default
-4. Click **Deploy**
-
-Every future `git push` to `main` now auto-deploys. ✅
-
----
-
-## Optional — custom domain
-
-In the Vercel dashboard: **Project → Settings → Domains → Add**, then point your
-domain's DNS at Vercel (it gives you the exact records). Free SSL is automatic.
-
-## Build settings (already correct by default)
-
-| Setting          | Value           |
-| ---------------- | --------------- |
-| Framework        | Next.js         |
-| Build command    | `next build`    |
-| Output directory | `.next`         |
-| Install command  | `npm install`   |
-| Node version     | 18.x or 20.x    |
+- **Framework preset:** Next.js (auto-detected). No custom build settings needed.
+- **Build command:** `next build` · **Output:** `.next` (managed by Vercel).
+- **Node:** 18+ (Vercel defaults are fine).
+- No environment variables are required — the site is fully static/SSG.

@@ -3,129 +3,181 @@
 @tailwind utilities;
 
 :root {
-  --bg: #08090c;
-  --emerald: #34d399;
-  --electric: #38bdf8;
-  --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", "Cascadia Code",
-    Menlo, monospace;
+  --font-sans: "Inter", system-ui, sans-serif;
+  --font-display: "Sora", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
 }
 
 @layer base {
   * {
-    @apply border-ink-700/60;
+    @apply border-edge;
   }
-
   html {
     scroll-behavior: smooth;
-    scroll-padding-top: 6rem;
+    -webkit-text-size-adjust: 100%;
   }
-
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+    }
+  }
   body {
-    @apply bg-ink-950 text-zinc-300 antialiased;
-    font-feature-settings: "ss01", "cv01";
+    @apply bg-base text-ink antialiased;
+    font-feature-settings: "ss01", "cv01", "cv11";
+    overflow-x: hidden;
   }
-
   ::selection {
     background: rgba(52, 211, 153, 0.25);
-    color: #ecfdf5;
+    color: #eafff6;
   }
-
-  /* Custom scrollbar */
+  h1,
+  h2,
+  h3 {
+    @apply font-display tracking-tight;
+    text-wrap: balance;
+  }
+  /* Focus ring — keyboard only, accessible */
+  :focus-visible {
+    outline: 2px solid theme("colors.emerald.accent");
+    outline-offset: 2px;
+    border-radius: 3px;
+  }
   ::-webkit-scrollbar {
     width: 10px;
     height: 10px;
   }
   ::-webkit-scrollbar-track {
-    background: #0b0d11;
+    background: #06090d;
   }
   ::-webkit-scrollbar-thumb {
-    background: #222732;
-    border-radius: 999px;
-    border: 2px solid #0b0d11;
+    background: #1c2630;
+    border-radius: 8px;
+    border: 2px solid #06090d;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: #2c3340;
+    background: #27343f;
   }
 }
 
 @layer components {
-  .container-x {
-    @apply mx-auto w-full max-w-content px-5 sm:px-8 lg:px-10;
+  /* Scroll-reveal (see components/ui/Reveal.tsx).
+     Default = visible so SSR / no-JS / crawlers always see content. The client
+     adds .reveal-init before paint to hide, then .reveal-in to animate back. */
+  [data-reveal] {
+    opacity: 1;
+  }
+  [data-reveal].reveal-init {
+    opacity: 0;
+    transform: translateY(var(--reveal-y, 18px));
+    will-change: opacity, transform;
+  }
+  [data-reveal].reveal-in {
+    opacity: 1;
+    transform: none;
+    transition:
+      opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+      transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    transition-delay: var(--reveal-delay, 0ms);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    [data-reveal].reveal-init {
+      opacity: 1;
+      transform: none;
+    }
   }
 
-  .text-gradient {
-    @apply bg-gradient-to-br from-white via-zinc-200 to-zinc-500 bg-clip-text text-transparent;
+  /* Radar polygon draw-in — pure CSS so it plays with or without JS and never
+     leaves the shape hidden (resting state is fully visible). */
+  .radar-poly {
+    animation: radarIn 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  @keyframes radarIn {
+    from {
+      opacity: 0;
+      transform: scale(0.7);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .radar-poly {
+      animation: none;
+    }
   }
 
-  .text-gradient-emerald {
-    @apply bg-gradient-to-r from-emerald-glow to-electric-glow bg-clip-text text-transparent;
+  /* Section shell */
+  .section {
+    @apply relative mx-auto w-full max-w-6xl px-5 sm:px-8;
   }
 
-  .card {
-    @apply rounded-2xl border border-ink-700/70 bg-ink-850/60 backdrop-blur-sm;
+  /* Hairline card */
+  .panel {
+    @apply relative rounded-2xl border border-edge bg-surface/70 backdrop-blur-sm;
   }
 
+  /* Eyebrow / mono label */
+  .eyebrow {
+    @apply inline-flex items-center gap-2 font-mono text-2xs uppercase tracking-wider2 text-ink-muted;
+  }
+
+  /* Gradient text — emerald→electric */
+  .grad-text {
+    @apply bg-gradient-to-r from-emerald-glow via-emerald-accent to-electric-accent bg-clip-text text-transparent;
+  }
+
+  /* Chip / tag */
   .chip {
-    @apply inline-flex items-center gap-1.5 rounded-full border border-ink-700 bg-ink-800/60 px-3 py-1 text-xs font-medium text-zinc-400;
+    @apply inline-flex items-center rounded-full border border-edge bg-raised/60 px-2.5 py-1 font-mono text-2xs text-ink-secondary;
   }
 
-  .btn {
-    @apply inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-glow/60;
-  }
-
+  /* Primary CTA button */
   .btn-primary {
-    @apply btn bg-emerald-glow text-ink-950 hover:bg-emerald-glow/90 hover:shadow-glow;
+    @apply inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-accent px-5 py-2.5 text-sm font-semibold text-void transition-all duration-200 hover:shadow-glow-emerald hover:brightness-110 active:scale-[0.98];
   }
-
   .btn-ghost {
-    @apply btn border border-ink-600 bg-transparent text-zinc-200 hover:border-emerald-glow/60 hover:text-white;
-  }
-
-  .section-label {
-    @apply inline-flex items-center gap-2 font-mono text-xs uppercase tracking-[0.25em] text-emerald-glow;
+    @apply inline-flex items-center justify-center gap-2 rounded-xl border border-edge bg-surface/60 px-5 py-2.5 text-sm font-semibold text-ink transition-all duration-200 hover:border-emerald-accent/50 hover:bg-raised active:scale-[0.98];
   }
 }
 
-/* Animated background grid */
-.grid-bg {
-  background-image:
-    linear-gradient(to right, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
-  background-size: 56px 56px;
-}
-
-.grid-bg-fade {
-  -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #000 40%, transparent 100%);
-  mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #000 40%, transparent 100%);
-}
-
-/* Radial glow accents */
-.glow-emerald {
-  background: radial-gradient(circle at center, rgba(52, 211, 153, 0.18), transparent 65%);
-}
-.glow-electric {
-  background: radial-gradient(circle at center, rgba(56, 189, 248, 0.16), transparent 65%);
-}
-
-/* Subtle conic spinning ring (used behind avatar / accents) */
-.spin-slow {
-  animation: spin 14s linear infinite;
-}
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
   }
-}
-
-/* Reduce motion */
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.001ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.001ms !important;
-    scroll-behavior: auto !important;
+  /* Radial spotlight that follows the hero (set via CSS vars) */
+  .spotlight {
+    background: radial-gradient(
+      600px circle at var(--mx, 50%) var(--my, 0%),
+      rgba(52, 211, 153, 0.08),
+      transparent 40%
+    );
+  }
+  .mask-fade-x {
+    -webkit-mask-image: linear-gradient(
+      to right,
+      transparent,
+      #000 8%,
+      #000 92%,
+      transparent
+    );
+    mask-image: linear-gradient(
+      to right,
+      transparent,
+      #000 8%,
+      #000 92%,
+      transparent
+    );
+  }
+  .mask-fade-b {
+    -webkit-mask-image: linear-gradient(to bottom, #000 60%, transparent);
+    mask-image: linear-gradient(to bottom, #000 60%, transparent);
   }
 }

@@ -1,14 +1,37 @@
 import type { Metadata, Viewport } from "next";
-import "./globals.css";
+import { Inter, Sora, JetBrains_Mono } from "next/font/google";
 import { profile } from "@/lib/data";
+import { Providers } from "@/components/Providers";
+import "./globals.css";
+
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-sans",
+  display: "swap",
+});
+const sora = Sora({
+  subsets: ["latin"],
+  variable: "--font-display",
+  weight: ["500", "600", "700", "800"],
+  display: "swap",
+});
+const mono = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-mono",
+  display: "swap",
+});
+
+const url = "https://walsec.com";
+const description =
+  "Cybersecurity Engineer & Developer specialising in threat intelligence, network forensics and SOC automation — building the software to back it up.";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://waleedbukhari.dev"),
+  metadataBase: new URL(url),
   title: {
-    default: `${profile.name} — ${profile.role}`,
+    default: `${profile.fullName} — ${profile.role}`,
     template: `%s · ${profile.name}`,
   },
-  description: profile.summary,
+  description,
   keywords: [
     "Cybersecurity Engineer",
     "Threat Intelligence",
@@ -16,27 +39,29 @@ export const metadata: Metadata = {
     "SOC Automation",
     "Penetration Testing",
     "Malware Analysis",
+    "MITRE ATT&CK",
     "Waleed Bukhari",
   ],
-  authors: [{ name: profile.fullName }],
+  authors: [{ name: profile.fullName, url }],
+  creator: profile.fullName,
   openGraph: {
-    title: `${profile.name} — ${profile.role}`,
-    description: profile.tagline,
     type: "website",
-    locale: "en_US",
+    url,
+    title: `${profile.fullName} — ${profile.role}`,
+    description,
+    siteName: "WalSec",
   },
   twitter: {
     card: "summary_large_image",
-    title: `${profile.name} — ${profile.role}`,
-    description: profile.tagline,
+    title: `${profile.fullName} — ${profile.role}`,
+    description,
   },
   robots: { index: true, follow: true },
 };
 
 export const viewport: Viewport = {
-  themeColor: "#08090c",
-  width: "device-width",
-  initialScale: 1,
+  themeColor: "#090d12",
+  colorScheme: "dark",
 };
 
 export default function RootLayout({
@@ -45,20 +70,20 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="dark">
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link
-          rel="preconnect"
-          href="https://fonts.gstatic.com"
-          crossOrigin="anonymous"
-        />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
-          rel="stylesheet"
-        />
-      </head>
-      <body className="min-h-screen bg-ink-950 font-sans">{children}</body>
+    <html
+      lang="en"
+      className={`${inter.variable} ${sora.variable} ${mono.variable}`}
+      suppressHydrationWarning
+    >
+      <body className="bg-base text-ink">
+        <a
+          href="#main"
+          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-lg focus:bg-emerald-accent focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-void"
+        >
+          Skip to content
+        </a>
+        <Providers>{children}</Providers>
+      </body>
     </html>
   );
 }

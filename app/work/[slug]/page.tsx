@@ -1,22 +1,27 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import type { Metadata } from "next";
+import { ArrowLeft, ArrowUpRight, ExternalLink } from "lucide-react";
+import { caseStudies } from "@/lib/data";
+import { Icon } from "@/lib/icons";
 import { Background } from "@/components/Background";
+import { SiteChrome } from "@/components/SiteChrome";
 import { Footer } from "@/components/Footer";
-import { Icon } from "@/components/ui/Icon";
-import { Reveal, RevealGroup } from "@/components/ui/Reveal";
-import { caseStudies, profile, type CaseStudy } from "@/lib/data";
+import { Reveal } from "@/components/ui/Reveal";
+import { FlowDiagram } from "@/components/case/FlowDiagram";
+import { KillChain } from "@/components/case/KillChain";
 
 export function generateStaticParams() {
   return caseStudies.map((c) => ({ slug: c.slug }));
 }
 
-export function generateMetadata({
+export async function generateMetadata({
   params,
 }: {
-  params: { slug: string };
-}): Metadata {
-  const study = caseStudies.find((c) => c.slug === params.slug);
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const study = caseStudies.find((c) => c.slug === slug);
   if (!study) return { title: "Case study not found" };
   return {
     title: study.title,
@@ -25,271 +30,233 @@ export function generateMetadata({
   };
 }
 
-function accent(a: CaseStudy["accent"]) {
-  return a === "emerald"
-    ? {
-        text: "text-emerald-glow",
-        ring: "border-emerald-glow/40 bg-emerald-glow/10 text-emerald-glow",
-        bar: "bg-emerald-glow",
-      }
-    : {
-        text: "text-electric-glow",
-        ring: "border-electric-glow/40 bg-electric-glow/10 text-electric-glow",
-        bar: "bg-electric-glow",
-      };
-}
+const accentText: Record<string, string> = {
+  emerald: "text-emerald-accent",
+  electric: "text-electric-accent",
+};
 
-export default function CaseStudyPage({
+export default async function WorkPage({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }) {
-  const idx = caseStudies.findIndex((c) => c.slug === params.slug);
-  const study = caseStudies[idx];
+  const { slug } = await params;
+  const study = caseStudies.find((c) => c.slug === slug);
   if (!study) notFound();
 
-  const a = accent(study.accent);
+  const idx = caseStudies.findIndex((c) => c.slug === slug);
   const next = caseStudies[(idx + 1) % caseStudies.length];
 
   return (
     <>
       <Background />
-
-      {/* Top bar */}
-      <header className="sticky top-0 z-50 border-b border-ink-700/60 bg-ink-950/80 backdrop-blur-xl">
-        <div className="container-x flex h-16 items-center justify-between">
-          <Link
-            href="/#work"
-            className="inline-flex items-center gap-2 text-sm text-zinc-400 transition-colors hover:text-white"
-          >
-            <Icon name="ArrowRight" className="h-4 w-4 rotate-180" />
-            All work
-          </Link>
-          <Link href="/#contact" className="btn-primary">
-            Hire Me
-            <Icon name="ArrowUpRight" className="h-4 w-4" />
-          </Link>
-        </div>
-      </header>
-
-      <main className="container-x py-14 sm:py-20">
-        {/* Hero */}
-        <Reveal>
-          <div className="flex items-center gap-4">
-            <span
-              className={`flex h-14 w-14 items-center justify-center rounded-2xl border ${a.ring}`}
+      <SiteChrome />
+      <main id="main" className="pt-24">
+        <article className="section pb-16">
+          {/* back */}
+          <Reveal>
+            <Link
+              href="/#work"
+              className="inline-flex items-center gap-2 font-mono text-2xs text-ink-muted transition-colors hover:text-emerald-accent"
             >
-              <Icon name={study.icon} className="h-7 w-7" />
-            </span>
-            <div>
-              <p className="font-mono text-xs uppercase tracking-wider text-zinc-500">
-                {study.category}
+              <ArrowLeft className="h-3.5 w-3.5" />
+              All work
+            </Link>
+          </Reveal>
+
+          {/* header */}
+          <header className="mt-6 border-b border-edge pb-10">
+            <Reveal>
+              <div className="flex items-center gap-3">
+                <span
+                  className={`grid h-12 w-12 place-items-center rounded-xl border border-edge bg-raised ${accentText[study.accent]}`}
+                >
+                  <Icon name={study.icon} className="h-6 w-6" />
+                </span>
+                <div className="font-mono text-2xs uppercase tracking-wider2 text-ink-muted">
+                  <div>{study.category}</div>
+                  <div className="mt-0.5 text-ink-secondary">{study.year}</div>
+                </div>
+              </div>
+            </Reveal>
+            <Reveal delay={0.05}>
+              <h1 className="mt-6 max-w-3xl text-3xl font-bold leading-tight sm:text-5xl">
+                {study.title}
+              </h1>
+            </Reveal>
+            <Reveal delay={0.1}>
+              <p className="mt-4 max-w-2xl text-lg text-ink-secondary">
+                {study.tagline}
               </p>
-              <p className={`font-mono text-xs ${a.text}`}>{study.year}</p>
-            </div>
-          </div>
-        </Reveal>
-
-        <Reveal delay={1}>
-          <h1 className="mt-6 max-w-4xl text-balance text-4xl font-bold leading-tight tracking-tight text-white sm:text-5xl">
-            {study.title}
-          </h1>
-        </Reveal>
-        <Reveal delay={2}>
-          <p className={`mt-3 font-mono text-base ${a.text}`}>{study.tagline}</p>
-        </Reveal>
-        <Reveal delay={3}>
-          <p className="mt-6 max-w-3xl text-pretty text-lg leading-relaxed text-zinc-300">
-            {study.context}
-          </p>
-        </Reveal>
-
-        {/* Tags */}
-        <Reveal delay={4}>
-          <div className="mt-6 flex flex-wrap gap-2">
-            {study.tags.map((t) => (
-              <span key={t} className="chip">
-                {t}
-              </span>
-            ))}
-          </div>
-        </Reveal>
-
-        {/* Metrics */}
-        <RevealGroup className="mt-12 grid grid-cols-2 gap-4 lg:grid-cols-4">
-          {study.metrics.map((m) => (
-            <Reveal as="div" key={m.label}>
-              <div className="card h-full p-5">
-                <p className={`text-3xl font-bold ${a.text}`}>{m.value}</p>
-                <p className="mt-2 text-sm font-medium text-zinc-200">
-                  {m.label}
-                </p>
-                {m.sub && (
-                  <p className="mt-1 text-xs leading-snug text-zinc-500">
-                    {m.sub}
-                  </p>
+            </Reveal>
+            <Reveal delay={0.15}>
+              <div className="mt-6 flex flex-wrap items-center gap-2">
+                {study.tags.map((t) => (
+                  <span key={t} className="chip">
+                    {t}
+                  </span>
+                ))}
+                {study.demo && (
+                  <a
+                    href={study.demo}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={`inline-flex items-center gap-1.5 rounded-full border border-emerald-accent/30 px-3 py-1 font-mono text-2xs ${accentText[study.accent]} transition-colors hover:bg-emerald-accent/10`}
+                  >
+                    Live <ExternalLink className="h-3 w-3" />
+                  </a>
                 )}
               </div>
             </Reveal>
-          ))}
-        </RevealGroup>
+          </header>
 
-        {/* Problem & Approach */}
-        <div className="mt-12 grid gap-5 lg:grid-cols-2">
+          {/* metrics */}
           <Reveal>
-            <div className="card h-full p-6">
-              <h2 className="flex items-center gap-2 text-lg font-semibold text-white">
-                <Icon name="Target" className={`h-5 w-5 ${a.text}`} />
-                The Problem
-              </h2>
-              <p className="mt-3 leading-relaxed text-zinc-400">
-                {study.problem}
-              </p>
-            </div>
-          </Reveal>
-          <Reveal delay={1}>
-            <div className="card h-full p-6">
-              <h2 className="flex items-center gap-2 text-lg font-semibold text-white">
-                <Icon name="Layers" className={`h-5 w-5 ${a.text}`} />
-                My Approach
-              </h2>
-              <p className="mt-3 leading-relaxed text-zinc-400">
-                {study.approach}
-              </p>
-            </div>
-          </Reveal>
-        </div>
-
-        {/* Stack */}
-        <Reveal>
-          <div className="mt-5 card p-6">
-            <h2 className="flex items-center gap-2 text-lg font-semibold text-white">
-              <Icon name="Cpu" className={`h-5 w-5 ${a.text}`} />
-              Stack & Techniques
-            </h2>
-            <div className="mt-4 flex flex-wrap gap-2">
-              {study.stack.map((s) => (
-                <span
-                  key={s}
-                  className="rounded-lg border border-ink-700/70 bg-ink-900/50 px-3 py-1.5 font-mono text-xs text-zinc-300"
-                >
-                  {s}
-                </span>
+            <div className="mt-10 grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-edge bg-edge lg:grid-cols-4">
+              {study.metrics.map((m) => (
+                <div key={m.label} className="bg-surface/80 px-5 py-6">
+                  <div
+                    className={`font-display text-2xl font-bold sm:text-3xl ${accentText[study.accent]}`}
+                  >
+                    {m.value}
+                  </div>
+                  <div className="mt-1.5 text-xs font-medium text-ink">
+                    {m.label}
+                  </div>
+                  {m.sub && (
+                    <div className="mt-0.5 text-2xs text-ink-muted">{m.sub}</div>
+                  )}
+                </div>
               ))}
             </div>
-          </div>
-        </Reveal>
+          </Reveal>
 
-        {/* Deep-dive sections */}
-        <div className="mt-14">
-          <h2 className="text-2xl font-bold tracking-tight text-white">
-            Inside the work
-          </h2>
-          <div className="mt-6 space-y-4">
-            {study.sections.map((sec, i) => (
-              <Reveal as="div" key={sec.heading} delay={i}>
-                <div className="card relative overflow-hidden p-6 sm:p-7">
-                  <span
-                    className={`absolute left-0 top-0 h-full w-1 ${a.bar} opacity-70`}
+          {/* overview grid */}
+          <div className="mt-12 grid gap-8 lg:grid-cols-3">
+            <Reveal className="lg:col-span-2">
+              <div className="space-y-6">
+                <Block label="Context" body={study.context} />
+                <Block label="The problem" body={study.problem} />
+                <Block label="My approach" body={study.approach} />
+              </div>
+            </Reveal>
+
+            <Reveal delay={0.05}>
+              <aside className="panel h-fit p-5 lg:sticky lg:top-24">
+                <h3 className="font-mono text-2xs uppercase tracking-wider2 text-ink-muted">
+                  Stack & tooling
+                </h3>
+                <ul className="mt-4 flex flex-wrap gap-1.5">
+                  {study.stack.map((s) => (
+                    <li key={s} className="chip">
+                      {s}
+                    </li>
+                  ))}
+                </ul>
+              </aside>
+            </Reveal>
+          </div>
+
+          {/* visualisations */}
+          {(study.architecture || study.killChain) && (
+            <div className="mt-12 space-y-6">
+              {study.architecture && (
+                <Reveal>
+                  <FlowDiagram
+                    title={study.architecture.title}
+                    nodes={study.architecture.nodes}
                   />
-                  <div className="flex items-start gap-4">
-                    <span
-                      className={`mt-0.5 font-mono text-sm font-bold ${a.text}`}
-                    >
-                      {String(i + 1).padStart(2, "0")}
-                    </span>
-                    <div className="flex-1">
-                      <h3 className="text-lg font-semibold text-white">
-                        {sec.heading}
-                      </h3>
-                      <p className="mt-2 leading-relaxed text-zinc-400">
-                        {sec.body}
-                      </p>
-                      {sec.bullets && (
-                        <ul className="mt-4 space-y-2">
-                          {sec.bullets.map((b) => (
-                            <li
-                              key={b}
-                              className="flex gap-2.5 text-sm leading-relaxed text-zinc-400"
-                            >
-                              <Icon
-                                name="ChevronRight"
-                                className={`mt-0.5 h-4 w-4 shrink-0 ${a.text}`}
-                              />
-                              <span>{b}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      )}
-                    </div>
+                </Reveal>
+              )}
+              {study.killChain && (
+                <Reveal>
+                  <KillChain stages={study.killChain} />
+                </Reveal>
+              )}
+            </div>
+          )}
+
+          {/* deep-dive sections */}
+          <div className="mt-12 space-y-8">
+            {study.sections.map((s, i) => (
+              <Reveal key={s.heading} delay={i * 0.03}>
+                <div className="grid gap-3 border-t border-edge pt-8 lg:grid-cols-[0.3fr_0.7fr]">
+                  <h3 className="font-display text-lg font-semibold text-ink">
+                    {s.heading}
+                  </h3>
+                  <div>
+                    <p className="text-base leading-relaxed text-ink-secondary">
+                      {s.body}
+                    </p>
+                    {s.bullets && (
+                      <ul className="mt-4 space-y-2">
+                        {s.bullets.map((b) => (
+                          <li
+                            key={b}
+                            className="flex gap-2.5 text-sm leading-relaxed text-ink-secondary"
+                          >
+                            <span
+                              className={`mt-2 h-1 w-1 flex-none rounded-full ${study.accent === "emerald" ? "bg-emerald-accent" : "bg-electric-accent"}`}
+                            />
+                            {b}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
                   </div>
                 </div>
               </Reveal>
             ))}
           </div>
-        </div>
 
-        {/* Outcome */}
-        <Reveal>
-          <div className="mt-14 card overflow-hidden p-7 sm:p-9">
-            <div className="glow-emerald pointer-events-none absolute right-0 top-0 h-48 w-48 rounded-full opacity-50" />
-            <h2 className="flex items-center gap-2 text-xl font-bold text-white">
-              <Icon name="Zap" className={`h-5 w-5 ${a.text}`} />
-              Outcome & Impact
-            </h2>
-            <p className="mt-3 max-w-3xl text-pretty text-lg leading-relaxed text-zinc-300">
-              {study.outcome}
-            </p>
-            <div className="mt-6 flex flex-wrap items-center gap-2">
-              <span className="text-xs uppercase tracking-wider text-zinc-500">
-                Tooling:
-              </span>
-              {study.tools.map((t) => (
-                <span key={t} className="chip">
-                  <Icon name="Wrench" className="h-3 w-3" />
-                  {t}
-                </span>
-              ))}
+          {/* outcome */}
+          <Reveal>
+            <div className="panel mt-12 p-6 sm:p-8">
+              <h3 className="eyebrow">
+                <span className="h-1 w-1 rounded-full bg-emerald-accent" />
+                Outcome
+              </h3>
+              <p className="mt-4 text-lg leading-relaxed text-ink">
+                {study.outcome}
+              </p>
             </div>
-          </div>
-        </Reveal>
+          </Reveal>
 
-        {/* Next + CTA */}
-        <div className="mt-14 grid gap-5 lg:grid-cols-2">
-          <Link
-            href={`/work/${next.slug}`}
-            className="card group flex items-center justify-between p-6 transition-colors hover:border-emerald-glow/40"
-          >
-            <div>
-              <p className="font-mono text-xs uppercase tracking-wider text-zinc-500">
+          {/* next + CTA */}
+          <div className="mt-12 flex flex-col items-start justify-between gap-6 border-t border-edge pt-8 sm:flex-row sm:items-center">
+            <Link
+              href={`/work/${next.slug}`}
+              className="group inline-flex items-center gap-3"
+            >
+              <span className="font-mono text-2xs uppercase tracking-wider2 text-ink-muted">
                 Next case study
-              </p>
-              <p className="mt-1 text-lg font-semibold text-white">
-                {next.title}
-              </p>
-            </div>
-            <Icon
-              name="ArrowRight"
-              className="h-6 w-6 text-zinc-500 transition-all group-hover:translate-x-1 group-hover:text-emerald-glow"
-            />
-          </Link>
-
-          <div className="card flex flex-col items-start justify-center p-6">
-            <p className="text-lg font-semibold text-white">
-              Want this on your team?
-            </p>
-            <p className="mt-1 text-sm text-zinc-400">
-              I&apos;m open to security engineering &amp; SOC roles.
-            </p>
-            <a href={`mailto:${profile.email}`} className="btn-primary mt-4">
-              <Icon name="Mail" className="h-4 w-4" />
-              Get in touch
-            </a>
+                <span className="mt-1 block font-sans text-base font-semibold normal-case tracking-normal text-ink transition-colors group-hover:text-emerald-accent">
+                  {next.title}
+                </span>
+              </span>
+              <ArrowUpRight className="h-5 w-5 text-ink-muted transition-colors group-hover:text-emerald-accent" />
+            </Link>
+            <Link href="/#contact" className="btn-primary">
+              Hire me
+              <ArrowUpRight className="h-4 w-4" />
+            </Link>
           </div>
-        </div>
+        </article>
       </main>
-
       <Footer />
     </>
+  );
+}
+
+function Block({ label, body }: { label: string; body: string }) {
+  return (
+    <div>
+      <h3 className="font-mono text-2xs uppercase tracking-wider2 text-ink-muted">
+        {label}
+      </h3>
+      <p className="mt-3 text-base leading-relaxed text-ink-secondary">
+        {body}
+      </p>
+    </div>
   );
 }

@@ -1,33 +1,36 @@
-import { Reveal } from "@/components/ui/Reveal";
+import { Reveal } from "./Reveal";
 
 export function SectionHeading({
-  label,
+  eyebrow,
   title,
-  description,
-  align = "left",
+  intro,
+  id,
 }: {
-  label: string;
+  eyebrow: string;
   title: React.ReactNode;
-  description?: string;
-  align?: "left" | "center";
+  intro?: string;
+  id?: string;
 }) {
   return (
-    <div className={align === "center" ? "mx-auto max-w-2xl text-center" : "max-w-2xl"}>
+    <div className="max-w-2xl">
       <Reveal>
-        <span className="section-label">
-          <span className="h-px w-6 bg-emerald-glow/60" />
-          {label}
+        <span className="eyebrow">
+          <span className="h-1 w-1 rounded-full bg-emerald-accent" />
+          {eyebrow}
         </span>
       </Reveal>
-      <Reveal delay={1}>
-        <h2 className="mt-4 text-3xl font-bold tracking-tight text-white sm:text-4xl">
+      <Reveal delay={0.05}>
+        <h2
+          id={id}
+          className="mt-4 text-3xl font-semibold leading-tight sm:text-4xl"
+        >
           {title}
         </h2>
       </Reveal>
-      {description && (
-        <Reveal delay={2}>
-          <p className="mt-4 text-pretty text-base leading-relaxed text-zinc-400">
-            {description}
+      {intro && (
+        <Reveal delay={0.1}>
+          <p className="mt-4 text-base leading-relaxed text-ink-secondary">
+            {intro}
           </p>
         </Reveal>
       )}
