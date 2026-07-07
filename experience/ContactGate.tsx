@@ -93,7 +93,7 @@ export function ContactGate() {
       <pointLight color={C.emerald} intensity={6} distance={9} decay={2} position={[0, 0, 1.5]} />
 
       {/* contact + index panel */}
-      <Panel position={[0, 1.45, 0]} mobilePosition={[0, 1.7, 0]} visible={show} width={430} align="center" z={[38, 0]}>
+      <Panel position={[0, 1.45, 0]} visible={show} width={430} align="center" z={[38, 0]}>
         <div className="text-center">
           <p className="eyebrow mb-2 justify-center">
             <span className="inline-block h-1.5 w-1.5 animate-pulse-dot rounded-full bg-emerald-accent" />

@@ -116,14 +116,7 @@ export function SkillsVortex() {
       </group>
 
       {/* proficiency dossier — floated toward the approaching camera */}
-      <Panel
-        position={[0, -0.62, 2.05]}
-        mobilePosition={[0, -0.62, 2.05]}
-        visible={show && selected !== null}
-        width={330}
-        align="center"
-        z={[35, 0]}
-      >
+      <Panel position={[0, -0.62, 2.05]} visible={show && selected !== null} width={330} align="center" z={[35, 0]}>
         {selected !== null && (
           <div>
             <div className="mb-2 flex items-start justify-between gap-3">
@@ -166,14 +159,7 @@ export function SkillsVortex() {
         )}
       </Panel>
 
-      <Panel
-        position={[0, -0.68, 2.3]}
-        mobilePosition={[0, -0.68, 2.3]}
-        visible={show && selected === null}
-        width={300}
-        align="center"
-        z={[20, 0]}
-      >
+      <Panel position={[0, -0.68, 2.3]} visible={show && selected === null} width={300} align="center" z={[20, 0]}>
         <p className="text-center font-mono text-2xs uppercase tracking-wider2 text-ink-muted">
           ◈ Select a node to decrypt proficiency data
         </p>

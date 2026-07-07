@@ -5,12 +5,22 @@ import { Html, useScroll } from "@react-three/drei";
 import { AnimatePresence, motion } from "framer-motion";
 import { journey } from "../state";
 
+// constant screen position: pins the Html wrapper to the sticky layer's
+// origin so it never tracks the 3D anchor (drei only re-evaluates
+// visibility/z-index when this value changes — it never does)
+const pinTopLeft = () => [0, 0] as [number, number];
+
 /**
  * HTML ↔ 3D sync. Drei's <Html> projects a DOM node onto a world-space
  * anchor every frame; we portal it into ScrollControls' *sticky* layer
  * (`scroll.fixed`), which lives INSIDE the scroll element — so panels are
  * clickable while wheel events still bubble to the native scroller.
  * Framer Motion handles the decrypt-in / dissolve-out.
+ *
+ * Touch devices: world-anchored divs overflow short viewports (content
+ * flows down from the anchor and gets clipped), so panels become a
+ * viewport-pinned bottom sheet instead — always fully visible, scrolling
+ * internally when tall. The 3D anchor still decides *when* it shows.
  */
 export function Panel({
   position,
@@ -19,7 +29,6 @@ export function Panel({
   width = 340,
   align = "left",
   z = [30, 0],
-  mobilePosition,
 }: {
   position: [number, number, number];
   visible: boolean;
@@ -27,20 +36,43 @@ export function Panel({
   width?: number;
   align?: "left" | "right" | "center";
   z?: [number, number];
-  /** touch devices: side anchors fall off narrow screens — default drops the
-   *  panel below the artifact, centered. Pass a tuple to override. */
-  mobilePosition?: [number, number, number];
 }) {
   const scroll = useScroll();
-  const coarse = journey.coarse;
-  const pos = coarse ? (mobilePosition ?? [0, -0.95, 0.6]) : position;
-  const effAlign = coarse ? "center" : align;
+
+  if (journey.coarse) {
+    return (
+      <Html
+        position={position}
+        portal={{ current: scroll.fixed }}
+        calculatePosition={pinTopLeft}
+        wrapperClass="jsheet-wrap"
+        className="jsheet-inner"
+        zIndexRange={z}
+        style={{ pointerEvents: "none" }}
+      >
+        <AnimatePresence>
+          {visible && (
+            <motion.div
+              initial={{ opacity: 0, y: 48 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 48 }}
+              transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+              className="jpanel jsheet"
+            >
+              {children}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </Html>
+    );
+  }
+
   const shift =
-    effAlign === "center" ? "translateX(-50%)" : effAlign === "right" ? "translateX(-100%)" : "none";
+    align === "center" ? "translateX(-50%)" : align === "right" ? "translateX(-100%)" : "none";
 
   return (
     <Html
-      position={pos}
+      position={position}
       portal={{ current: scroll.fixed }}
       zIndexRange={z}
       style={{ pointerEvents: "none" }}
