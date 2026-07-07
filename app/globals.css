@@ -185,6 +185,19 @@
     inset: 0;
     pointer-events: none;
   }
+
+  /* desktop vortex dossier: dead-center of the viewport, between the nodes */
+  .jcenter {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+  }
+  .jpanel-center {
+    max-height: 76vh;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
   .jsheet {
     position: absolute;
     left: 10px;

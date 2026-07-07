@@ -29,6 +29,7 @@ export function Panel({
   width = 340,
   align = "left",
   z = [30, 0],
+  center = false,
 }: {
   position: [number, number, number];
   visible: boolean;
@@ -36,6 +37,10 @@ export function Panel({
   width?: number;
   align?: "left" | "right" | "center";
   z?: [number, number];
+  /** desktop: ignore the world anchor and float dead-center in the viewport
+   *  (used inside the skills vortex, where any anchored spot clips).
+   *  Touch devices always use the bottom sheet regardless. */
+  center?: boolean;
 }) {
   const scroll = useScroll();
 
@@ -63,6 +68,36 @@ export function Panel({
             </motion.div>
           )}
         </AnimatePresence>
+      </Html>
+    );
+  }
+
+  if (center) {
+    return (
+      <Html
+        position={position}
+        portal={{ current: scroll.fixed }}
+        calculatePosition={pinTopLeft}
+        wrapperClass="jsheet-wrap"
+        className="jsheet-inner"
+        zIndexRange={z}
+        style={{ pointerEvents: "none" }}
+      >
+        <div className="jcenter" style={{ width, maxWidth: "84vw" }}>
+          <AnimatePresence>
+            {visible && (
+              <motion.div
+                initial={{ opacity: 0, y: 16, scale: 0.96, filter: "blur(8px)" }}
+                animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
+                exit={{ opacity: 0, y: -12, scale: 0.98, filter: "blur(6px)" }}
+                transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+                className="jpanel jpanel-center w-full"
+              >
+                {children}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       </Html>
     );
   }
