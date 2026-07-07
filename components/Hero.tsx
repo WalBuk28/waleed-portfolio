@@ -1,7 +1,8 @@
 "use client";
 
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { ArrowUpRight, Download, MapPin, Terminal as TIcon } from "lucide-react";
+import { ArrowUpRight, Download, MapPin, Orbit, Terminal as TIcon } from "lucide-react";
+import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { profile } from "@/lib/data";
 import { Terminal } from "./hero/Terminal";
@@ -102,6 +103,10 @@ export function Hero() {
               Hire me
               <ArrowUpRight className="h-4 w-4" />
             </a>
+            <Link href="/journey" className="btn-journey">
+              <Orbit className="h-4 w-4" />
+              Enter the 3D journey
+            </Link>
             <a href="#work" className="btn-ghost">
               <TIcon className="h-4 w-4 text-emerald-accent" />
               View the work

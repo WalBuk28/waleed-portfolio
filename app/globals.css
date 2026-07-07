@@ -139,12 +139,64 @@
     @apply inline-flex items-center rounded-full border border-edge bg-raised/60 px-2.5 py-1 font-mono text-2xs text-ink-secondary;
   }
 
+  /* ── 3D journey: floating decrypt panel (drei <Html> + framer-motion) ── */
+  .jpanel {
+    @apply max-w-[80vw] rounded-xl border border-edge bg-surface/85 p-4 shadow-panel backdrop-blur-md;
+    pointer-events: auto;
+    box-shadow:
+      0 0 0 1px rgba(52, 211, 153, 0.06) inset,
+      0 8px 40px -12px rgba(0, 0, 0, 0.8),
+      0 0 42px -18px rgba(52, 211, 153, 0.28);
+  }
+  .jpanel::before {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(
+      135deg,
+      rgba(52, 211, 153, 0.4),
+      transparent 30%,
+      transparent 70%,
+      rgba(56, 189, 248, 0.35)
+    );
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+
+  /* hide the virtual scroller's scrollbar (drei ScrollControls) */
+  #journey-gl .no-scrollbar {
+    scrollbar-width: none;
+  }
+  #journey-gl .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
   /* Primary CTA button */
   .btn-primary {
     @apply inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-accent px-5 py-2.5 text-sm font-semibold text-void transition-all duration-200 hover:shadow-glow-emerald hover:brightness-110 active:scale-[0.98];
   }
   .btn-ghost {
     @apply inline-flex items-center justify-center gap-2 rounded-xl border border-edge bg-surface/60 px-5 py-2.5 text-sm font-semibold text-ink transition-all duration-200 hover:border-emerald-accent/50 hover:bg-raised active:scale-[0.98];
+  }
+
+  /* Opt-in portal to the 3D journey — gradient border, quiet glow */
+  .btn-journey {
+    @apply relative inline-flex items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold text-emerald-glow transition-all duration-200 hover:brightness-110 active:scale-[0.98];
+    border: 1px solid transparent;
+    background:
+      linear-gradient(#0d1319, #0d1319) padding-box,
+      linear-gradient(120deg, rgba(52, 211, 153, 0.75), rgba(56, 189, 248, 0.75)) border-box;
+  }
+  .btn-journey:hover {
+    box-shadow:
+      0 0 24px -6px rgba(52, 211, 153, 0.4),
+      0 0 24px -10px rgba(56, 189, 248, 0.35);
   }
 }
 

@@ -1,27 +1,14 @@
-import { Background } from "@/components/Background";
-import { SiteChrome } from "@/components/SiteChrome";
-import { Hero } from "@/components/Hero";
-import { CaseStudies } from "@/components/CaseStudies";
-import { Skills } from "@/components/Skills";
-import { Experience } from "@/components/Experience";
-import { About } from "@/components/About";
-import { Contact } from "@/components/Contact";
-import { Footer } from "@/components/Footer";
+import { JourneyGate } from "@/experience";
+import { FlatSite } from "@/components/FlatSite";
 
+/**
+ * The 2D site stays server-rendered inside the gate (SEO, no-JS, a11y);
+ * capable browsers get the cinematic 3D journey layered over it.
+ */
 export default function Home() {
   return (
-    <>
-      <Background />
-      <SiteChrome />
-      <main id="main">
-        <Hero />
-        <CaseStudies />
-        <Skills />
-        <Experience />
-        <About />
-        <Contact />
-      </main>
-      <Footer />
-    </>
+    <JourneyGate>
+      <FlatSite />
+    </JourneyGate>
   );
 }
