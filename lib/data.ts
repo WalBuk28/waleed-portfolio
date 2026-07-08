@@ -26,6 +26,7 @@ export const profile = {
   linkedin: "https://linkedin.com/in/muhammad-waleed-b43997202",
   github: "https://github.com/WalBuk28",
   site: "https://walsec.com",
+  cv: "/Muhammad_Waleed_CV.pdf",
   availability: "Open to Security Engineering & SOC roles — 2026",
   summary:
     "BSc (Hons) Cybersecurity from De Montfort University, Dubai, and a hands-on builder. I specialise in threat intelligence, network forensics and SOC automation — and I ship the software to back it up, from a fully-local, LLM-powered SIEM-Lite platform to ML phishing detectors and C++ security tooling. Industry experience across Telstra, Mastercard, Deloitte and Receptive Tech, where I cut response time, hardened endpoints and contained simulated attacks.",

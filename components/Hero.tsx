@@ -1,7 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { ArrowUpRight, Download, MapPin, Orbit, Terminal as TIcon } from "lucide-react";
+import { ArrowUpRight, Download, Github, MapPin, Orbit, Terminal as TIcon } from "lucide-react";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { profile } from "@/lib/data";
@@ -103,6 +103,14 @@ export function Hero() {
               Hire me
               <ArrowUpRight className="h-4 w-4" />
             </a>
+            <a
+              href={profile.cv}
+              download="Muhammad_Waleed_CV.pdf"
+              className="btn-ghost"
+            >
+              <Download className="h-4 w-4 text-electric-accent" />
+              Download CV
+            </a>
             <Link href="/journey" className="btn-journey">
               <Orbit className="h-4 w-4" />
               Enter the 3D journey
@@ -117,7 +125,7 @@ export function Hero() {
               rel="noopener noreferrer"
               className="btn-ghost"
             >
-              <Download className="h-4 w-4 text-electric-accent" />
+              <Github className="h-4 w-4 text-electric-accent" />
               GitHub
             </a>
           </motion.div>
