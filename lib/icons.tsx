@@ -6,8 +6,11 @@ import {
   Cloud,
   KeyRound,
   ShieldCheck,
+  ShieldAlert,
   BrainCircuit,
   Truck,
+  Boxes,
+  Lock,
   type LucideIcon,
 } from "lucide-react";
 
@@ -19,8 +22,11 @@ const map: Record<string, LucideIcon> = {
   Cloud,
   KeyRound,
   ShieldCheck,
+  ShieldAlert,
   BrainCircuit,
   Truck,
+  Boxes,
+  Lock,
 };
 
 export function Icon({

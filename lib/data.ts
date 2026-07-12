@@ -31,7 +31,7 @@ export const profile = {
   summary:
     "BSc (Hons) Cybersecurity from De Montfort University, Dubai, and a hands-on builder. I specialise in threat intelligence, network forensics and SOC automation — and I ship the software to back it up, from a fully-local, LLM-powered SIEM-Lite platform to ML phishing detectors and C++ security tooling. Industry experience across Telstra, Mastercard, Deloitte and Receptive Tech, where I cut response time, hardened endpoints and contained simulated attacks.",
   stats: [
-    { value: 7, suffix: "+", label: "Technical projects shipped" },
+    { value: 10, suffix: "+", label: "Technical projects shipped" },
     { value: 4, suffix: "", label: "Industry programs" },
     { value: 30, suffix: "+", label: "MITRE ATT&CK techniques mapped" },
     { value: 100, suffix: "%", label: "Local, air-gapped AI analysis" },
@@ -332,6 +332,7 @@ export const caseStudies: CaseStudy[] = [
       "Two production-grade reports with full IOC tables (file hashes, host- and network-based indicators), prioritised remediation and implementable detection logic — demonstrating the offensive-to-defensive loop end to end.",
     tools: ["Kali", "Nessus", "Metasploit", "IDA Pro", "GDB", "REMnux", "Wireshark"],
     tags: ["Penetration Testing", "Malware Analysis", "Reverse Engineering", "MITRE ATT&CK"],
+    repo: "https://github.com/WalBuk28/penetration-testing-malware-analysis",
   },
 
   // ---------------------------------------------------------------------------
@@ -420,6 +421,64 @@ export const caseStudies: CaseStudy[] = [
       "A complete incident report aligned to NIST SP 800-82 / 800-61, with forensic memos, an attack tree, CARVER scoring and dual-matrix ATT&CK mapping — translating raw packets into board-level business risk and concrete controls.",
     tools: ["Wireshark", "Cisco Packet Tracer", "ATT&CK Navigator"],
     tags: ["Network Forensics", "ICS / SCADA", "Incident Response", "MITRE ATT&CK"],
+    repo: "https://github.com/WalBuk28/network-forensics-ics",
+  },
+
+  // ---------------------------------------------------------------------------
+  {
+    slug: "incident-response-maturity",
+    title: "Incident Response Maturity & Threat Intel",
+    tagline: "A SIM3 maturity assessment and STIX threat-intel structuring for a logistics SME",
+    category: "Incident Response · Threat Intelligence",
+    year: "2025–26",
+    accent: "electric",
+    icon: "ShieldAlert",
+    summary:
+      "A SIM3 v2 incident-response maturity assessment of a mid-sized logistics company — 45 controls scored across four domains and benchmarked against ENISA Basic — paired with STIX 2.1 structuring of a live warehouse intrusion and a NIST SP 800-61 lifecycle response.",
+    context:
+      "An Incident Response & Cyber Threat Intelligence engagement (CSEC2002D) for “Winderby Logistics Group”, a realistic “digitally sideways” SME running a mixed IT/OT estate with a part-time analyst and an office-hours-only MSSP. The brief: measure how ready they actually are to handle an incident, and turn a live intrusion into shareable intelligence.",
+    problem:
+      "Incident-response capability that grows ad hoc is invisible until it fails. WLG had no formal IR mandate, no service description and almost no repeatable process — but no way to see or prioritise that. The work had to quantify maturity against a recognised baseline and convert a messy intrusion into structured, actionable threat intelligence.",
+    approach:
+      "I scored all 45 SIM3 v2 parameters (Organisation, Human, Tools, Process) on maturity of existence, documentation and enforcement, benchmarked each against the ENISA Basic target, and built a prioritised remediation roadmap. Separately I structured a warehouse-automation intrusion into STIX 2.1 objects and ran it through the NIST SP 800-61 lifecycle.",
+    stack: [
+      "SIM3 v2 (Open CSIRT Foundation)",
+      "ENISA Basic Maturity",
+      "STIX 2.1",
+      "MITRE ATT&CK (Enterprise + ICS)",
+      "NIST SP 800-61",
+      "TAXII / threat-intel sharing",
+    ],
+    metrics: [
+      { value: "45", label: "SIM3 controls assessed", sub: "Org · Human · Tools · Process" },
+      { value: "8/45", label: "At or above ENISA Basic", sub: "37 gaps identified" },
+      { value: "16/17", label: "Process controls below target", sub: "weakest domain" },
+      { value: "STIX 2.1", label: "Intrusion structured", sub: "shareable IOCs" },
+    ],
+    sections: [
+      {
+        heading: "SIM3 maturity assessment",
+        body: "Each parameter was scored 0 (non-existent) to 4 (optimising) and compared to ENISA Basic, so every result reads as a gap to a recognised standard rather than an abstract number.",
+        bullets: [
+          "Organisation: no formal IR mandate (O-1), authority “devolves to whoever is available” (O-3), only an informal service description (O-5)",
+          "Process is the weakest domain — 16 of 17 parameters below ENISA Basic",
+          "Tools are the relative bright spot (resilient comms/internet already exist for logistics)",
+        ],
+      },
+      {
+        heading: "Root cause & prioritised roadmap",
+        body: "The organisation-layer gaps are the systemic cause: without a mandate, authority or service description, investment in people, tools and process leaks away. The roadmap sequences the lowest-cost, highest-impact fixes first — a board-approved IR charter, service/SLA definitions, then core detection and resolution playbooks.",
+      },
+      {
+        heading: "Threat intelligence — STIX 2.1 + NIST 800-61",
+        body: "A warehouse-automation intrusion (rogue scheduled task by a look-alike service account, C2 to Eastern-European infrastructure, USB exfiltration, telematics brute force) was mapped to STIX 2.1 objects and MITRE ATT&CK for Enterprise and ICS, then walked through the NIST SP 800-61 lifecycle — showing that preparation and detection, not heroics during containment, decide the outcome.",
+      },
+    ],
+    outcome:
+      "A defensible, standards-based picture of an SME’s incident-response readiness with a costed roadmap to ENISA Basic, plus a worked example of turning a live intrusion into structured, shareable threat intelligence aligned to NIST SP 800-61.",
+    tools: ["SIM3", "ENISA", "STIX 2.1", "MITRE ATT&CK", "NIST SP 800-61"],
+    tags: ["Incident Response", "Threat Intelligence", "SIM3 / ENISA", "STIX"],
+    repo: "https://github.com/WalBuk28/incident-response-maturity-wlg",
   },
 
   // ---------------------------------------------------------------------------
@@ -471,6 +530,7 @@ export const caseStudies: CaseStudy[] = [
       "A rigorous, deployment-aware evaluation that treats ML as a security control — not a leaderboard — and ties detection back to the MITRE ATT&CK phishing technique and a CIA-triad impact analysis.",
     tools: ["Python", "scikit-learn", "XGBoost", "Jupyter"],
     tags: ["Machine Learning", "SOC Automation", "Phishing", "Adversarial ML"],
+    repo: "https://github.com/WalBuk28/ai-phishing-detection",
   },
 
   // ---------------------------------------------------------------------------
@@ -525,6 +585,135 @@ export const caseStudies: CaseStudy[] = [
       "A coursework demonstrating end-to-end cryptographic literacy — from hand-built ciphers to protocol cryptanalysis — with each weakness paired to a defensible mitigation grounded in academic sources.",
     tools: ["Python", "Number Theory", "OpenSSL"],
     tags: ["Cryptography", "Cryptanalysis", "RSA", "Protocols"],
+    repo: "https://github.com/WalBuk28/industrial-cryptography",
+  },
+
+  // ---------------------------------------------------------------------------
+  {
+    slug: "secure-scripting",
+    title: "FreightDesk — Secure Business Application",
+    tagline: "A hardened Flask logistics portal with live FX, RBAC and a full security self-assessment",
+    category: "Secure Software · Web App",
+    year: "2025–26",
+    accent: "emerald",
+    icon: "Boxes",
+    summary:
+      "A database-backed logistics management web app built the way a security engineer would: parameterised SQL, role-based access control, per-session CSRF tokens, hardened headers, and a live remote FX web service — shipped with 17 automated tests and an OWASP-mapped self-penetration-test.",
+    context:
+      "Built for the Secure Scripting & Business Applications brief (CSEC2001D). Staff sign in against role-based permissions, manage freight shipments in a normalised SQLite database, and see each shipment’s declared value converted to a base currency using exchange rates pulled live over HTTPS from a remote web service.",
+    problem:
+      "The brief’s real test isn’t “can you build a CRUD app” — it’s “can you build one that withstands the common business-application attacks”: SQL injection, broken access control, CSRF, session hijacking and unsafe outbound requests. The emphasis is as much on how it’s secured as on what it does.",
+    approach:
+      "A Flask application factory wires configuration, the database, a remote FX client, authentication, central CSRF enforcement and security headers. Every query is parameterised; passwords are PBKDF2-hashed; access control is enforced server-side with role decorators; and the outbound FX call is HTTPS-only with a timeout, defensive parsing and an offline fallback.",
+    stack: [
+      "Python · Flask 3",
+      "SQLite (parameterised SQL)",
+      "Werkzeug PBKDF2 auth",
+      "Role-Based Access Control",
+      "CSRF tokens · CSP · security headers",
+      "Remote FX web service (requests)",
+      "unittest (17 tests)",
+    ],
+    metrics: [
+      { value: "17", label: "Automated tests", sub: "auth · RBAC · CSRF · SQLi · FX" },
+      { value: "10/10", label: "OWASP Top 10 addressed", sub: "each with a mitigation" },
+      { value: "3", label: "RBAC roles", sub: "viewer · clerk · admin" },
+      { value: "0", label: "String-built SQL", sub: "fully parameterised" },
+    ],
+    architecture: {
+      title: "Secure request pipeline",
+      nodes: [
+        { id: "user", label: "Browser\nsession + CSRF", kind: "in" },
+        { id: "flask", label: "Flask app\nRBAC · validation", kind: "core" },
+        { id: "db", label: "SQLite\nparameterised SQL", kind: "core" },
+        { id: "fx", label: "Remote FX API\nHTTPS · cached · fallback", kind: "ai" },
+        { id: "audit", label: "Audit log\nappend-only", kind: "out" },
+      ],
+    },
+    sections: [
+      {
+        heading: "Security-by-design controls",
+        body: "Each control is deliberately hand-rolled so the mechanism is visible and auditable, and each is backed by a test.",
+        bullets: [
+          "Injection: parameterised queries everywhere; allow-list input validation",
+          "Access control: server-side role decorators (viewer < clerk < admin), never UI-only",
+          "CSRF: per-session token enforced centrally for every state-changing request",
+          "Session: PBKDF2 hashes, HttpOnly + SameSite cookies, session rotation on login",
+          "Headers: strict CSP, X-Frame-Options DENY, nosniff, Referrer-Policy",
+        ],
+      },
+      {
+        heading: "Remote web service integration",
+        body: "Shipment values in mixed currencies are converted using live rates from a public FX API — fetched over HTTPS with a short timeout, parsed defensively, cached with a TTL, and gracefully degraded to bundled fallback rates if the service is unreachable. The endpoint is fixed in config, not user-controlled, to resist SSRF.",
+      },
+      {
+        heading: "Self-penetration test (OWASP)",
+        body: "I attacked my own app and documented it: SQL-injection auth-bypass and table-drop payloads (blocked by parameterisation), forced-browsing privilege escalation (403 server-side), CSRF replay (400), reflected-XSS (Jinja autoescape + CSP) and clickjacking (frame-ancestors none) — every finding mapped to the OWASP Top 10 with the mitigation and a test.",
+      },
+    ],
+    outcome:
+      "A production-shaped business application that treats security as a first-class requirement — with a written OWASP self-assessment, a data-protection (UK GDPR) analysis and a green test suite — demonstrating secure development end to end, not just a working feature set.",
+    tools: ["Python", "Flask", "SQLite", "requests"],
+    tags: ["Secure Coding", "Web App", "OWASP", "RBAC"],
+    repo: "https://github.com/WalBuk28/freightdesk",
+  },
+
+  // ---------------------------------------------------------------------------
+  {
+    slug: "secure-password-manager",
+    title: "Secure Password Manager (C++)",
+    tagline: "An AES-256-GCM credential vault in modern C++ built on real OpenSSL crypto",
+    category: "Secure Coding · Systems C++",
+    year: "2025–26",
+    accent: "electric",
+    icon: "Lock",
+    summary:
+      "A command-line password manager in modern C++17 that stores credentials in a single vault file encrypted and authenticated with AES-256-GCM, unlocked by a master password that is never written to disk — using audited OpenSSL crypto, not a hand-rolled cipher.",
+    context:
+      "The Secure Coding module (CSEC1003D) asks for correct, object-oriented, security-minded systems programming. Rather than a toy, I built a real vault: a crypto layer over OpenSSL’s EVP API, a vault/serialisation layer, and a thin CLI — with a CMake build and a CTest suite.",
+    problem:
+      "A password manager is only as trustworthy as its weakest cryptographic decision. The goal was to get every one right: authenticated encryption so tampering is detected, slow salted key derivation so the master password resists brute force, and unique nonces so identical vaults never leak equality.",
+    approach:
+      "AES-256-GCM provides confidentiality and integrity in one primitive; PBKDF2-HMAC-SHA256 (200k iterations, random per-vault salt) derives the key; a fresh random 96-bit IV is generated on every save. RAII wraps the OpenSSL contexts, sensitive buffers are cleansed, and the master password is read with terminal echo disabled.",
+    stack: [
+      "C++17",
+      "OpenSSL EVP (libcrypto)",
+      "AES-256-GCM",
+      "PBKDF2-HMAC-SHA256",
+      "CMake + CTest",
+      "RAII / OOP",
+    ],
+    metrics: [
+      { value: "AES-256", label: "GCM authenticated encryption", sub: "tampering detected" },
+      { value: "200k", label: "PBKDF2 iterations", sub: "random per-vault salt" },
+      { value: "0", label: "Plaintext at rest", sub: "master key never stored" },
+      { value: "C++17", label: "OpenSSL EVP", sub: "CMake · CTest · -Wall" },
+    ],
+    sections: [
+      {
+        heading: "Cryptographic design",
+        body: "Every choice is deliberate and documented.",
+        bullets: [
+          "AES-256-GCM: a modified vault fails the auth tag instead of decrypting to junk",
+          "PBKDF2-HMAC-SHA256 with a random salt: expensive brute-force, no rainbow tables",
+          "Fresh random 96-bit IV per save: GCM nonces never repeat under one key",
+          "Master password derived to a key and never stored — only salt + iterations persist",
+        ],
+      },
+      {
+        heading: "Proven, not just claimed",
+        body: "The test suite demonstrates the security properties: a wrong master password and a single flipped byte in the vault both fail with an authentication error, and grepping the vault file for a stored secret returns nothing — it is encrypted at rest.",
+      },
+      {
+        heading: "Engineering discipline",
+        body: "Clean separation (crypto knows nothing about vaults; the CLI is thin), RAII around OpenSSL contexts so a context is freed exactly once even on error, OPENSSL_cleanse on key material, and a warnings-as-signal build (-Wall -Wextra -Wpedantic, zero warnings).",
+      },
+    ],
+    outcome:
+      "A genuinely secure, tested systems-C++ project that backs the ‘I can build the code I defend’ claim — real authenticated encryption, sound key management, and a threat model that is honest about what it does and does not protect.",
+    tools: ["C++", "OpenSSL", "CMake"],
+    tags: ["C++", "Cryptography", "Secure Coding", "AES-256"],
+    repo: "https://github.com/WalBuk28/secure-password-manager-cpp",
   },
 
   // ---------------------------------------------------------------------------
@@ -594,44 +783,57 @@ export const caseStudies: CaseStudy[] = [
   // ---------------------------------------------------------------------------
   {
     slug: "software-development",
-    title: "Software Engineering",
-    tagline: "Systems-level C++ and Python — from a secure vault to games",
-    category: "Software Development",
-    year: "2023–25",
+    title: "Secure Coding Fundamentals",
+    tagline: "Two small Python builds that show security thinking, not just working code",
+    category: "Software Development · Secure Coding",
+    year: "2025–26",
     accent: "emerald",
     icon: "Code2",
     summary:
-      "A breadth of software engineering across C++ and Python — including a CLI password manager built on AES-256 and SHA-256, plus Python applications such as calculators and card games — showing security-minded systems programming alongside clean application development.",
+      "Two focused Python projects that demonstrate secure-by-design engineering: a calculator that evaluates expressions without ever calling eval, and an object-oriented card game with a tamper-evident, HMAC-signed results log — each fully unit-tested.",
     context:
-      "Beyond security research I build software. This case study collects the engineering work that backs my defensive skill set — from low-level, security-focused C++ to approachable Python applications.",
+      "Good security engineers can build the code they defend. These two Secure Coding (CSEC1003D) projects apply that mindset to everyday programs: assume input is hostile, and protect integrity even where nobody thinks to.",
     problem:
-      "Good security engineers can read and write the code they defend. The goal across these projects was to apply sound engineering — correct cryptographic usage, clear structure and usable interfaces — rather than treat code as a black box.",
+      "The naive version of each is a security hole. A quick calculator reaches for eval() — a remote-code-execution hole. A game writes a plain-text score file anyone can edit. The exercise was to build the correct version of each, and prove it with tests.",
     approach:
-      "I built a CLI-based Secure Password Manager in C++ that applies AES-256 encryption with SHA-256 hashing to store secrets safely, following secure-storage principles. Alongside it, Python projects (calculators, card games and utilities) sharpened application logic, state handling and clean interface design.",
-    stack: ["C++", "AES-256", "SHA-256", "Python", "OOP & Data Structures", "CLI / GUI"],
+      "The calculator is a hand-written tokeniser + shunting-yard parser + fixed-operation evaluator, structurally incapable of running arbitrary code. The card game (War) uses clean OOP (Card / Deck / Player / engine) and signs every recorded result with HMAC-SHA256, so any edit to the score log is detected.",
+    stack: [
+      "Python 3",
+      "Shunting-yard parsing",
+      "OOP & data structures",
+      "HMAC-SHA256 integrity",
+      "unittest (29 tests)",
+    ],
     metrics: [
-      { value: "C++", label: "Secure password manager", sub: "AES-256 + SHA-256" },
-      { value: "Python", label: "Apps & games", sub: "calculators, card games" },
-      { value: "2", label: "Core languages", sub: "systems + scripting" },
+      { value: "0", label: "Uses of eval()", sub: "no code-execution path" },
+      { value: "29", label: "Unit tests passing", sub: "incl. security suites" },
+      { value: "HMAC", label: "Tamper-evident scores", sub: "SHA-256 signed log" },
+      { value: "2", label: "Focused builds", sub: "calculator · card game" },
     ],
     sections: [
       {
-        heading: "Secure Password Manager (C++)",
-        body: "A command-line credential vault using AES-256 for confidentiality and SHA-256 for integrity / hashing — a focused exercise in applying cryptographic primitives correctly and implementing secure secret-storage principles in a systems language.",
+        heading: "Safe expression calculator",
+        body: "The common “quick calculator” — eval(user_input) — is a remote-code-execution hole. This one classifies every character explicitly and only ever performs a closed set of maths operations, so hostile input is rejected before any computation.",
+        bullets: [
+          "Three stages: tokeniser → shunting-yard parser → RPN evaluator (no eval anywhere)",
+          "Rejects code injection and illegal characters at the lexer",
+          "Guards division-by-zero, domain errors and exponent-based DoS",
+        ],
       },
       {
-        heading: "Python applications",
-        body: "A set of Python projects — calculators, a multiplayer card game using OOP and logic modules, and utilities — used to build fluency in program logic, state management, input handling and clean, maintainable structure.",
+        heading: "Object-oriented War, with integrity",
+        body: "A clean OOP implementation (immutable cards, seedable deck, players, rules engine) — plus a security twist: every game result is appended to an HMAC-SHA256-signed log, and verification uses a constant-time comparison, so tampering with the score file is detected.",
       },
       {
-        heading: "Engineering practice",
-        body: "Across both languages the emphasis is on readable, well-structured code and an understanding of the trade-offs — exactly the developer literacy that strengthens day-to-day security engineering.",
+        heading: "Tested and honest",
+        body: "29 unit tests across the two projects, including dedicated security suites (code-injection rejection, input-length and exponent guards, tamper detection, wrong-key verification). Both are on GitHub as secure-calculator and card-war.",
       },
     ],
     outcome:
-      "A developer’s foundation that complements the security work — the ability to build, not just assess — spanning systems-level C++ and pragmatic Python.",
-    tools: ["C++", "Python", "Git"],
-    tags: ["C++", "Python", "Secure Coding"],
+      "Two small but genuinely secure, tested projects — the developer literacy that strengthens day-to-day security engineering, built and verified rather than claimed.",
+    tools: ["Python", "Git"],
+    tags: ["Python", "Secure Coding", "Testing"],
+    repo: "https://github.com/WalBuk28/secure-calculator",
   },
 ];
 

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, ArrowUpRight, ExternalLink } from "lucide-react";
+import { ArrowLeft, ArrowUpRight, ExternalLink, Github } from "lucide-react";
 import { caseStudies } from "@/lib/data";
 import { Icon } from "@/lib/icons";
 import { Background } from "@/components/Background";
@@ -104,6 +104,16 @@ export default async function WorkPage({
                     className={`inline-flex items-center gap-1.5 rounded-full border border-emerald-accent/30 px-3 py-1 font-mono text-2xs ${accentText[study.accent]} transition-colors hover:bg-emerald-accent/10`}
                   >
                     Live <ExternalLink className="h-3 w-3" />
+                  </a>
+                )}
+                {study.repo && (
+                  <a
+                    href={study.repo}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 rounded-full border border-edge px-3 py-1 font-mono text-2xs text-ink-secondary transition-colors hover:border-ink-muted hover:text-ink"
+                  >
+                    <Github className="h-3 w-3" /> Code
                   </a>
                 )}
               </div>

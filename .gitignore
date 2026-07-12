@@ -34,9 +34,15 @@ yarn-error.log*
 # extracted source documents (private CV / coursework — not for the public repo)
 /_src_text/
 
+# raw coursework source documents (student ID / personal data — never publish)
+/projects/
+
 # logs
 *.log
 
 # claude local settings
 .claude/settings.local.json
 .env*
+
+# claude conversation handoff / context (local only, keep out of public repo)
+CLAUDE_CONTEXT.md

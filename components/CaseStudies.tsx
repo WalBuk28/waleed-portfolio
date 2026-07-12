@@ -119,7 +119,7 @@ export function CaseStudies() {
         eyebrow="Selected work"
         title={
           <>
-            Six deep case studies,{" "}
+            {caseStudies.length} deep case studies,{" "}
             <span className="grad-text">not a wall of logos</span>
           </>
         }
