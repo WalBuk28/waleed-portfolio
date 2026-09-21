@@ -114,6 +114,86 @@
     }
   }
 
+  /* ── Homepage brand backdrop (components/brand/WallBackdrop.tsx) ──
+     The WalSec mark, fixed behind the content. The stage is sized in svh so
+     mobile URL bars never resize it; every piece is its own composited layer
+     (transforms only), positioned in % of the stage. Deep brand-green panels
+     with brand-green hairlines (--wall-stroke brightens while the system is
+     active; phones stay a notch calmer where text overlaps more). */
+  .wall-stage {
+    --wall-fill: rgb(48 150 122 / 0.19);
+    --wall-stroke: 0.52;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    height: min(74vh, 96vw);
+    height: min(74svh, 96vw);
+    aspect-ratio: 600 / 780;
+    transform: translate(-50%, -50%);
+    will-change: transform;
+    animation: wallIn 1.6s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both;
+  }
+  @media (max-width: 639px) {
+    .wall-stage {
+      --wall-fill: rgb(48 150 122 / 0.15);
+      --wall-stroke: 0.42;
+    }
+  }
+  .wall-piece,
+  .wall-blueprint {
+    position: absolute;
+    overflow: visible;
+  }
+  .wall-piece {
+    transform-origin: 0 0;
+    will-change: transform;
+  }
+  .wall-piece polygon {
+    fill: var(--wall-fill);
+    stroke: rgb(51 153 125);
+    stroke-opacity: var(--wall-stroke);
+    stroke-width: 1;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
+  }
+  .wall-blueprint {
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    will-change: opacity;
+  }
+  .wall-blueprint polygon {
+    fill: none;
+    stroke: rgb(148 163 184 / 0.22);
+    stroke-width: 1;
+    stroke-dasharray: 3 5;
+    vector-effect: non-scaling-stroke;
+  }
+  @keyframes wallIn {
+    from {
+      opacity: 0;
+    }
+  }
+
+  /* WalSecMark `lockIn`: pieces slide home along their lattice normals */
+  .mark-lock polygon {
+    animation: markLock 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation-delay: calc(var(--ld, 0ms) + 0.15s);
+  }
+  @keyframes markLock {
+    from {
+      opacity: 0;
+      transform: translate(var(--lx, 0), var(--ly, 0));
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .wall-stage,
+    .mark-lock polygon {
+      animation: none;
+    }
+  }
+
   /* Section shell */
   .section {
     @apply relative mx-auto w-full max-w-6xl px-5 sm:px-8;
@@ -245,13 +325,21 @@
   .text-balance {
     text-wrap: balance;
   }
-  /* Radial spotlight that follows the hero (set via CSS vars) */
+  /* Radial spotlight that follows the cursor (Hero moves it with a transform,
+     so it never repaints). Rests at the top centre until the pointer moves. */
   .spotlight {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 480px;
+    height: 480px;
     background: radial-gradient(
-      600px circle at var(--mx, 50%) var(--my, 0%),
+      circle closest-side,
       rgba(52, 211, 153, 0.08),
-      transparent 40%
+      transparent
     );
+    transform: translate(calc(50vw - 240px), -240px);
+    will-change: transform;
   }
   .mask-fade-x {
     -webkit-mask-image: linear-gradient(

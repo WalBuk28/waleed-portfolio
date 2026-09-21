@@ -1,5 +1,6 @@
 import { Mail, Linkedin, Github, Command } from "lucide-react";
 import { profile, navLinks } from "@/lib/data";
+import { WalSecMark } from "./brand/WalSecMark";
 
 export function Footer() {
   const year = new Date().getFullYear();
@@ -12,9 +13,7 @@ export function Footer() {
               href="#top"
               className="inline-flex items-center gap-2 font-display text-lg font-bold"
             >
-              <span className="grid h-7 w-7 place-items-center rounded-md bg-emerald-accent font-mono text-sm text-void">
-                W
-              </span>
+              <WalSecMark className="h-7 w-auto" />
               WalSec
             </a>
             <p className="mt-3 max-w-xs text-sm leading-relaxed text-ink-secondary">

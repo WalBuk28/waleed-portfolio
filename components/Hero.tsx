@@ -3,11 +3,12 @@
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { ArrowUpRight, Download, Github, MapPin, Orbit, Terminal as TIcon } from "lucide-react";
 import Link from "next/link";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { profile } from "@/lib/data";
 import { Terminal } from "./hero/Terminal";
 import { ThreatTicker } from "./hero/ThreatTicker";
 import { Counter } from "./ui/Counter";
+import { WalSecMark } from "./brand/WalSecMark";
 
 export function Hero() {
   const reduce = useReducedMotion();
@@ -22,29 +23,61 @@ export function Hero() {
     return () => clearInterval(id);
   }, []);
 
-  // Cursor spotlight — writes CSS vars, no React re-render.
-  const onMove = useCallback(
-    (e: React.MouseEvent) => {
-      if (reduce || !spotRef.current) return;
-      const r = spotRef.current.getBoundingClientRect();
-      spotRef.current.style.setProperty("--mx", `${e.clientX - r.left}px`);
-      spotRef.current.style.setProperty("--my", `${e.clientY - r.top}px`);
-    },
-    [reduce]
-  );
+  // Cursor spotlight — follows the pointer down the whole page. One transform
+  // write per frame at most: compositor-only, no repaint, no React re-render.
+  useEffect(() => {
+    const el = spotRef.current;
+    if (reduce || !el) return;
+    let raf = 0;
+    let x = 0;
+    let y = 0;
+    const onMove = (e: PointerEvent) => {
+      if (e.pointerType === "touch") return;
+      x = e.clientX;
+      y = e.clientY;
+      if (raf) return;
+      raf = requestAnimationFrame(() => {
+        raf = 0;
+        const r = el.parentElement!.getBoundingClientRect();
+        el.style.transform = `translate(${x - r.left - 240}px, ${y - r.top - 240}px)`;
+      });
+    };
+    window.addEventListener("pointermove", onMove, { passive: true });
+    return () => {
+      window.removeEventListener("pointermove", onMove);
+      cancelAnimationFrame(raf);
+    };
+  }, [reduce]);
 
   return (
-    <section
-      id="top"
-      onMouseMove={onMove}
-      className="relative overflow-hidden pt-28 sm:pt-32"
-    >
-      {/* cursor spotlight layer */}
-      <div ref={spotRef} className="spotlight absolute inset-0 -z-[1]" />
+    <section id="top" className="relative overflow-hidden pt-28 sm:pt-32">
+      {/* cursor spotlight layer — fixed to the viewport wherever there's a
+          real pointer, so the glow carries on past the hero */}
+      <div className="pointer-events-none absolute inset-0 -z-[1] overflow-hidden motion-safe:[@media(hover:hover)_and_(pointer:fine)]:fixed">
+        <div ref={spotRef} className="spotlight" />
+      </div>
 
       <div className="section grid items-center gap-12 pb-10 lg:grid-cols-[1.05fr_0.95fr] lg:gap-10">
         {/* ── Left: copy ── */}
         <div>
+          {/* brand lockup */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="mb-7 flex items-center gap-3.5"
+          >
+            <WalSecMark lockIn className="h-12 w-auto sm:h-14" />
+            <div className="leading-none">
+              <p className="font-display text-[1.7rem] font-bold tracking-tight text-ink sm:text-3xl">
+                WalSec
+              </p>
+              <p className="mt-2 font-display text-[0.625rem] font-semibold uppercase tracking-[0.26em] text-ink-secondary sm:text-2xs">
+                Signal through the noise
+              </p>
+            </div>
+          </motion.div>
+
           <motion.span
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}

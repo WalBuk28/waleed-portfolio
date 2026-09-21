@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { motion, useScroll, useSpring } from "framer-motion";
 import { Command, Menu, X, ArrowUpRight } from "lucide-react";
 import { navLinks } from "@/lib/data";
+import { WalSecMark } from "./brand/WalSecMark";
 
 export function Nav({ onOpenPalette }: { onOpenPalette: () => void }) {
   const pathname = usePathname();
@@ -40,11 +41,10 @@ export function Nav({ onOpenPalette }: { onOpenPalette: () => void }) {
           {/* logo */}
           <a
             href="#top"
-            className="group inline-flex items-center gap-2 font-display text-base font-bold"
+            aria-label="WalSec"
+            className="group inline-flex items-center gap-2 font-display text-base font-bold text-ink"
           >
-            <span className="grid h-8 w-8 place-items-center rounded-md bg-emerald-accent font-mono text-sm text-void transition-transform group-hover:scale-105">
-              W
-            </span>
+            <WalSecMark className="h-8 w-auto transition-transform group-hover:scale-105" />
             <span className="hidden sm:inline">WalSec</span>
           </a>
 
