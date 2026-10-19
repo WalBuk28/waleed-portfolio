@@ -15,7 +15,8 @@ const label: Record<string, string> = {
 
 /**
  * Infinite marquee of indicators taken from the case studies. The track is duplicated so the
- * -50% translate loops seamlessly. Edge-masked; pauses on hover.
+ * -50% translate loops seamlessly; the copy is aria-hidden so screen readers read each item once.
+ * Edge-masked; pauses on hover.
  */
 export function ThreatTicker() {
   const items = [...threatFeed, ...threatFeed];
@@ -25,6 +26,7 @@ export function ThreatTicker() {
         {items.map((t, i) => (
           <div
             key={i}
+            aria-hidden={i >= threatFeed.length || undefined}
             className="flex items-center gap-2 whitespace-nowrap rounded-md border border-edge bg-surface/60 px-2.5 py-1 font-mono text-2xs"
           >
             <span
