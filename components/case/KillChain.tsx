@@ -16,9 +16,9 @@ const railTone = [
 export function KillChain({ stages }: { stages: KillStage[] }) {
   return (
     <div className="panel p-6">
-      <h3 className="font-mono text-2xs uppercase tracking-wider2 text-ink-muted">
+      <h2 className="font-mono text-2xs uppercase tracking-wider2 text-ink-muted">
         Reconstructed kill chain · IT → OT
-      </h3>
+      </h2>
       <ol className="mt-5 space-y-4">
         {stages.map((s, i) => (
           <li key={s.stage} className="relative flex gap-4">
@@ -36,9 +36,9 @@ export function KillChain({ stages }: { stages: KillStage[] }) {
 
             <div className="flex-1 pb-2">
               <div className="flex flex-wrap items-center gap-2">
-                <h4 className="font-display text-sm font-semibold text-ink">
+                <h3 className="font-display text-sm font-semibold tracking-normal text-ink">
                   {s.label}
-                </h4>
+                </h3>
                 <span className="chip font-mono text-emerald-accent">
                   {s.technique}
                 </span>

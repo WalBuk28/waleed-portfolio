@@ -22,9 +22,9 @@ export function FlowDiagram({
 }) {
   return (
     <div className="panel p-6">
-      <h3 className="font-mono text-2xs uppercase tracking-wider2 text-ink-muted">
+      <h2 className="font-mono text-2xs uppercase tracking-wider2 text-ink-muted">
         {title}
-      </h3>
+      </h2>
       <div className="mt-5 flex flex-col items-stretch gap-3 sm:flex-row sm:flex-wrap sm:items-center">
         {nodes.map((n, i) => (
           <div

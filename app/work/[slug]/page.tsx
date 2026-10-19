@@ -175,9 +175,9 @@ export default async function WorkPage({
 
             <Reveal delay={0.05}>
               <aside className="panel h-fit p-5 lg:sticky lg:top-24">
-                <h3 className="font-mono text-2xs uppercase tracking-wider2 text-ink-muted">
+                <h2 className="font-mono text-2xs uppercase tracking-wider2 text-ink-muted">
                   Stack & tooling
-                </h3>
+                </h2>
                 <ul className="mt-4 flex flex-wrap gap-1.5">
                   {study.stack.map((s) => (
                     <li key={s} className="chip">
@@ -213,9 +213,9 @@ export default async function WorkPage({
             {study.sections.map((s, i) => (
               <Reveal key={s.heading} delay={i * 0.03}>
                 <div className="grid gap-3 border-t border-edge pt-8 lg:grid-cols-[0.3fr_0.7fr]">
-                  <h3 className="font-display text-lg font-semibold text-ink">
+                  <h2 className="font-display text-lg font-semibold text-ink">
                     {s.heading}
-                  </h3>
+                  </h2>
                   <div>
                     <p className="text-base leading-relaxed text-ink-secondary">
                       {s.body}
@@ -244,10 +244,10 @@ export default async function WorkPage({
           {/* outcome */}
           <Reveal>
             <div className="panel mt-12 p-6 sm:p-8">
-              <h3 className="eyebrow">
+              <h2 className="eyebrow">
                 <span className="h-1 w-1 rounded-full bg-emerald-accent" />
                 Outcome
-              </h3>
+              </h2>
               <p className="mt-4 text-lg leading-relaxed text-ink">
                 {study.outcome}
               </p>
@@ -283,9 +283,9 @@ export default async function WorkPage({
 function Block({ label, body }: { label: string; body: string }) {
   return (
     <div>
-      <h3 className="font-mono text-2xs uppercase tracking-wider2 text-ink-muted">
+      <h2 className="font-mono text-2xs uppercase tracking-wider2 text-ink-muted">
         {label}
-      </h3>
+      </h2>
       <p className="mt-3 text-base leading-relaxed text-ink-secondary">
         {body}
       </p>
