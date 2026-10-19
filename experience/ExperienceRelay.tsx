@@ -20,12 +20,12 @@ const WINDOWS: [number, number][] = [
   [0.788, 0.826],
 ];
 const BADGE_T = [0.7, 0.735, 0.77, 0.805];
-const SHORT = ["RTC", "TELSTRA", "MASTERCARD", "DELOITTE"];
+const SHORT = ["RTC", "FORAGE"];
 
 /**
- * Field operations — four holographic access badges checkpointed along the
- * stream, one per engagement (Receptive Tech, Telstra, Mastercard,
- * Deloitte). Each authenticates as the camera reaches it.
+ * Field operations — holographic access badges checkpointed along the
+ * stream, one per experience entry (the Receptive Tech internship, then the
+ * Forage virtual job simulations). Each authenticates as the camera reaches it.
  */
 export function ExperienceRelay() {
   const scroll = useScroll();

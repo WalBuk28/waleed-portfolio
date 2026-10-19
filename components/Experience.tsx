@@ -15,7 +15,7 @@ export function Experience() {
       <SectionHeading
         eyebrow="Track record"
         title="Experience & credentials"
-        intro="Hands-on security work across industry programs, backed by a cybersecurity degree and professional certifications."
+        intro="A cyber security internship, virtual job simulations labelled as such, a First Class degree and the certifications I hold or am working towards."
       />
 
       <div className="mt-12 grid gap-12 lg:grid-cols-[1.3fr_0.7fr] lg:gap-14">
@@ -23,7 +23,7 @@ export function Experience() {
         <div>
           <div className="mb-6 flex items-center gap-2 font-mono text-2xs uppercase tracking-wider2 text-ink-muted">
             <Briefcase className="h-3.5 w-3.5 text-emerald-accent" />
-            Professional experience
+            Experience
           </div>
 
           <RevealGroup className="relative space-y-6 border-l border-edge pl-6">
@@ -104,9 +104,11 @@ export function Experience() {
                 >
                   <div className="flex items-baseline justify-between gap-3">
                     <h4 className="text-sm font-semibold text-ink">{c.name}</h4>
-                    <span className="whitespace-nowrap font-mono text-2xs text-ink-muted">
-                      {c.date}
-                    </span>
+                    {c.date && (
+                      <span className="whitespace-nowrap font-mono text-2xs text-ink-muted">
+                        {c.date}
+                      </span>
+                    )}
                   </div>
                   <p className="mt-0.5 text-xs text-emerald-accent">
                     {c.issuer}

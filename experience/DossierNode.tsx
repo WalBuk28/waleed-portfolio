@@ -113,7 +113,8 @@ export function DossierNode() {
             <li key={c.name} className="flex items-baseline gap-2 text-2xs text-ink-secondary">
               <span className="text-electric-accent">◈</span>
               <span>
-                <span className="text-ink">{c.name}</span> — {c.issuer} · {c.date}
+                <span className="text-ink">{c.name}</span> — {c.issuer}
+                {c.date && ` · ${c.date}`}
               </span>
             </li>
           ))}

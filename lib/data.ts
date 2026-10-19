@@ -839,7 +839,7 @@ export const caseStudies: CaseStudy[] = [
   },
 ];
 
-// ── Experience (dates aligned to CV) ───────────────────────────────────────
+// ── Experience (dates aligned to CV; the internship is the only employment) ──
 export type Experience = {
   company: string;
   role: string;
@@ -857,54 +857,38 @@ export const experience: Experience[] = [
     location: "Lahore, Pakistan",
     kind: "Internship",
     points: [
-      "Improved threat-detection accuracy by 20% by refining SIEM rules and tuning alert thresholds, reducing false positives during triage.",
-      "Contributed to a 25% drop in endpoint vulnerabilities via scans, patch verification and flagging misconfigurations across assets.",
-      "Cut incident-response time 15–20% by updating escalation matrices and drafting playbooks.",
+      "Tuned SIEM correlation rules and alert thresholds to cut false positives during triage.",
+      "Ran recurring vulnerability scans, verified patches and flagged misconfigurations.",
+      "Rewrote escalation matrices and drafted incident-response playbooks.",
     ],
   },
   {
-    company: "Telstra Cybersecurity",
-    role: "Cyber Security Analyst",
+    company: "Telstra · Mastercard · Deloitte Australia",
+    role: "Virtual job simulations (Forage)",
     period: "2025",
-    location: "Virtual Experience",
-    kind: "Job Simulation",
+    location: "Online",
+    kind: "Simulation, not employment",
     points: [
-      "Responded to a simulated malware attack, reducing threat impact by 80% through timely containment and mitigation.",
-      "Performed post-incident analysis, identifying 3 key vulnerabilities and recommending 5 targeted hardening improvements.",
-    ],
-  },
-  {
-    company: "Mastercard Cybersecurity",
-    role: "Security Awareness Analyst",
-    period: "2025",
-    location: "Virtual Experience",
-    kind: "Job Simulation",
-    points: [
-      "Served as an analyst on Mastercard’s Security Awareness Team, identifying and reporting phishing threats.",
-      "Assessed gaps in employee security awareness and helped implement targeted training across high-risk business units.",
-    ],
-  },
-  {
-    company: "Deloitte Australia Cybersecurity",
-    role: "Cyber Security Analyst",
-    period: "2025",
-    location: "Virtual Experience",
-    kind: "Job Simulation",
-    points: [
-      "Analysed web-activity logs for cybersecurity incidents and investigated suspicious user activity.",
-      "Supported a client through a cyber-security breach, answering investigative questions to identify the source.",
+      "Telstra (cyber security): responded to a simulated malware incident, then wrote a post-incident analysis with hardening recommendations.",
+      "Mastercard (security awareness): identified the phishing in the exercise and proposed training for high-risk teams.",
+      "Deloitte Australia (cyber): analysed web-activity logs in a simulated breach.",
     ],
   },
 ];
 
-export type Certification = { name: string; issuer: string; date: string; detail?: string };
+export type Certification = { name: string; issuer: string; date?: string; detail?: string };
 
 export const certifications: Certification[] = [
+  {
+    name: "Certified in Cybersecurity (CC)",
+    issuer: "ISC2",
+    date: "May 2026",
+  },
   {
     name: "Cybersecurity Professional Certificate",
     issuer: "Google",
     date: "May 2025",
-    detail: "8-course program — detection & response, Python automation, Linux, SQL, threat analysis",
+    detail: "Detection and response, Python automation, Linux, SQL, threat analysis",
   },
   {
     name: "Generative AI Engineering Professional",
@@ -918,13 +902,23 @@ export const certifications: Certification[] = [
     date: "Jul 2025",
     detail: "AI Foundations + OCI Foundations Associate",
   },
+  {
+    name: "AI Fluency · Claude 101",
+    issuer: "Anthropic",
+  },
+  {
+    name: "Security, Compliance, and Identity Fundamentals (SC-900)",
+    issuer: "Microsoft",
+    date: "In progress",
+    detail: "Studying for the exam; not yet held",
+  },
 ];
 
 export const education = {
   degree: "BSc (Hons) Cyber Security",
-  school: "De Montfort University, Dubai",
-  result: "EQF Level 6 · Final-year / recent graduate",
-  period: "2023 – 2026",
+  school: "De Montfort University (studied at DMU Dubai)",
+  result: "First Class Honours · awarded 16 July 2026",
+  period: "Oct 2023 – Jul 2026",
 };
 
 export const navLinks = [
