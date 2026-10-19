@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowUpRight, ExternalLink, Github } from "lucide-react";
-import { caseStudies } from "@/lib/data";
+import { caseStudies, profile } from "@/lib/data";
 import { Icon } from "@/lib/icons";
 import { Background } from "@/components/Background";
 import { SiteChrome } from "@/components/SiteChrome";
@@ -23,10 +23,25 @@ export async function generateMetadata({
   const { slug } = await params;
   const study = caseStudies.find((c) => c.slug === slug);
   if (!study) return { title: "Case study not found" };
+  const path = `/work/${study.slug}`;
   return {
     title: study.title,
     description: study.summary,
-    openGraph: { title: study.title, description: study.summary },
+    // The page's own tags, not the site-wide security keywords.
+    keywords: [...study.tags, profile.name, profile.cvName],
+    alternates: { canonical: path },
+    openGraph: {
+      type: "article",
+      url: path,
+      siteName: "WalSec",
+      title: study.title,
+      description: study.summary,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: study.title,
+      description: study.summary,
+    },
   };
 }
 

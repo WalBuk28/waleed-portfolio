@@ -1,6 +1,11 @@
+import type { Metadata } from "next";
 import { JourneyGate } from "@/experience";
 import { FlatSite } from "@/components/FlatSite";
 import { WallBackdrop } from "@/components/brand/WallBackdrop";
+
+export const metadata: Metadata = {
+  alternates: { canonical: "/" },
+};
 
 /**
  * The 2D site stays server-rendered inside the gate (SEO, no-JS, a11y);
