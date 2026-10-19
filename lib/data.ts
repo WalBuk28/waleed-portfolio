@@ -272,15 +272,15 @@ export const caseStudies: CaseStudy[] = [
     slug: "pentest-malware",
     title: "Penetration Testing & Malware Investigations",
     tagline: "Black-box pentest + multi-sample malware reverse engineering",
-    category: "Offensive Security · Reverse Engineering",
+    category: "Coursework (CSEC2003D) · Offensive security",
     year: "2025–26",
     accent: "electric",
     icon: "Bug",
     featured: true,
     summary:
-      "A full black-box penetration test of a legacy banking application (96 findings) paired with an advanced forensic investigation of a weaponised-PDF → service-DLL → downloader malware cluster, mapped end-to-end to MITRE ATT&CK.",
+      "A black-box penetration test of a legacy lab host (96 Nessus findings) paired with reverse engineering of a weaponised PDF, a service DLL and a downloader, mapped to MITRE ATT&CK with detections.",
     context:
-      "Two complementary engagements: a black-box penetration test against a simulated legacy banking host (“Besure Bank”, 192.168.50.130), and an advanced forensic investigation reverse-engineering four malicious artefacts plus a stack-overflow binary.",
+      "Coursework (CSEC2003D) in an isolated lab with provided targets and samples. Two parts: a black-box penetration test of a simulated legacy banking host (“Besure Bank”, 192.168.50.130), and a malware investigation of four artefacts: three malware samples (a PDF, a service DLL and a downloader) and one vulnerable C program. The service DLL is Practical Malware Analysis Lab 3-2, a standard training sample.",
     problem:
       "Legacy, end-of-life infrastructure quietly accumulates exploitable risk. The brief: enumerate and validate every weakness on an externally-facing host with no prior knowledge, then — separately — triage a high-confidence malware cluster, prove its persistence and capabilities, and produce actionable detection engineering.",
     approach:
@@ -297,18 +297,18 @@ export const caseStudies: CaseStudy[] = [
       "PDFiD / peepdf",
     ],
     metrics: [
-      { value: "96", label: "Vulnerabilities found", sub: "2 critical · 15 high · 26 medium" },
-      { value: "4", label: "Malware samples analysed", sub: "PDF · DLL · EXE · C binary" },
-      { value: "5+", label: "MITRE ATT&CK techniques", sub: "mapped from evidence" },
-      { value: "5", label: "Notable CVEs referenced", sub: "POODLE, DROWN, RCE" },
+      { value: "96", label: "Nessus findings", sub: "2 critical · 15 high · 26 medium · 8 low · 45 info" },
+      { value: "4", label: "Artefacts analysed", sub: "3 malware samples (PDF · DLL · EXE) + 1 vulnerable C program" },
+      { value: "5", label: "ATT&CK techniques mapped", sub: "listed under “MITRE ATT&CK & detection engineering”" },
+      { value: "5", label: "CVEs referenced", sub: "listed under “Penetration test”" },
     ],
     sections: [
       {
         heading: "Penetration test — Besure Bank",
-        body: "Nmap revealed an outdated stack: OpenSSH 3.1p1 (SSHv1 enabled), Apache 2.0.40 and PHP 4.2.2 — all end-of-life. Nessus surfaced 96 findings across the host.",
+        body: "Nmap revealed an end-of-life stack: OpenSSH 3.1p1 (SSHv1 enabled), Apache 2.0.40 and PHP 4.2.2. Nessus Essentials reported 96 findings: 2 critical, 15 high, 26 medium, 8 low and 45 informational. The report references five CVEs: CVE-2014-3566 (POODLE), CVE-2016-0800 (DROWN), CVE-2003-0253 (Apache 2.0 buffer overflow), CVE-2007-1001 (PHP code injection) and CVE-2008-0599 (PHP variable handling).",
         bullets: [
-          "Critical: SSLv2/SSLv3 enabled → POODLE (CVE-2014-3566) & DROWN (CVE-2016-0800)",
-          "Critical: PHP 4.2.2 — numerous public RCE / memory-corruption exploits",
+          "Critical: SSLv2/SSLv3 enabled → POODLE (CVE-2014-3566) and DROWN (CVE-2016-0800)",
+          "Critical: PHP 4.2.2, end of life, with public exploits (CVE-2007-1001, CVE-2008-0599); Metasploit modules attempted",
           "Weak ciphers (RC4, EXPORT, 3DES/SWEET32), TLS 1.0, expired self-signed cert (2007)",
           "HTTP TRACE enabled (XST), exposed phpinfo.php, inconsistent login errors → enumeration",
           "Delivered tactical + strategic remediation and a patch-management lifecycle",
@@ -320,7 +320,7 @@ export const caseStudies: CaseStudy[] = [
       },
       {
         heading: "Malware — persistence service DLL (sus-file3)",
-        body: "A PE32 service DLL exporting Install/ServiceMain/UninstallService. Imports (OpenSCManagerA, CreateServiceA) and strings revealed svchost/netsvcs persistence, masquerading as “Intranet Network Awareness (INA+)” under service name IPRIP. Dynamic analysis confirmed the DLL loading inside svchost.exe; C2 strings pointed at practicalmalwareanalysis.com/serve.html.",
+        body: "A PE32 service DLL exporting Install/ServiceMain/UninstallService. Imports (OpenSCManagerA, CreateServiceA) and strings revealed svchost/netsvcs persistence, masquerading as “Intranet Network Awareness (INA+)” under service name IPRIP. Dynamic analysis confirmed the DLL loading inside svchost.exe. Its C2 strings point to hxxp://practicalmalwareanalysis[.]com/serve.html, a lab IOC: this is the Practical Malware Analysis Lab 3-2 sample, not a live threat.",
       },
       {
         heading: "Downloader + stack overflow (sus-file4 / sus-file6)",
@@ -332,7 +332,7 @@ export const caseStudies: CaseStudy[] = [
       },
     ],
     outcome:
-      "Two production-grade reports with full IOC tables (file hashes, host- and network-based indicators), prioritised remediation and implementable detection logic — demonstrating the offensive-to-defensive loop end to end.",
+      "Two reports with IOC tables (host- and network-based indicators), prioritised remediation and detection logic you could implement, covering the loop from finding a weakness to detecting its use. The IOCs and detections are in the public repo.",
     tools: ["Kali", "Nessus", "Metasploit", "IDA Pro", "GDB", "REMnux", "Wireshark"],
     tags: ["Penetration Testing", "Malware Analysis", "Reverse Engineering", "MITRE ATT&CK"],
     repo: "https://github.com/WalBuk28/penetration-testing-malware-analysis",
@@ -343,19 +343,19 @@ export const caseStudies: CaseStudy[] = [
     slug: "network-forensics",
     title: "Network Forensics & ICS Security",
     tagline: "Reconstructing a multi-stage SCADA attack from packets",
-    category: "Digital Forensics · OT/ICS",
+    category: "Coursework (CSEC3002) · Digital forensics · OT/ICS",
     year: "2025",
     accent: "emerald",
     icon: "Network",
     featured: true,
     summary:
-      "A Wireshark-driven forensic reconstruction of a four-stage attack that pivoted from a public web server into a water-treatment OT network, scored with a CARVER matrix and mapped to MITRE ATT&CK for Enterprise and ICS — backed by hands-on Cisco Packet Tracer network design.",
+      "A Wireshark reconstruction of a four-stage attack that pivoted from a public web server into a water-treatment OT network, scored with a CARVER matrix and mapped to MITRE ATT&CK for Enterprise and ICS.",
     context:
-      "A Cyber-Physical Systems Security investigation into a multi-stage intrusion at “CTI Utilities”, a water-treatment operator, combined with enterprise network-design work in Cisco Packet Tracer (VLAN/NAT/static routing) that demonstrates the segmentation the victim lacked.",
+      "Coursework for Cyber Physical Systems Security (CSEC3002), submitted November 2025: an investigation into a multi-stage intrusion at “CTI Utilities”, a fictional water-treatment operator, using synthetic teaching captures. Alongside it, network-design work in Cisco Packet Tracer (VLANs, NAT, static routing) shows the segmentation the victim lacked.",
     problem:
-      "An external attacker defaced a safety-critical HMI by stepping-stone from a low-value public asset into a secure OT network. The investigation had to answer the brief’s forensic questions from packet evidence alone, quantify asset risk, and recommend controls that would have broken the kill chain.",
+      "An external attacker defaced a safety-critical HMI by stepping from a low-value public asset into a secure OT network. The investigation had to answer the brief’s forensic questions from packet evidence alone, quantify asset risk, and recommend controls that would have broken the kill chain.",
     approach:
-      "I scored 17 assets with a CARVER matrix to prioritise defence, modelled three attack pathways as an attack tree (selecting the direct VPN route as optimal), then reconstructed the actual intrusion packet-by-packet in Wireshark — correlating timestamps, IPs, ports and HTTP streams into interim forensic memos and a final incident report.",
+      "Before touching the captures, I scored 17 assets with a CARVER matrix and modelled three attack pathways as an attack tree. The tree rated the direct route through the VPN server as the attacker’s best option: fewest dependencies, on end-of-life Ubuntu 18.04. The web-server route ranked lower because it is noisier and leaves more logs. I then reconstructed the actual intrusion packet by packet in Wireshark, correlating timestamps, IPs, ports and HTTP streams into interim forensic memos and a final incident report. The packets showed the attacker took the noisier web-server route, which the tree had ranked second.",
     stack: [
       "Wireshark",
       "CARVER Matrix",
@@ -367,8 +367,8 @@ export const caseStudies: CaseStudy[] = [
     metrics: [
       { value: "4", label: "Kill-chain stages reconstructed", sub: "IT → pivot → OT → ICS" },
       { value: "17", label: "Assets CARVER-scored", sub: "VPN server highest at 52" },
-      { value: "9", label: "ATT&CK techniques mapped", sub: "Enterprise + ICS matrices" },
-      { value: "3", label: "Coordinated attacker IPs", sub: "distributed port scan" },
+      { value: "9", label: "ATT&CK techniques mapped", sub: "7 Enterprise + 2 ICS, listed below" },
+      { value: "3", label: "Scanning source IPs", sub: "distributed port scan, from the captures" },
     ],
     killChain: [
       {
@@ -380,7 +380,7 @@ export const caseStudies: CaseStudy[] = [
       {
         stage: "02",
         label: "Initial Access",
-        detail: "Brute force on /wp-login.php → WordPress admin compromise on the public web server.",
+        detail: "A brute force on /wp-login.php was detected but failed; a different attack on the public web server gave the attacker access.",
         technique: "T1190 · Exploit Public-Facing App",
       },
       {
@@ -393,7 +393,7 @@ export const caseStudies: CaseStudy[] = [
         stage: "04",
         label: "ICS Impact",
         detail: "Stolen JSESSIONID cookie → malicious upload (anonymous.gif) defacing the ScadaBR HMI.",
-        technique: "T0880 · Manipulation of View",
+        technique: "T0832 · Manipulation of View",
       },
     ],
     sections: [
@@ -403,7 +403,7 @@ export const caseStudies: CaseStudy[] = [
       },
       {
         heading: "Findings & recommendations",
-        body: "Three root-cause findings drove a prioritised remediation plan.",
+        body: "Three root-cause findings, plus a fix for the stolen-cookie hijack, drove a prioritised remediation plan.",
         bullets: [
           "Insufficient network segmentation (CRITICAL) — strict IT/OT firewall rules",
           "Weak access control — enforce MFA on all remote / RDP access",
@@ -413,15 +413,20 @@ export const caseStudies: CaseStudy[] = [
       },
       {
         heading: "MITRE ATT&CK mapping",
-        body: "Behaviours were mapped across both matrices: Enterprise (T1595 Active Scanning, T1190 Exploit Public-Facing App, T1110.001 Brute Force, T1021.001 RDP, T1552.001 Credentials in Files) and ICS (T0862 Exploitation of Remote Services, T0880 Manipulation of View) and visualised in ATT&CK Navigator.",
+        body: "Nine techniques, each tied to a forensic memo, mapped across both matrices and visualised in ATT&CK Navigator.",
+        bullets: [
+          "Enterprise: T1595 Active Scanning · T1592 Gather Victim Host Information · T1190 Exploit Public-Facing Application · T1110.001 Password Guessing (the failed brute force) · T1021.001 Remote Desktop Protocol · T1552.001 Credentials In Files (the stolen session cookie) · T1046 Network Service Discovery",
+          "ICS: T0866 Exploitation of Remote Services (the malicious POST to the HMI web service) · T0832 Manipulation of View (the defaced HMI)",
+          "Correction: the submitted report gives the two ICS techniques as T0862 and T0880. Those IDs are Supply Chain Compromise and Loss of Safety, so the IDs above are the corrected ones.",
+        ],
       },
       {
         heading: "Secure-by-design networking",
-        body: "Complementary Cisco Packet Tracer work built high-availability corporate topologies using VLAN segmentation, NAT and static routing — the exact controls whose absence enabled the CTI Utilities breach, and passing 100% of simulation tests.",
+        body: "Separate Cisco Packet Tracer work built corporate topologies with VLAN segmentation, NAT and static routing: the controls whose absence let the CTI Utilities attacker cross from IT into OT.",
       },
     ],
     outcome:
-      "A complete incident report aligned to NIST SP 800-82 / 800-61, with forensic memos, an attack tree, CARVER scoring and dual-matrix ATT&CK mapping — translating raw packets into board-level business risk and concrete controls.",
+      "An incident report aligned to NIST SP 800-82 and 800-61, with forensic memos, an attack tree, CARVER scoring and ATT&CK mapping across both matrices, turning raw packets into business risk and concrete controls.",
     tools: ["Wireshark", "Cisco Packet Tracer", "ATT&CK Navigator"],
     tags: ["Network Forensics", "ICS / SCADA", "Incident Response", "MITRE ATT&CK"],
     repo: "https://github.com/WalBuk28/network-forensics-ics",
@@ -432,14 +437,14 @@ export const caseStudies: CaseStudy[] = [
     slug: "incident-response-maturity",
     title: "Incident Response Maturity & Threat Intel",
     tagline: "A SIM3 maturity assessment and STIX threat-intel structuring for a logistics SME",
-    category: "Incident Response · Threat Intelligence",
+    category: "Coursework (CSEC2002D) · Incident response · Threat intelligence",
     year: "2025–26",
     accent: "electric",
     icon: "ShieldAlert",
     summary:
-      "A SIM3 v2 incident-response maturity assessment of a mid-sized logistics company — 45 controls scored across four domains and benchmarked against ENISA Basic — paired with STIX 2.1 structuring of a live warehouse intrusion and a NIST SP 800-61 lifecycle response.",
+      "A SIM3 v2 incident-response maturity assessment of a case-study logistics company (45 parameters across four domains, benchmarked against ENISA Basic), paired with STIX 2.1 structuring of a scenario intrusion and a NIST SP 800-61 lifecycle response.",
     context:
-      "An Incident Response & Cyber Threat Intelligence engagement (CSEC2002D) for “Winderby Logistics Group”, a realistic “digitally sideways” SME running a mixed IT/OT estate with a part-time analyst and an office-hours-only MSSP. The brief: measure how ready they actually are to handle an incident, and turn a live intrusion into shareable intelligence.",
+      "Incident Response & Cyber Threat Intelligence coursework (CSEC2002D). “Winderby Logistics Group” is a case-study organisation from the brief, not a client: a “digitally sideways” SME with a mixed IT/OT estate, a part-time analyst and an office-hours-only MSSP. The brief: measure how ready it is to handle an incident, and turn a scenario intrusion into shareable intelligence.",
     problem:
       "Incident-response capability that grows ad hoc is invisible until it fails. WLG had no formal IR mandate, no service description and almost no repeatable process — but no way to see or prioritise that. The work had to quantify maturity against a recognised baseline and convert a messy intrusion into structured, actionable threat intelligence.",
     approach:
@@ -450,12 +455,11 @@ export const caseStudies: CaseStudy[] = [
       "STIX 2.1",
       "MITRE ATT&CK (Enterprise + ICS)",
       "NIST SP 800-61",
-      "TAXII / threat-intel sharing",
     ],
     metrics: [
-      { value: "45", label: "SIM3 controls assessed", sub: "Org · Human · Tools · Process" },
+      { value: "45", label: "SIM3 parameters assessed", sub: "Org 11 · Human 7 · Tools 10 · Process 17" },
       { value: "8/45", label: "At or above ENISA Basic", sub: "37 gaps identified" },
-      { value: "16/17", label: "Process controls below target", sub: "weakest domain" },
+      { value: "16/17", label: "Process parameters below target", sub: "weakest domain" },
       { value: "STIX 2.1", label: "Intrusion structured", sub: "shareable IOCs" },
     ],
     sections: [
@@ -474,11 +478,11 @@ export const caseStudies: CaseStudy[] = [
       },
       {
         heading: "Threat intelligence — STIX 2.1 + NIST 800-61",
-        body: "A warehouse-automation intrusion (rogue scheduled task by a look-alike service account, C2 to Eastern-European infrastructure, USB exfiltration, telematics brute force) was mapped to STIX 2.1 objects and MITRE ATT&CK for Enterprise and ICS, then walked through the NIST SP 800-61 lifecycle — showing that preparation and detection, not heroics during containment, decide the outcome.",
+        body: "The brief’s warehouse-automation intrusion scenario (rogue scheduled task by a look-alike service account, C2 to Eastern-European infrastructure, USB exfiltration, telematics brute force) was mapped to STIX 2.1 objects and MITRE ATT&CK for Enterprise and ICS, then walked through the NIST SP 800-61 lifecycle — showing that preparation and detection, not heroics during containment, decide the outcome.",
       },
     ],
     outcome:
-      "A defensible, standards-based picture of an SME’s incident-response readiness with a costed roadmap to ENISA Basic, plus a worked example of turning a live intrusion into structured, shareable threat intelligence aligned to NIST SP 800-61.",
+      "A standards-based picture of a case-study SME’s incident-response readiness with a prioritised roadmap to ENISA Basic, plus a worked example of turning a scenario intrusion into structured, shareable threat intelligence aligned to NIST SP 800-61.",
     tools: ["SIM3", "ENISA", "STIX 2.1", "MITRE ATT&CK", "NIST SP 800-61"],
     tags: ["Incident Response", "Threat Intelligence", "SIM3 / ENISA", "STIX"],
     repo: "https://github.com/WalBuk28/incident-response-maturity-wlg",
