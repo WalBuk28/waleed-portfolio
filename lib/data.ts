@@ -258,7 +258,7 @@ export const caseStudies: CaseStudy[] = [
       },
       {
         heading: "Limitations",
-        body: "The out-of-evidence behaviour is shown by one recorded test, not a measured rate. No latency figure is given: the earlier one was measured on Llama 3.2 on unrecorded hardware, and the platform now runs Qwen and DeepSeek. Setup is not zero-configuration: it needs a Linux host with Docker and Ollama, the models pulled in advance, and dependencies installed offline.",
+        body: "The out-of-evidence behaviour is shown by one recorded test, not a measured rate. No latency figure is given: the hardware wasn’t recorded, and the models have changed since testing. Setup is not zero-configuration: it needs a Linux host with Docker and Ollama, the models pulled in advance, and dependencies installed offline.",
       },
     ],
     outcome:
@@ -586,7 +586,7 @@ export const caseStudies: CaseStudy[] = [
       { value: "17", label: "Automated tests", sub: "auth · RBAC · CSRF · SQLi · FX" },
       { value: "7 of 10", label: "OWASP Top 10 (2021) categories with a test", sub: "A07 and A09 shown in code, A06 by pinned deps · SECURITY.md" },
       { value: "3", label: "RBAC roles", sub: "viewer · clerk · admin" },
-      { value: "0", label: "String-built SQL", sub: "fully parameterised" },
+      { value: "0", label: "String-built SQL", sub: "parameterised queries only · SQLi tests in the repo" },
     ],
     architecture: {
       title: "Secure request pipeline",
@@ -752,7 +752,7 @@ export const caseStudies: CaseStudy[] = [
     slug: "software-development",
     title: "Secure Coding Fundamentals",
     tagline: "Two small Python builds that show security thinking, not just working code",
-    category: "Software Development · Secure Coding",
+    category: "Coursework (CSEC1003D) · Secure coding",
     year: "2025–26",
     accent: "emerald",
     icon: "Code2",
@@ -772,8 +772,8 @@ export const caseStudies: CaseStudy[] = [
       "unittest (29 tests)",
     ],
     metrics: [
-      { value: "0", label: "Uses of eval()", sub: "no code-execution path" },
-      { value: "29", label: "Unit tests passing", sub: "incl. security suites" },
+      { value: "0", label: "Uses of eval()", sub: "checked by searching the repo source" },
+      { value: "29", label: "Unit tests", sub: "14 calculator + 15 card game · unittest, in the repos" },
       { value: "HMAC", label: "Tamper-evident scores", sub: "SHA-256 signed log" },
       { value: "2", label: "Focused builds", sub: "calculator · card game" },
     ],
@@ -797,7 +797,7 @@ export const caseStudies: CaseStudy[] = [
       },
     ],
     outcome:
-      "Two small but genuinely secure, tested projects — the developer literacy that strengthens day-to-day security engineering, built and verified rather than claimed.",
+      "Two small, tested projects that show secure-by-default habits in everyday code, with the tests in the public repos.",
     tools: ["Python", "Git"],
     tags: ["Python", "Secure Coding", "Testing"],
     repos: ["https://github.com/WalBuk28/secure-calculator", "https://github.com/WalBuk28/card-war"],
