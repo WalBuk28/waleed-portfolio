@@ -31,10 +31,10 @@ const securityHeaders = [
     key: "Permissions-Policy",
     value: "camera=(), microphone=(), geolocation=(), browsing-topics=()",
   },
-  // `next dev` needs eval, so the CSP applies to production builds only.
-  // Report-only until every route is checked; then it becomes Content-Security-Policy.
+  // `next dev` needs eval, so the CSP applies to production builds only. It ran report-only on
+  // every route (including the 3D journey) with no violations before being enforced.
   ...(process.env.NODE_ENV === "production"
-    ? [{ key: "Content-Security-Policy-Report-Only", value: csp }]
+    ? [{ key: "Content-Security-Policy", value: csp }]
     : []),
 ];
 
