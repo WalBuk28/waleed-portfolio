@@ -50,9 +50,11 @@ function CaseCard({ study, wide }: { study: CaseStudy; wide?: boolean }) {
                 Featured
               </span>
             )}
-            <span className="font-mono text-2xs text-ink-muted">
-              {study.year}
-            </span>
+            {study.year && (
+              <span className="font-mono text-2xs text-ink-muted">
+                {study.year}
+              </span>
+            )}
           </div>
         </div>
 
@@ -123,7 +125,7 @@ export function CaseStudies() {
             <span className="grad-text">not a wall of logos</span>
           </>
         }
-        intro="Each project is written up like an engagement report — the problem, the approach, the architecture and the measured result. Click any card for the full breakdown."
+        intro="Each project is written up like an engagement report: the problem, what I did, the evidence, the result and how it was measured, and the limitations. Click any card for the full breakdown."
       />
 
       <div className="mt-12 grid gap-5 md:grid-cols-2">
@@ -135,8 +137,8 @@ export function CaseStudies() {
 
       <Reveal className="mt-10 text-center">
         <p className="font-mono text-2xs text-ink-muted">
-          All work grounded in real coursework, the WalSec final-year project and
-          internship reports.
+          Nine are university coursework or my final-year project; one is a
+          personal build. Each page says which, and links its repo where public.
         </p>
       </Reveal>
     </section>

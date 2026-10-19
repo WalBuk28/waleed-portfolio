@@ -162,7 +162,7 @@ export type CaseStudy = {
   title: string;
   tagline: string;
   category: string;
-  year: string;
+  year?: string;
   accent: "emerald" | "electric";
   icon: string;
   featured?: boolean;
@@ -176,7 +176,7 @@ export type CaseStudy = {
   outcome: string;
   tools: string[];
   tags: string[];
-  repo?: string;
+  repos?: string[];
   repoNote?: string; // shown when there is no public repo
   demo?: string;
   // optional visualisations
@@ -335,7 +335,7 @@ export const caseStudies: CaseStudy[] = [
       "Two reports with IOC tables (host- and network-based indicators), prioritised remediation and detection logic you could implement, covering the loop from finding a weakness to detecting its use. The IOCs and detections are in the public repo.",
     tools: ["Kali", "Nessus", "Metasploit", "IDA Pro", "GDB", "REMnux", "Wireshark"],
     tags: ["Penetration Testing", "Malware Analysis", "Reverse Engineering", "MITRE ATT&CK"],
-    repo: "https://github.com/WalBuk28/penetration-testing-malware-analysis",
+    repos: ["https://github.com/WalBuk28/penetration-testing-malware-analysis"],
   },
 
   // ---------------------------------------------------------------------------
@@ -429,7 +429,7 @@ export const caseStudies: CaseStudy[] = [
       "An incident report aligned to NIST SP 800-82 and 800-61, with forensic memos, an attack tree, CARVER scoring and ATT&CK mapping across both matrices, turning raw packets into business risk and concrete controls.",
     tools: ["Wireshark", "Cisco Packet Tracer", "ATT&CK Navigator"],
     tags: ["Network Forensics", "ICS / SCADA", "Incident Response", "MITRE ATT&CK"],
-    repo: "https://github.com/WalBuk28/network-forensics-ics",
+    repos: ["https://github.com/WalBuk28/network-forensics-ics"],
   },
 
   // ---------------------------------------------------------------------------
@@ -485,7 +485,7 @@ export const caseStudies: CaseStudy[] = [
       "A standards-based picture of a case-study SME’s incident-response readiness with a prioritised roadmap to ENISA Basic, plus a worked example of turning a scenario intrusion into structured, shareable threat intelligence aligned to NIST SP 800-61.",
     tools: ["SIM3", "ENISA", "STIX 2.1", "MITRE ATT&CK", "NIST SP 800-61"],
     tags: ["Incident Response", "Threat Intelligence", "SIM3 / ENISA", "STIX"],
-    repo: "https://github.com/WalBuk28/incident-response-maturity-wlg",
+    repos: ["https://github.com/WalBuk28/incident-response-maturity-wlg"],
   },
 
   // ---------------------------------------------------------------------------
@@ -553,62 +553,7 @@ export const caseStudies: CaseStudy[] = [
       "An evaluation that treats ML as a security control rather than a leaderboard: it rejects a too-good result, chooses a threshold from what errors cost a SOC, and shows which model family survives poisoned training data.",
     tools: ["Python", "scikit-learn", "XGBoost", "Jupyter"],
     tags: ["Machine Learning", "SOC Automation", "Phishing", "Adversarial ML"],
-    repo: "https://github.com/WalBuk28/ai-phishing-detection",
-  },
-
-  // ---------------------------------------------------------------------------
-  {
-    slug: "cryptography",
-    title: "Cryptography & Encryption",
-    tagline: "Cipher design, RSA cryptanalysis and protocol attack simulation",
-    category: "Coursework · Applied cryptography",
-    year: "2025",
-    accent: "emerald",
-    icon: "KeyRound",
-    summary:
-      "Industrial-cryptography work spanning a custom modified-Affine cipher, a ciphertext-only RSA common-modulus attack, and replay / impersonation attacks against Needham-Schroeder and Diffie-Hellman variants — each with a mathematical justification and concrete mitigations.",
-    context:
-      "A combined Industrial Cryptography coursework covering both construction and cryptanalysis — designing a working cipher, then breaking real protocol weaknesses with the underlying number theory.",
-    problem:
-      "Cryptographic security depends on more than strong primitives — parameter choices, key management and protocol freshness decide whether a system actually holds. The brief required demonstrating both how schemes work and exactly how they fail.",
-    approach:
-      "I implemented a modified Affine cipher over a 30-character domain, then mounted a ciphertext-only common-modulus RSA attack using the Extended Euclidean Algorithm, and finally simulated replay and impersonation attacks step-by-step against symmetric key-exchange protocols.",
-    stack: [
-      "Modular Arithmetic",
-      "Extended Euclidean Algorithm",
-      "RSA",
-      "Needham-Schroeder",
-      "Diffie-Hellman",
-    ],
-    metrics: [
-      { value: "30", label: "Symbol cipher alphabet", sub: "A–Z + four symbols, k₀ = 7" },
-      { value: "4", label: "Schemes analysed", sub: "Affine · RSA · NS · DH" },
-      { value: "0", label: "Private keys needed for the RSA break", sub: "if one message goes to two users sharing a modulus" },
-      { value: "10", label: "Unit tests", sub: "in the public repo" },
-    ],
-    sections: [
-      {
-        heading: "Modified Affine cipher",
-        body: "A 30-symbol alphabet (A–Z plus +, −, *, /) with f(x) = (7x + 4) mod 30. k₀ = 7 is coprime to 30 (gcd = 1), so the map is a bijection; the modular inverse 13 (7·13 ≡ 1 mod 30) drives decryption. The tests check that the map is collision-free across the whole alphabet. Like any affine cipher it has a tiny keyspace and falls to frequency analysis: it illustrates modular arithmetic, not a secure design.",
-      },
-      {
-        heading: "RSA common-modulus attack",
-        body: "The precondition: the same message is encrypted to two users who share a modulus N and have coprime public exponents. An interceptor holding both ciphertexts can then recover the plaintext with no private key: solve s·eA + t·eB = 1 with the Extended Euclidean Algorithm, then compute m = CA^s · CB^t mod N. Key generation and parameter separation matter as much as the maths.",
-      },
-      {
-        heading: "Protocol attacks & mitigations",
-        body: "I demonstrated a Needham-Schroeder replay (an exposed old session key Kab accepted as fresh because B never verifies freshness) and a Diffie-Hellman-variant impersonation under key compromise.",
-        bullets: [
-          "Needham-Schroeder: add timestamps / B-originated nonce challenges",
-          "DH variant: enforce mutual authentication, key rotation and ephemeral DH for forward secrecy",
-        ],
-      },
-    ],
-    outcome:
-      "A coursework demonstrating end-to-end cryptographic literacy — from hand-built ciphers to protocol cryptanalysis — with each weakness paired to a defensible mitigation grounded in academic sources.",
-    tools: ["Python", "Number theory"],
-    tags: ["Cryptography", "Cryptanalysis", "RSA", "Protocols"],
-    repo: "https://github.com/WalBuk28/industrial-cryptography",
+    repos: ["https://github.com/WalBuk28/ai-phishing-detection"],
   },
 
   // ---------------------------------------------------------------------------
@@ -682,7 +627,7 @@ export const caseStudies: CaseStudy[] = [
       "A business application that treats security as a first-class requirement, with a written OWASP self-assessment, a UK GDPR data-protection analysis and a passing test suite: secure development end to end, not just a working feature set.",
     tools: ["Python", "Flask", "SQLite", "requests"],
     tags: ["Secure Coding", "Web App", "OWASP", "RBAC"],
-    repo: "https://github.com/WalBuk28/freightdesk",
+    repos: ["https://github.com/WalBuk28/freightdesk"],
   },
 
   // ---------------------------------------------------------------------------
@@ -744,71 +689,62 @@ export const caseStudies: CaseStudy[] = [
       "A tested systems-C++ project that backs the ‘I can build the code I defend’ claim: real authenticated encryption, sound key management, and a threat model that is honest about what it does and does not protect.",
     tools: ["C++", "OpenSSL", "CMake"],
     tags: ["C++", "Cryptography", "Secure Coding", "AES-256"],
-    repo: "https://github.com/WalBuk28/secure-password-manager-cpp",
+    repos: ["https://github.com/WalBuk28/secure-password-manager-cpp"],
   },
 
   // ---------------------------------------------------------------------------
   {
-    slug: "contrust-os",
-    title: "ConTrust OS",
-    tagline: "Data-first construction ERP — logistics, procurement & finance",
-    category: "Full-Stack · SaaS Platform",
-    year: "2024–25",
-    accent: "electric",
-    icon: "Truck",
-    featured: true,
+    slug: "cryptography",
+    title: "Cryptography & Encryption",
+    tagline: "Cipher design, RSA cryptanalysis and protocol attack simulation",
+    category: "Coursework · Applied cryptography",
+    year: "2025",
+    accent: "emerald",
+    icon: "KeyRound",
     summary:
-      "A “data-first” construction ERP that ingests a firm’s messy spreadsheets and instantly generates a professional management environment — project tracking, a procurement workflow, inventory alerts and automated retention-based billing — on a zero-cost Supabase + Vercel stack.",
+      "Industrial-cryptography work spanning a custom modified-Affine cipher, a ciphertext-only RSA common-modulus attack, and replay / impersonation attacks against Needham-Schroeder and Diffie-Hellman variants — each with a mathematical justification and concrete mitigations.",
     context:
-      "ConTrust OS (built as ConstructOS) is a full-stack SaaS platform for mid-to-large construction firms. Rather than selling software, it sells automated control: a user uploads existing Excel/CSV files and the platform maps them into a live PostgreSQL-backed operations environment with RBAC.",
+      "A combined Industrial Cryptography coursework covering both construction and cryptanalysis — designing a working cipher, then breaking real protocol weaknesses with the underlying number theory.",
     problem:
-      "Construction logistics run on disconnected spreadsheets and manual updates, leaving managers without a timely, accurate view of fleet status, inventory, procurement approvals and billing — driving material waste, idle assets, missed approvals and slow (30-day) billing cycles.",
+      "Cryptographic security depends on more than strong primitives — parameter choices, key management and protocol freshness decide whether a system actually holds. The brief required demonstrating both how schemes work and exactly how they fail.",
     approach:
-      "I designed a Next.js 14 (App Router) front end over Supabase (PostgreSQL, Auth + RBAC, Storage). A PapaParse importer turns 14 source CSVs into normalised rows across an 11-table relational schema; procurement follows a Material Request → RFQ → PO → GRN flow with an approval matrix, and a billing ledger applies retention logic automatically.",
+      "I implemented a modified Affine cipher over a 30-character domain, then mounted a ciphertext-only common-modulus RSA attack using the Extended Euclidean Algorithm, and finally simulated replay and impersonation attacks step-by-step against symmetric key-exchange protocols.",
     stack: [
-      "Next.js 14 (App Router)",
-      "Supabase · PostgreSQL",
-      "Auth + Role-Based Access Control",
-      "PapaParse (CSV ingestion)",
-      "Recharts / frappe-gantt",
-      "Tailwind + shadcn/ui",
-      "Vercel",
+      "Modular Arithmetic",
+      "Extended Euclidean Algorithm",
+      "RSA",
+      "Needham-Schroeder",
+      "Diffie-Hellman",
     ],
     metrics: [
-      { value: "11", label: "Relational tables", sub: "projects → procurement → billing" },
-      { value: "14", label: "CSV sources ingested", sub: "one-drop importer" },
-      { value: "4", label: "Stage procurement flow", sub: "MR → RFQ → PO → GRN" },
-      { value: "~$0", label: "Infra cost", sub: "Supabase + Vercel free tier" },
+      { value: "30", label: "Symbol cipher alphabet", sub: "A–Z + four symbols, k₀ = 7" },
+      { value: "4", label: "Schemes analysed", sub: "Affine · RSA · NS · DH" },
+      { value: "0", label: "Private keys needed for the RSA break", sub: "if one message goes to two users sharing a modulus" },
+      { value: "10", label: "Unit tests", sub: "in the public repo" },
     ],
-    architecture: {
-      title: "Data-first ERP flow",
-      nodes: [
-        { id: "csv", label: "14 CSV / Excel\nsource files", kind: "in" },
-        { id: "import", label: "PapaParse\nimporter", kind: "core" },
-        { id: "pg", label: "Supabase Postgres\n11-table schema + RBAC", kind: "core" },
-        { id: "proc", label: "Procurement\nMR → RFQ → PO → GRN", kind: "core" },
-        { id: "bill", label: "Billing ledger\nretention logic", kind: "ai" },
-        { id: "dash", label: "Next.js dashboard\nGantt + charts", kind: "out" },
-      ],
-    },
     sections: [
       {
-        heading: "One-drop data onboarding",
-        body: "Instead of manual data entry, a manager drops their existing 14 spreadsheets into the importer. PapaParse parses them client-side and maps the rows onto a foreign-key-linked PostgreSQL schema — projects to customers, material requests to the approval matrix — so the system “exists” from day one.",
+        heading: "Modified Affine cipher",
+        body: "A 30-symbol alphabet (A–Z plus +, −, *, /) with f(x) = (7x + 4) mod 30. k₀ = 7 is coprime to 30 (gcd = 1), so the map is a bijection; the modular inverse 13 (7·13 ≡ 1 mod 30) drives decryption. The tests check that the map is collision-free across the whole alphabet. Like any affine cipher it has a tiny keyspace and falls to frequency analysis: it illustrates modular arithmetic, not a secure design.",
       },
       {
-        heading: "Supply chain & automated approvals",
-        body: "An inventory master flags low stock against each item’s reorder level, and the procurement workflow (Material Request → RFQ → PO → GRN) checks an approval matrix so a new purchase order is automatically flagged “Pending” for the correct manager.",
+        heading: "RSA common-modulus attack",
+        body: "The precondition: the same message is encrypted to two users who share a modulus N and have coprime public exponents. An interceptor holding both ciphertexts can then recover the plaintext with no private key: solve s·eA + t·eB = 1 with the Extended Euclidean Algorithm, then compute m = CA^s · CB^t mod N. Key generation and parameter separation matter as much as the maths.",
       },
       {
-        heading: "Project & finance intelligence",
-        body: "A Gantt view renders project start/end dates, while the billing module applies retention automatically — Net Payable = Gross − (Gross × Retention %) — tracked in a dedicated retention ledger to compress the billing cycle.",
+        heading: "Protocol attacks & mitigations",
+        body: "I demonstrated a Needham-Schroeder replay (an exposed old session key Kab accepted as fresh because B never verifies freshness) and a Diffie-Hellman-variant impersonation under key compromise.",
+        bullets: [
+          "Needham-Schroeder: add timestamps / B-originated nonce challenges",
+          "DH variant: enforce mutual authentication, key rotation and ephemeral DH for forward secrecy",
+        ],
       },
     ],
     outcome:
-      "A production-shaped ERP that turns spreadsheet chaos into a single source of truth on professional-grade infrastructure for near-zero cost — demonstrating full-stack product thinking from schema design to a polished operator dashboard.",
-    tools: ["Next.js", "Supabase", "PostgreSQL", "Recharts", "Vercel"],
-    tags: ["Full-Stack", "SaaS", "PostgreSQL", "Product"],
+      "A coursework demonstrating end-to-end cryptographic literacy — from hand-built ciphers to protocol cryptanalysis — with each weakness paired to a defensible mitigation grounded in academic sources.",
+    tools: ["Python", "Number theory"],
+    tags: ["Cryptography", "Cryptanalysis", "RSA", "Protocols"],
+    repos: ["https://github.com/WalBuk28/industrial-cryptography"],
   },
 
   // ---------------------------------------------------------------------------
@@ -864,7 +800,31 @@ export const caseStudies: CaseStudy[] = [
       "Two small but genuinely secure, tested projects — the developer literacy that strengthens day-to-day security engineering, built and verified rather than claimed.",
     tools: ["Python", "Git"],
     tags: ["Python", "Secure Coding", "Testing"],
-    repo: "https://github.com/WalBuk28/secure-calculator",
+    repos: ["https://github.com/WalBuk28/secure-calculator", "https://github.com/WalBuk28/card-war"],
+  },
+  // ---------------------------------------------------------------------------
+  {
+    slug: "contrust-os",
+    title: "Construct OS",
+    tagline: "Truck and cargo tracking for a friend's transport business",
+    category: "Personal build · Web app",
+    accent: "electric",
+    icon: "Truck",
+    summary:
+      "A web app I built to help a friend run their transportation business: it tracks the trucks and what is inside them, and relays that information to management in a simple way.",
+    context:
+      "A personal build for a friend’s business, not coursework. Built with Next.js on Supabase.",
+    problem:
+      "The business needed management to see its trucks and what each one is carrying, in a simple form.",
+    approach:
+      "I built a Next.js web app backed by Supabase that keeps the trucks and their loads in one place and presents them to management in a simple view.",
+    stack: ["Next.js", "Supabase"],
+    metrics: [],
+    sections: [],
+    outcome:
+      "A full-stack app built for a real user and a real business need.",
+    tools: ["Next.js", "Supabase"],
+    tags: ["Full-stack", "Personal build"],
   },
 ];
 

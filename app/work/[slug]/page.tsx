@@ -75,7 +75,9 @@ export default async function WorkPage({
                 </span>
                 <div className="font-mono text-2xs uppercase tracking-wider2 text-ink-muted">
                   <div>{study.category}</div>
-                  <div className="mt-0.5 text-ink-secondary">{study.year}</div>
+                  {study.year && (
+                    <div className="mt-0.5 text-ink-secondary">{study.year}</div>
+                  )}
                 </div>
               </div>
             </Reveal>
@@ -106,22 +108,25 @@ export default async function WorkPage({
                     Live <ExternalLink className="h-3 w-3" />
                   </a>
                 )}
-                {study.repo && (
+                {study.repos?.map((repo) => (
                   <a
-                    href={study.repo}
+                    key={repo}
+                    href={repo}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-1.5 rounded-full border border-edge px-3 py-1 font-mono text-2xs text-ink-secondary transition-colors hover:border-ink-muted hover:text-ink"
                   >
-                    <Github className="h-3 w-3" /> Code
+                    <Github className="h-3 w-3" />
+                    {study.repos!.length > 1 ? repo.split("/").pop() : "Code"}
                   </a>
-                )}
+                ))}
                 {study.repoNote && <span className="chip">{study.repoNote}</span>}
               </div>
             </Reveal>
           </header>
 
           {/* metrics */}
+          {study.metrics.length > 0 && (
           <Reveal>
             <div className="mt-10 grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-edge bg-edge lg:grid-cols-4">
               {study.metrics.map((m) => (
@@ -141,6 +146,7 @@ export default async function WorkPage({
               ))}
             </div>
           </Reveal>
+          )}
 
           {/* overview grid */}
           <div className="mt-12 grid gap-8 lg:grid-cols-3">
