@@ -43,26 +43,26 @@ export const profile = {
 // ── Hero boot sequence (typed terminal) ───────────────────────────────────
 export const bootSequence: { text: string; tone?: "ok" | "warn" | "info" }[] = [
   { text: "$ walsec --init --profile operator", tone: "info" },
-  { text: "[ok] loading threat-intel feeds ······ ThreatFox · URLhaus · Abuse.ch", tone: "ok" },
+  { text: "[ok] loading threat-intel feeds ······ ThreatFox · URLhaus", tone: "ok" },
   { text: "[ok] mounting forensic engine ········ PyShark / TShark", tone: "ok" },
-  { text: "[ok] grounding local LLM ············· Llama 3.2 · RAG · BGE-M3", tone: "ok" },
-  { text: "[ok] MITRE ATT&CK mapping ············ 30+ techniques armed", tone: "ok" },
+  { text: "[ok] grounding local LLM ············· Qwen · DeepSeek · RAG", tone: "ok" },
+  { text: "[ok] MITRE ATT&CK mapping ············ Enterprise + ICS", tone: "ok" },
   { text: "operator ready — welcome to the WalSec bench", tone: "info" },
 ];
 
-// ── Live threat-feed ticker (illustrative IOC stream, cyber flavour) ───────
+// ── Threat-feed ticker: every item comes from a case study (lab or scenario data) ──
 export const threatFeed: { type: string; value: string; sev: "crit" | "warn" | "ok" }[] = [
-  { type: "IPv4", value: "185.220.101.42", sev: "crit" },
-  { type: "MITRE", value: "T1566.001 · Spearphishing", sev: "warn" },
-  { type: "URL", value: "hxxp://serve[.]html/payload", sev: "crit" },
+  { type: "IPv4", value: "5.152.177.221 · scanner, ICS case study", sev: "crit" },
+  { type: "MITRE", value: "T1566.001 · Spearphishing Attachment", sev: "warn" },
+  { type: "URL", value: "hxxp://practicalmalwareanalysis[.]com/serve.html · lab IOC", sev: "crit" },
   { type: "CVE", value: "CVE-2014-3566 · POODLE", sev: "warn" },
-  { type: "HASH", value: "a3f9…svchost.dll", sev: "crit" },
+  { type: "SVC", value: "IPRIP · “INA+” service DLL", sev: "crit" },
   { type: "MITRE", value: "T1543.003 · Windows Service", sev: "warn" },
-  { type: "FEED", value: "URLhaus sync · 30m", sev: "ok" },
+  { type: "FEED", value: "URLhaus pull · every 30–60 min", sev: "ok" },
   { type: "CVE", value: "CVE-2016-0800 · DROWN", sev: "warn" },
-  { type: "IPv4", value: "192.168.121.151 · pivot", sev: "crit" },
+  { type: "IPv4", value: "192.168.127.226 · GIT server pivot", sev: "crit" },
   { type: "MITRE", value: "T1021.001 · RDP lateral", sev: "warn" },
-  { type: "FEED", value: "ThreatFox ingest · OK", sev: "ok" },
+  { type: "FEED", value: "ThreatFox · 9,000+ IOCs stored", sev: "ok" },
 ];
 
 // ── Skills: no self-ratings. Each group names the case studies that show it. ──

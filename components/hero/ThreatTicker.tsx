@@ -14,7 +14,7 @@ const label: Record<string, string> = {
 };
 
 /**
- * Infinite marquee of illustrative IOCs. The track is duplicated so the
+ * Infinite marquee of indicators taken from the case studies. The track is duplicated so the
  * -50% translate loops seamlessly. Edge-masked; pauses on hover.
  */
 export function ThreatTicker() {
