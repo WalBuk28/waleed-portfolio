@@ -93,27 +93,6 @@
     }
   }
 
-  /* Radar polygon draw-in — pure CSS so it plays with or without JS and never
-     leaves the shape hidden (resting state is fully visible). */
-  .radar-poly {
-    animation: radarIn 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
-  }
-  @keyframes radarIn {
-    from {
-      opacity: 0;
-      transform: scale(0.7);
-    }
-    to {
-      opacity: 1;
-      transform: scale(1);
-    }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .radar-poly {
-      animation: none;
-    }
-  }
-
   /* ── Homepage brand backdrop (components/brand/WallBackdrop.tsx) ──
      The WalSec mark, fixed behind the content. The stage is sized in svh so
      mobile URL bars never resize it; every piece is its own composited layer

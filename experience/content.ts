@@ -9,7 +9,6 @@ import {
   experience,
   profile,
   skillGroups,
-  skillRadar,
   threatFeed,
 } from "@/lib/data";
 
@@ -33,23 +32,11 @@ export const allCases = caseStudies.map((c) => ({
   category: c.category,
 }));
 
-// ── Skills vortex nodes — skillGroups fused with radar proficiency ──────────
-const radarFor = (title: string) => {
-  const map: Record<string, string> = {
-    "Threat Intel & SOC": "Threat Intel & SOC",
-    "Offensive & Forensics": "Offensive Security",
-    "Networking & ICS": "Network Forensics",
-    "Software & AI": "Secure Software Dev",
-    "Cloud & DevSecOps": "Cloud & DevSecOps",
-    Cryptography: "Cryptography",
-  };
-  return skillRadar.find((r) => r.axis === map[title])?.value ?? 80;
-};
-
+// ── Skills vortex nodes — skillGroups with the case studies that evidence them
 export const vortexNodes = skillGroups.map((g, i) => ({
   title: g.title,
   skills: g.skills,
-  value: radarFor(g.title),
+  evidence: g.evidence.map((slug) => ({ slug, title: bySlug(slug).title })),
   hot: i % 2 === 0, // emerald vs electric
 }));
 

@@ -5,7 +5,6 @@ import * as THREE from "three";
 import { useFrame, useThree } from "@react-three/fiber";
 import { useCursor, useScroll } from "@react-three/drei";
 import { easing } from "maath";
-import { motion } from "framer-motion";
 import { C } from "./palette";
 import { ANCHORS, SECTIONS, facing } from "./journey";
 import { vortexNodes } from "./content";
@@ -20,7 +19,7 @@ const RING_R = 1.5;
 /**
  * The arsenal — a stargate of six domain nodes ringing the flight path; the
  * camera flies straight through the middle. Click a node to decrypt its
- * proficiency dossier. All additive energy fades with camera proximity so
+ * skills-and-evidence dossier. All additive energy fades with camera proximity so
  * the fly-through never washes out.
  */
 export function SkillsVortex() {
@@ -115,7 +114,7 @@ export function SkillsVortex() {
         ))}
       </group>
 
-      {/* proficiency dossier — screen-centered between the nodes on desktop,
+      {/* skills-and-evidence dossier — screen-centered between the nodes on desktop,
           bottom sheet on touch */}
       <Panel center position={[0, -0.62, 2.05]} visible={show && selected !== null} width={330} align="center" z={[35, 0]}>
         {selected !== null && (
@@ -133,26 +132,21 @@ export function SkillsVortex() {
                 ✕
               </button>
             </div>
-            <div className="mb-3">
-              <div className="mb-1 flex justify-between font-mono text-2xs text-ink-muted">
-                <span>PROFICIENCY</span>
-                <span className="text-emerald-glow">{vortexNodes[selected].value}%</span>
-              </div>
-              <div className="h-1.5 overflow-hidden rounded-full bg-void">
-                <motion.div
-                  key={selected}
-                  initial={{ width: 0 }}
-                  animate={{ width: `${vortexNodes[selected].value}%` }}
-                  transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-                  className={`h-full rounded-full ${vortexNodes[selected].hot ? "bg-emerald-accent" : "bg-electric-accent"}`}
-                />
-              </div>
-            </div>
             <ul className="grid grid-cols-1 gap-1">
               {vortexNodes[selected].skills.map((s) => (
                 <li key={s} className="flex items-baseline gap-2 text-2xs text-ink-secondary">
                   <span className={vortexNodes[selected].hot ? "text-emerald-accent" : "text-electric-accent"}>▹</span>
                   {s}
+                </li>
+              ))}
+            </ul>
+            <p className="mb-1 mt-3 font-mono text-2xs text-ink-muted">EVIDENCE</p>
+            <ul className="grid grid-cols-1 gap-1">
+              {vortexNodes[selected].evidence.map((e) => (
+                <li key={e.slug} className="text-2xs">
+                  <a href={`/work/${e.slug}`} className="text-ink-secondary transition-colors hover:text-emerald-accent">
+                    {e.title} ↗
+                  </a>
                 </li>
               ))}
             </ul>
@@ -162,7 +156,7 @@ export function SkillsVortex() {
 
       <Panel center position={[0, -0.68, 2.3]} visible={show && selected === null} width={300} align="center" z={[20, 0]}>
         <p className="text-center font-mono text-2xs uppercase tracking-wider2 text-ink-muted">
-          ◈ Select a node to decrypt proficiency data
+          ◈ Select a node to see the skills and the case studies behind them
         </p>
       </Panel>
     </group>

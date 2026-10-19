@@ -65,36 +65,28 @@ export const threatFeed: { type: string; value: string; sev: "crit" | "warn" | "
   { type: "FEED", value: "ThreatFox ingest · OK", sev: "ok" },
 ];
 
-// ── Skills radar (self-assessed proficiency across core domains) ───────────
-export const skillRadar: { axis: string; short: string; value: number }[] = [
-  { axis: "Threat Intel & SOC", short: "Threat Intel", value: 92 },
-  { axis: "Network Forensics", short: "Forensics", value: 90 },
-  { axis: "Offensive Security", short: "Offensive", value: 82 },
-  { axis: "Secure Software Dev", short: "Software", value: 85 },
-  { axis: "Applied AI / ML", short: "AI / ML", value: 84 },
-  { axis: "Cryptography", short: "Crypto", value: 78 },
-  { axis: "Cloud & DevSecOps", short: "Cloud", value: 76 },
-];
-
-export type SkillGroup = { title: string; icon: string; skills: string[] };
+// ── Skills: no self-ratings. Each group names the case studies that show it. ──
+export type SkillGroup = { title: string; icon: string; skills: string[]; evidence: string[] };
 
 export const skillGroups: SkillGroup[] = [
   {
-    title: "Threat Intel & SOC",
+    title: "Threat intel & SOC",
     icon: "Radar",
+    evidence: ["walsec-atioc-hub", "incident-response-maturity", "network-forensics"],
     skills: [
       "MITRE ATT&CK (Enterprise + ICS)",
-      "SIEM / SOC Operations",
+      "SIEM rule tuning",
       "Splunk",
       "Wazuh / EDR",
-      "Threat Hunting",
-      "Incident Response (NIST SP 800-61)",
-      "OSINT — ThreatFox · URLhaus · Abuse.ch",
+      "Log analysis",
+      "Incident response (NIST SP 800-61)",
+      "Threat feeds — ThreatFox · URLhaus",
     ],
   },
   {
-    title: "Offensive & Forensics",
+    title: "Offensive & forensics",
     icon: "Bug",
+    evidence: ["pentest-malware", "network-forensics"],
     skills: [
       "Penetration Testing (black-box)",
       "Nessus / Nmap / Metasploit",
@@ -108,6 +100,7 @@ export const skillGroups: SkillGroup[] = [
   {
     title: "Networking & ICS",
     icon: "Network",
+    evidence: ["network-forensics"],
     skills: [
       "Packet Analysis & DPI",
       "VLAN / NAT / Static Routing",
@@ -120,37 +113,40 @@ export const skillGroups: SkillGroup[] = [
   {
     title: "Software & AI",
     icon: "Code2",
+    evidence: ["walsec-atioc-hub", "ai-phishing-detection", "secure-password-manager", "contrust-os"],
     skills: [
       "Python — Flask · PyShark · scikit-learn",
       "C++",
-      "React 18 / Next.js",
-      "Local LLMs — Ollama · Llama 3.2",
+      "React / Next.js",
+      "Local LLMs — Ollama · Qwen · DeepSeek",
       "RAG + BGE-M3 embeddings",
       "ML — XGBoost · Random Forest · MLP",
-      "SQL / SQLite (WAL)",
+      "SQL / SQLite",
     ],
   },
   {
-    title: "Cloud & DevSecOps",
-    icon: "Cloud",
+    title: "Secure development",
+    icon: "ShieldCheck",
+    evidence: ["secure-scripting", "secure-password-manager", "software-development"],
     skills: [
-      "Microsoft Azure (Security focus)",
-      "Docker / Docker Compose",
-      "CI/CD (GitHub Actions)",
-      "SAST / DAST",
-      "JWT · bcrypt · RBAC",
-      "ISO 27001 / GDPR",
+      "OWASP Top 10 self-testing",
+      "RBAC · CSRF tokens · CSP",
+      "JWT · bcrypt · PBKDF2",
+      "Parameterised SQL",
+      "Unit tests — unittest · CTest",
+      "UK GDPR analysis",
     ],
   },
   {
     title: "Cryptography",
     icon: "KeyRound",
+    evidence: ["cryptography", "secure-password-manager", "pentest-malware"],
     skills: [
-      "AES-256 / SHA-256",
-      "RSA & Cryptanalysis",
-      "Key-Exchange Protocols",
-      "Symmetric & Public-Key Crypto",
-      "TLS / SSL Hardening",
+      "AES-256-GCM · HMAC-SHA256",
+      "RSA and cryptanalysis",
+      "Key-exchange protocols",
+      "Symmetric and public-key crypto",
+      "TLS / SSL configuration analysis",
     ],
   },
 ];

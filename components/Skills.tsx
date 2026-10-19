@@ -4,7 +4,7 @@ import { skillGroups } from "@/lib/data";
 import { Icon } from "@/lib/icons";
 import { SectionHeading } from "./ui/SectionHeading";
 import { Reveal, RevealGroup, RevealItem } from "./ui/Reveal";
-import { SkillsRadar } from "./SkillsRadar";
+import { SkillsEvidence } from "./SkillsEvidence";
 
 export function Skills() {
   return (
@@ -12,13 +12,13 @@ export function Skills() {
       <SectionHeading
         eyebrow="Capability map"
         title={<>The stack behind the defence</>}
-        intro="A T-shaped skill set: deep in threat intelligence and network forensics, broad across offensive testing, secure software, applied AI and cloud. The radar is a self-assessment; the columns are the tools I actually reach for."
+        intro="Deepest in threat intelligence and network forensics, with offensive testing, secure development, applied AI and cryptography alongside. No self-ratings: each domain links to the case studies where you can check the work."
       />
 
       <div className="mt-12 grid gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:gap-14">
-        {/* radar */}
+        {/* evidence map */}
         <Reveal className="panel flex items-center justify-center p-6 lg:sticky lg:top-24 lg:self-start">
-          <SkillsRadar />
+          <SkillsEvidence />
         </Reveal>
 
         {/* grouped skills */}
