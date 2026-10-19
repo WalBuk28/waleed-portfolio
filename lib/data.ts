@@ -8,7 +8,8 @@
 export const profile = {
   name: "Waleed Bukhari",
   fullName: "Syed Muhammad Waleed Bukhari",
-  role: "Cybersecurity Engineer & Developer",
+  cvName: "Muhammad Waleed",
+  role: "SOC Analyst",
   handle: "WalBuk28",
   // Rotating words for the hero headline
   rotatingRoles: [
@@ -27,9 +28,9 @@ export const profile = {
   github: "https://github.com/WalBuk28",
   site: "https://walsec.com",
   cv: "/Muhammad_Waleed_CV.pdf",
-  availability: "Open to Security Engineering & SOC roles — 2026",
+  availability: "Open to SOC Analyst and blue-team roles",
   summary:
-    "BSc (Hons) Cybersecurity from De Montfort University, Dubai, and a hands-on builder. I specialise in threat intelligence, network forensics and SOC automation — and I ship the software to back it up, from a fully-local, LLM-powered SIEM-Lite platform to ML phishing detectors and C++ security tooling. Industry experience across Telstra, Mastercard, Deloitte and Receptive Tech, where I cut response time, hardened endpoints and contained simulated attacks.",
+    "BSc (Hons) Cyber Security, First Class Honours, from De Montfort University, studied at DMU Dubai. I work on threat intelligence, network forensics and SOC automation, and I write the software to back it up: an offline SIEM-Lite with a local LLM, an ML phishing detector and C++ security tooling. My industry experience is a cyber security internship at Receptive Tech Communications (Lahore, 2025), where I tuned SIEM correlation rules and alert thresholds, ran vulnerability scans and drafted playbooks. I've also completed virtual job simulations (Forage) with Telstra, Mastercard and Deloitte.",
   stats: [
     { value: 10, suffix: "+", label: "Technical projects shipped" },
     { value: 4, suffix: "", label: "Industry programs" },

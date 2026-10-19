@@ -23,38 +23,41 @@ const mono = JetBrains_Mono({
 });
 
 const url = "https://walsec.com";
-const description =
-  "Cybersecurity Engineer & Developer specialising in threat intelligence, network forensics and SOC automation — building the software to back it up.";
+const title = `${profile.name} (${profile.cvName}) — ${profile.role}, Dubai`;
+const description = `${profile.fullName} (${profile.cvName}): SOC Analyst in Dubai. BSc (Hons) Cyber Security, First Class Honours. Case studies in threat intelligence, network forensics and SOC automation, with the evidence and repos behind them.`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(url),
   title: {
-    default: `${profile.fullName} — ${profile.role}`,
+    default: title,
     template: `%s · ${profile.name}`,
   },
   description,
   keywords: [
-    "Cybersecurity Engineer",
+    "SOC Analyst",
+    "Blue team",
     "Threat Intelligence",
     "Network Forensics",
     "SOC Automation",
-    "Penetration Testing",
     "Malware Analysis",
     "MITRE ATT&CK",
+    "Dubai",
     "Waleed Bukhari",
+    "Muhammad Waleed",
+    "Syed Muhammad Waleed Bukhari",
   ],
   authors: [{ name: profile.fullName, url }],
   creator: profile.fullName,
   openGraph: {
     type: "website",
     url,
-    title: `${profile.fullName} — ${profile.role}`,
+    title,
     description,
     siteName: "WalSec",
   },
   twitter: {
     card: "summary_large_image",
-    title: `${profile.fullName} — ${profile.role}`,
+    title,
     description,
   },
   robots: { index: true, follow: true },

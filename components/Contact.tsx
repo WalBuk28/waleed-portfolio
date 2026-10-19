@@ -41,8 +41,8 @@ export function Contact() {
                 <span className="grad-text">together.</span>
               </h2>
               <p className="mt-4 max-w-lg text-base leading-relaxed text-ink-secondary">
-                I’m looking for Security Engineering, SOC and Threat-Intelligence
-                roles where I can analyse the threat and build the tooling that
+                I’m looking for SOC Analyst and blue-team roles, mainly in the
+                UAE, where I can analyse the threat and build the tooling that
                 answers it. If that’s the kind of person your team needs, let’s
                 talk.
               </p>
