@@ -99,7 +99,7 @@ export function Hero() {
           >
             {profile.name}
             <span className="mt-2 block text-2xl font-medium text-ink-secondary sm:text-3xl lg:text-[2rem]">
-              {profile.role} ·{" "}
+              {profile.role}&nbsp;·{" "}
               <span className="relative inline-block align-baseline">
                 <AnimatePresence mode="wait">
                   <motion.span

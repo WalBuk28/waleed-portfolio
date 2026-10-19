@@ -14,7 +14,7 @@ const pillars = [
   {
     icon: Cpu,
     title: "Builder’s hands",
-    body: "I ship the software behind the defence: a local LLM SIEM-Lite, ML detectors, C++ security tooling and full-stack products.",
+    body: "I write the software behind the defence: an offline SIEM-Lite with a local LLM, an ML phishing detector, C++ security tooling and full-stack web apps.",
   },
   {
     icon: ShieldCheck,

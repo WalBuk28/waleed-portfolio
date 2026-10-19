@@ -88,6 +88,11 @@ function CaseCard({ study, wide }: { study: CaseStudy; wide?: boolean }) {
                 <div className="mt-0.5 text-2xs leading-snug text-ink-muted">
                   {m.label}
                 </div>
+                {m.sub && (
+                  <div className="mt-0.5 text-2xs leading-snug text-ink-muted">
+                    {m.sub}
+                  </div>
+                )}
               </div>
             ))}
           </div>
