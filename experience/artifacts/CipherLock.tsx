@@ -185,7 +185,7 @@ export function CipherLock() {
       <GlowSprite color={C.critMark} scale={2.6} opacity={0.16} />
       <pointLight ref={coreLight} color={C.crit} intensity={3.6} distance={6} decay={2} position={[0, 0.2, 0.9]} />
       <pointLight color={C.electricDeep} intensity={2} distance={5} decay={2} position={[-1.4, 0.8, 1]} />
-      <TextPlane text="96 FINDINGS · 4 SAMPLES" height={0.085} color="#fda4af" position={[0, -1.05, 0.2]} />
+      <TextPlane text="96 FINDINGS · 4 ARTEFACTS" height={0.085} color="#fda4af" position={[0, -1.05, 0.2]} />
 
       <Panel position={[-1.5, 0.5, 0]} visible={show} width={330} align="right">
         <PanelHeader

@@ -43,33 +43,33 @@ export const vortexNodes = skillGroups.map((g, i) => ({
 // ── Terminal screen script — boot lines then a looping SOC feed ─────────────
 export const terminalScript: { text: string; tone: "ok" | "warn" | "crit" | "info" | "dim" }[] = [
   ...bootSequence.map((l) => ({ text: l.text, tone: (l.tone ?? "info") as "ok" | "info" })),
-  { text: "$ tshark -i eth0 -Y 'tls.handshake' --color", tone: "dim" },
-  { text: "[dpi ] tcp.stream 42 → 185.220.101.42:443 · JA3 mismatch", tone: "warn" },
-  { text: "[ioc ] a3f9…svchost.dll tagged · family: pdfka", tone: "crit" },
-  { text: "[map ] T1543.003 → persistence/new-service (conf 0.91)", tone: "warn" },
-  { text: "[rag ] retrieved 8 chunks · bge-m3 · grounding OK", tone: "info" },
-  { text: "[llm ] llama3.2 verdict: MALICIOUS · ttft 2.1s", tone: "ok" },
-  { text: "[db  ] evidence committed · sqlite wal · 3,214 w/s", tone: "ok" },
-  { text: "[alrt] CRIT rdp lateral 192.168.121.151 → ops-ws", tone: "crit" },
-  { text: "[scan] nessus 96 findings · 2 crit · besure-bank", tone: "warn" },
-  { text: "[feed] threatfox sync complete · Δ 312 indicators", tone: "info" },
-  { text: "[hunt] score(ioc) = conf + recency·0.25 + family", tone: "dim" },
+  { text: "$ tshark -r evidence.pcap -Y 'http.request.method == \"POST\"'", tone: "dim" },
+  { text: "[dpi ] POST /ScadaBR/view_edit.shtm · anonymous.gif upload", tone: "warn" },
+  { text: "[ioc ] hxxp://practicalmalwareanalysis[.]com/serve.html · lab IOC", tone: "crit" },
+  { text: "[map ] IPRIP service DLL → T1543.003 Windows Service", tone: "warn" },
+  { text: "[rag ] retrieving local evidence · bge-m3", tone: "info" },
+  { text: "[llm ] no local evidence → \"Insufficient local evidence\"", tone: "ok" },
+  { text: "[db  ] evidence committed · sqlite wal", tone: "ok" },
+  { text: "[alrt] RDP 192.168.127.226 → 192.168.170.111 (ops ws)", tone: "crit" },
+  { text: "[scan] nessus · 96 findings · 2 critical · lab host", tone: "warn" },
+  { text: "[feed] threatfox pull complete", tone: "info" },
+  { text: "[hunt] score = min(100, base + recency + malware + tags)", tone: "dim" },
 ];
 
 // ── Holographic code lines that float off the screen ────────────────────────
 export const holoCode = [
   "cap = pyshark.FileCapture('evidence.pcap', display_filter='http')",
   "for pkt in cap: iocs.extend(extract_iocs(pkt))",
-  "score = base_conf + recency*0.25 + family_boost",
-  "ctx = rag.retrieve(query, k=8, embedder='bge-m3')",
-  "resp = ollama.chat('llama3.2', ground(ctx, evidence_only=True))",
+  "score = min(100, base + recency + malware_boost + tags_boost)",
+  "ctx = rag.retrieve(query, embedder='bge-m3')",
+  "resp = ollama.chat(model, ground(ctx, evidence_only=True))",
   "if not ctx: return 'Insufficient local evidence'",
   "alert(rule='T1543.003', svc='IPRIP', path=user_writable)",
-  "df['entropy'] = df.url.map(shannon)",
-  "xgb.fit(X_train, y_train)  # macro-F1 0.99",
-  "const verdict = useThreatScore(indicator)",
+  "X = df.drop(columns=['URLSimilarityIndex', 'LineOfCode'])  # leaky",
+  "xgb.fit(X_train, y_train)",
+  "f.seek(0, 2); size = f.tell()  # 50 MB cap",
   "socket.emit('telemetry', mitre_map(findings))",
-  "nmap -sV --script vuln 192.168.50.130",
+  "nmap -sV 192.168.50.130",
 ];
 
 // ── IOC tags that orbit the cracked cipher lock ──────────────────────────────

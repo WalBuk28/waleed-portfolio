@@ -181,7 +181,7 @@ export function ServerRack() {
           </mesh>
         ))}
       </group>
-      <TextPlane text="AIR-GAPPED · 100% LOCAL" height={0.09} color={C.emeraldGlow} position={[0, -1.32, 0.3]} />
+      <TextPlane text="AIR-GAPPED · LOCAL MODELS" height={0.09} color={C.emeraldGlow} position={[0, -1.32, 0.3]} />
 
       <pointLight color={C.emerald} intensity={5} distance={7} decay={2} position={[0, 0.4, 1.2]} />
 

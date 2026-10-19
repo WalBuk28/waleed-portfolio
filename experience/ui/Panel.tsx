@@ -158,13 +158,14 @@ export function PanelHeader({
   );
 }
 
-export function MetricGrid({ metrics }: { metrics: { value: string; label: string }[] }) {
+export function MetricGrid({ metrics }: { metrics: { value: string; label: string; sub?: string }[] }) {
   return (
     <div className="mb-3 grid grid-cols-2 gap-2">
       {metrics.slice(0, 4).map((m) => (
         <div key={m.label} className="rounded-lg border border-edge bg-void/50 px-2.5 py-2">
           <div className="font-mono text-sm font-bold text-emerald-glow">{m.value}</div>
           <div className="mt-0.5 text-2xs leading-tight text-ink-muted">{m.label}</div>
+          {m.sub && <div className="mt-0.5 text-2xs leading-tight text-ink-muted">{m.sub}</div>}
         </div>
       ))}
     </div>
