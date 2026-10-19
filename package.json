@@ -2,11 +2,12 @@
   "name": "waleed-bukhari-portfolio",
   "version": "2.0.0",
   "private": true,
-  "description": "Portfolio of Syed Muhammad Waleed Bukhari — Cybersecurity Engineer & Developer",
+  "description": "Portfolio of Syed Muhammad Waleed Bukhari (Muhammad Waleed) — SOC Analyst",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.7",
