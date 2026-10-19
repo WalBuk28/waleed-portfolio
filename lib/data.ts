@@ -492,49 +492,65 @@ export const caseStudies: CaseStudy[] = [
   {
     slug: "ai-phishing-detection",
     title: "AI-Driven Phishing Detection",
-    tagline: "Adversarially-tested ML over 235k URLs for SOC automation",
-    category: "Machine Learning · SOC Automation",
+    tagline: "Phishing detection on 235,795 URLs, with a leakage fix, a SOC cost model and a poisoning test",
+    category: "Coursework (CSEC3004) · Machine learning",
     year: "2025",
     accent: "electric",
     icon: "BrainCircuit",
     summary:
-      "A machine-learning pipeline that classifies phishing URLs at up to 99.97% accuracy across the 235k-sample PhiUSIIL dataset — then stress-tests that accuracy against obfuscation and data-poisoning to expose the gap between lab metrics and real-world defence.",
+      "Six supervised models classifying phishing on the PhiUSIIL dataset (235,795 URLs, using URL and page features). I found and removed two leaky features, picked a decision threshold from a SOC cost model, and tested how the models hold up when training labels are poisoned.",
     context:
-      "An AI-for-Cybersecurity project building and critically evaluating supervised models for phishing-URL classification on the PhiUSIIL Phishing URL dataset — with a deliberate focus on adversarial robustness rather than headline accuracy.",
+      "AI for Cyber Security coursework (CSEC3004): building and critically evaluating phishing classifiers on the public PhiUSIIL Phishing URL dataset. The whole analysis is in a Jupyter notebook in the public repo, with its outputs saved.",
     problem:
-      "Phishing remains a dominant initial-access vector (MITRE T1566.002). Signature lists can’t keep pace, and models that score 99%+ on clean test data can collapse under obfuscation. The question: which model families generalise, and how brittle are they when attackers fight back?",
+      "Phishing is a leading initial-access vector (MITRE T1566.002). On a public benchmark it is easy to report near-perfect accuracy that means little. The questions: is the accuracy real, what threshold makes sense for a SOC that pays for both false alarms and missed phish, and how brittle are the models when an attacker corrupts the training data?",
     approach:
-      "I engineered lexical and host-based URL features, then trained and compared bagging (Random Forest), boosting (XGBoost, LightGBM, CatBoost) and a neural network (MLP). Crucially, I designed experiments to measure how feature obfuscation and poisoned training samples shift the decision boundary — moving the analysis beyond simple classification accuracy.",
+      "I engineered URL and page features (the dataset includes page-content signals such as HasSocialNet and HasCopyrightInfo, not just the URL). A first run gave a suspicious 1.0 accuracy, which I traced to two leaky “oracle” features, URLSimilarityIndex and LineOfCode, and dropped. I then tuned and compared six models on a stratified 80/20 split: Logistic Regression, Random Forest, XGBoost, LightGBM, CatBoost and an MLP.",
     stack: [
       "Python",
       "scikit-learn",
       "XGBoost / LightGBM / CatBoost",
-      "MLP Neural Network",
+      "MLP neural network",
       "pandas / NumPy",
       "Matplotlib",
     ],
     metrics: [
-      { value: "99.97%", label: "Peak accuracy", sub: "MLP on clean data" },
-      { value: ">0.99", label: "Macro F1 (all models)", sub: "on untouched data" },
+      { value: "0.9999", label: "Best test accuracy", sub: "XGBoost and LightGBM · stratified 20% test split" },
+      { value: "0.61", label: "Cost-optimal threshold", sub: "$15 per false alarm vs $5,000 per missed phish" },
       { value: "235,795", label: "URLs in dataset", sub: "PhiUSIIL (43% phishing)" },
-      { value: "5", label: "Model families compared", sub: "bagging · boosting · NN" },
+      { value: "6", label: "Models compared", sub: "linear · bagging · boosting ×3 · MLP" },
     ],
     sections: [
       {
-        heading: "Feature engineering",
-        body: "Strong discriminators emerged from URL structure: legitimate business URLs trend short (SEO-driven), while phishing URLs show high length variance, random tokens and disposable-infrastructure signals such as IsHTTPS=0.",
+        heading: "Catching the leak",
+        body: "The first models scored a perfect 1.0, which is a warning sign rather than a result. Correlation analysis showed URLSimilarityIndex (correlation 0.86 with the label) and LineOfCode acting as oracles for the answer. I dropped both, and split the data before scaling so nothing from the test set leaked into training.",
       },
       {
-        heading: "Model comparison",
-        body: "All five families exceeded a macro-F1 of 0.99 on clean data, with the MLP reaching 99.97% accuracy. Tree ensembles offered the best stability / efficiency trade-off for real-time deployment.",
+        heading: "Model comparison (clean test set)",
+        body: "Accuracy / false-positive rate / false-negative rate on the 20% held-out split, from the notebook’s results table:",
+        bullets: [
+          "Logistic Regression 0.9991 / 0.0011 / 0.0007",
+          "Random Forest 0.9996 / 0.0005 / 0.0003",
+          "XGBoost 0.9999 / 0.0002 / 0.0001",
+          "LightGBM 0.9999 / 0.0002 / 0.0000",
+          "CatBoost 0.9998 / 0.0004 / 0.0001",
+          "MLP 0.9997 / 0.0003 / 0.0002",
+        ],
       },
       {
-        heading: "Adversarial reality check",
-        body: "Obfuscation techniques pushed macro-F1 below the headline figures — demonstrating that clean-data accuracy is deceptive for deployed defences, and that a production threshold must account for class imbalance (phishing is <1% of real traffic) and false-positive cost.",
+        heading: "SOC cost model",
+        body: "I modelled a SOC that sees 1,000,000 URLs a day, 0.5% of them phishing, where a false positive costs $15 of analyst triage and a missed phish costs $5,000. Sweeping the threshold gave an optimum of 0.61 and a minimum expected cost of about $4,072 a day.",
+      },
+      {
+        heading: "Poisoning test",
+        body: "I flipped 1, 5, 10, 15 and 20% of the training labels and re-measured accuracy on clean test data (Random Forest and XGBoost). From the notebook’s plot: Random Forest stayed at about 0.9995 at every rate, while XGBoost fell steadily, to about 0.997 at 20%. Bagging averages out the noise; boosting keeps fitting it.",
+      },
+      {
+        heading: "Limitations",
+        body: "Every model scored a ROC-AUC of 1.0000, even after the leakage fix: PhiUSIIL is close to separable, so these scores overstate real-world performance. The 0.5% phishing rate and the dollar costs are modelling assumptions, not measured figures. The poisoning numbers are read from a plot, and the poisoning test covered two models only.",
       },
     ],
     outcome:
-      "A rigorous, deployment-aware evaluation that treats ML as a security control — not a leaderboard — and ties detection back to the MITRE ATT&CK phishing technique and a CIA-triad impact analysis.",
+      "An evaluation that treats ML as a security control rather than a leaderboard: it rejects a too-good result, chooses a threshold from what errors cost a SOC, and shows which model family survives poisoned training data.",
     tools: ["Python", "scikit-learn", "XGBoost", "Jupyter"],
     tags: ["Machine Learning", "SOC Automation", "Phishing", "Adversarial ML"],
     repo: "https://github.com/WalBuk28/ai-phishing-detection",
@@ -545,7 +561,7 @@ export const caseStudies: CaseStudy[] = [
     slug: "cryptography",
     title: "Cryptography & Encryption",
     tagline: "Cipher design, RSA cryptanalysis and protocol attack simulation",
-    category: "Applied Cryptography",
+    category: "Coursework · Applied cryptography",
     year: "2025",
     accent: "emerald",
     icon: "KeyRound",
@@ -563,21 +579,21 @@ export const caseStudies: CaseStudy[] = [
       "RSA",
       "Needham-Schroeder",
       "Diffie-Hellman",
-      "AES",
     ],
     metrics: [
-      { value: "30", label: "Char cipher domain", sub: "A–Z + symbols, k₀=7" },
+      { value: "30", label: "Symbol cipher alphabet", sub: "A–Z + four symbols, k₀ = 7" },
       { value: "4", label: "Schemes analysed", sub: "Affine · RSA · NS · DH" },
-      { value: "0", label: "Keys needed for RSA break", sub: "ciphertext-only attack" },
+      { value: "0", label: "Private keys needed for the RSA break", sub: "if one message goes to two users sharing a modulus" },
+      { value: "10", label: "Unit tests", sub: "in the public repo" },
     ],
     sections: [
       {
         heading: "Modified Affine cipher",
-        body: "A 30-symbol alphabet (A–Z plus +, −, *, /) with f(x) = (7x + 4) mod 30. k₀ = 7 is coprime to 30 (gcd = 1) ensuring bijectivity; the modular inverse 13 (7·13 ≡ 1 mod 30) drives decryption — a clean illustration of modular arithmetic expanding the keyspace.",
+        body: "A 30-symbol alphabet (A–Z plus +, −, *, /) with f(x) = (7x + 4) mod 30. k₀ = 7 is coprime to 30 (gcd = 1), so the map is a bijection; the modular inverse 13 (7·13 ≡ 1 mod 30) drives decryption. The tests check that the map is collision-free across the whole alphabet. Like any affine cipher it has a tiny keyspace and falls to frequency analysis: it illustrates modular arithmetic, not a secure design.",
       },
       {
         heading: "RSA common-modulus attack",
-        body: "When two users share a modulus N with coprime public exponents, an interceptor can recover plaintext with no private key: solve s·eA + t·eB = 1 via the Extended Euclidean Algorithm, then compute m = CA^s · CB^t mod N. A potent reminder that key generation and parameter separation matter as much as the maths.",
+        body: "The precondition: the same message is encrypted to two users who share a modulus N and have coprime public exponents. An interceptor holding both ciphertexts can then recover the plaintext with no private key: solve s·eA + t·eB = 1 with the Extended Euclidean Algorithm, then compute m = CA^s · CB^t mod N. Key generation and parameter separation matter as much as the maths.",
       },
       {
         heading: "Protocol attacks & mitigations",
@@ -590,7 +606,7 @@ export const caseStudies: CaseStudy[] = [
     ],
     outcome:
       "A coursework demonstrating end-to-end cryptographic literacy — from hand-built ciphers to protocol cryptanalysis — with each weakness paired to a defensible mitigation grounded in academic sources.",
-    tools: ["Python", "Number Theory", "OpenSSL"],
+    tools: ["Python", "Number theory"],
     tags: ["Cryptography", "Cryptanalysis", "RSA", "Protocols"],
     repo: "https://github.com/WalBuk28/industrial-cryptography",
   },
@@ -600,12 +616,12 @@ export const caseStudies: CaseStudy[] = [
     slug: "secure-scripting",
     title: "FreightDesk — Secure Business Application",
     tagline: "A hardened Flask logistics portal with live FX, RBAC and a full security self-assessment",
-    category: "Secure Software · Web App",
+    category: "Coursework (CSEC2001D) · Secure web app",
     year: "2025–26",
     accent: "emerald",
     icon: "Boxes",
     summary:
-      "A database-backed logistics management web app built the way a security engineer would: parameterised SQL, role-based access control, per-session CSRF tokens, hardened headers, and a live remote FX web service — shipped with 17 automated tests and an OWASP-mapped self-penetration-test.",
+      "A database-backed logistics web app built security-first: parameterised SQL, role-based access control, per-session CSRF tokens, hardened headers and a live FX web service, with 17 automated tests and an OWASP Top 10 self-assessment.",
     context:
       "Built for the Secure Scripting & Business Applications brief (CSEC2001D). Staff sign in against role-based permissions, manage freight shipments in a normalised SQLite database, and see each shipment’s declared value converted to a base currency using exchange rates pulled live over HTTPS from a remote web service.",
     problem:
@@ -623,7 +639,7 @@ export const caseStudies: CaseStudy[] = [
     ],
     metrics: [
       { value: "17", label: "Automated tests", sub: "auth · RBAC · CSRF · SQLi · FX" },
-      { value: "10/10", label: "OWASP Top 10 addressed", sub: "each with a mitigation" },
+      { value: "7 of 10", label: "OWASP Top 10 (2021) categories with a test", sub: "A07 and A09 shown in code, A06 by pinned deps · SECURITY.md" },
       { value: "3", label: "RBAC roles", sub: "viewer · clerk · admin" },
       { value: "0", label: "String-built SQL", sub: "fully parameterised" },
     ],
@@ -651,15 +667,19 @@ export const caseStudies: CaseStudy[] = [
       },
       {
         heading: "Remote web service integration",
-        body: "Shipment values in mixed currencies are converted using live rates from a public FX API — fetched over HTTPS with a short timeout, parsed defensively, cached with a TTL, and gracefully degraded to bundled fallback rates if the service is unreachable. The endpoint is fixed in config, not user-controlled, to resist SSRF.",
+        body: "Shipment values in mixed currencies are converted using live rates from open.er-api.com, a public FX API that needs no key. Rates are fetched over HTTPS with a 4-second timeout, parsed defensively, cached for an hour, and replaced by bundled fallback rates if the service is unreachable. The endpoint is fixed in config, not user-controlled, to resist SSRF.",
       },
       {
         heading: "Self-penetration test (OWASP)",
-        body: "I attacked my own app and documented it: SQL-injection auth-bypass and table-drop payloads (blocked by parameterisation), forced-browsing privilege escalation (403 server-side), CSRF replay (400), reflected-XSS (Jinja autoescape + CSP) and clickjacking (frame-ancestors none) — every finding mapped to the OWASP Top 10 with the mitigation and a test.",
+        body: "I attacked my own app and documented it: SQL-injection auth-bypass and table-drop payloads (blocked by parameterisation), forced-browsing privilege escalation (403 server-side), CSRF replay (400), reflected XSS (Jinja autoescape + CSP) and clickjacking (frame-ancestors none). SECURITY.md maps each OWASP Top 10 (2021) category to its threat, control and evidence: 7 categories have a named test, A07 (authentication) and A09 (logging) point to the code that implements them, and A06 (vulnerable components) relies on a minimal pinned dependency set.",
+      },
+      {
+        heading: "Limitations",
+        body: "There is no rate limiting or lockout on /login yet, so credential stuffing (A07) is only slowed by the password hash. The audit log is append-only by convention, not tamper-evident.",
       },
     ],
     outcome:
-      "A production-shaped business application that treats security as a first-class requirement — with a written OWASP self-assessment, a data-protection (UK GDPR) analysis and a green test suite — demonstrating secure development end to end, not just a working feature set.",
+      "A business application that treats security as a first-class requirement, with a written OWASP self-assessment, a UK GDPR data-protection analysis and a passing test suite: secure development end to end, not just a working feature set.",
     tools: ["Python", "Flask", "SQLite", "requests"],
     tags: ["Secure Coding", "Web App", "OWASP", "RBAC"],
     repo: "https://github.com/WalBuk28/freightdesk",
@@ -670,16 +690,16 @@ export const caseStudies: CaseStudy[] = [
     slug: "secure-password-manager",
     title: "Secure Password Manager (C++)",
     tagline: "An AES-256-GCM credential vault in modern C++ built on real OpenSSL crypto",
-    category: "Secure Coding · Systems C++",
+    category: "Coursework (CSEC1003D) · Secure C++",
     year: "2025–26",
     accent: "electric",
     icon: "Lock",
     summary:
-      "A command-line password manager in modern C++17 that stores credentials in a single vault file encrypted and authenticated with AES-256-GCM, unlocked by a master password that is never written to disk — using audited OpenSSL crypto, not a hand-rolled cipher.",
+      "A command-line password manager in modern C++17 that stores credentials in a single vault file encrypted and authenticated with AES-256-GCM, unlocked by a master password that is never written to disk, using OpenSSL’s EVP API rather than a hand-rolled cipher.",
     context:
       "The Secure Coding module (CSEC1003D) asks for correct, object-oriented, security-minded systems programming. Rather than a toy, I built a real vault: a crypto layer over OpenSSL’s EVP API, a vault/serialisation layer, and a thin CLI — with a CMake build and a CTest suite.",
     problem:
-      "A password manager is only as trustworthy as its weakest cryptographic decision. The goal was to get every one right: authenticated encryption so tampering is detected, slow salted key derivation so the master password resists brute force, and unique nonces so identical vaults never leak equality.",
+      "A password manager is only as trustworthy as its weakest cryptographic decision. The goal was to get every one right: authenticated encryption so tampering is detected, slow salted key derivation so the master password resists brute force, and a fresh random nonce on every save so the same contents never encrypt the same way twice.",
     approach:
       "AES-256-GCM provides confidentiality and integrity in one primitive; PBKDF2-HMAC-SHA256 (200k iterations, random per-vault salt) derives the key; a fresh random 96-bit IV is generated on every save. RAII wraps the OpenSSL contexts, sensitive buffers are cleansed, and the master password is read with terminal echo disabled.",
     stack: [
@@ -692,7 +712,7 @@ export const caseStudies: CaseStudy[] = [
     ],
     metrics: [
       { value: "AES-256", label: "GCM authenticated encryption", sub: "tampering detected" },
-      { value: "200k", label: "PBKDF2 iterations", sub: "random per-vault salt" },
+      { value: "200k", label: "PBKDF2 iterations", sub: "below OWASP’s 600k; see limitations" },
       { value: "0", label: "Plaintext at rest", sub: "master key never stored" },
       { value: "C++17", label: "OpenSSL EVP", sub: "CMake · CTest · -Wall" },
     ],
@@ -703,21 +723,25 @@ export const caseStudies: CaseStudy[] = [
         bullets: [
           "AES-256-GCM: a modified vault fails the auth tag instead of decrypting to junk",
           "PBKDF2-HMAC-SHA256 with a random salt: expensive brute-force, no rainbow tables",
-          "Fresh random 96-bit IV per save: GCM nonces never repeat under one key",
+          "Fresh random 96-bit IV per save: a repeated nonce under one key is negligibly unlikely at this volume",
           "Master password derived to a key and never stored — only salt + iterations persist",
         ],
       },
       {
         heading: "Proven, not just claimed",
-        body: "The test suite demonstrates the security properties: a wrong master password and a single flipped byte in the vault both fail with an authentication error, and grepping the vault file for a stored secret returns nothing — it is encrypted at rest.",
+        body: "The CTest suite checks the security properties: a wrong key or master password and a single flipped bit both fail with an authentication error. The README repeats this by hand and adds a grep of the vault file that finds no trace of a stored secret, because it is encrypted at rest.",
       },
       {
         heading: "Engineering discipline",
-        body: "Clean separation (crypto knows nothing about vaults; the CLI is thin), RAII around OpenSSL contexts so a context is freed exactly once even on error, OPENSSL_cleanse on key material, and a warnings-as-signal build (-Wall -Wextra -Wpedantic, zero warnings).",
+        body: "Clean separation (crypto knows nothing about vaults; the CLI is thin), RAII around OpenSSL contexts so a context is freed exactly once even on error, OPENSSL_cleanse on key material, and a build with -Wall -Wextra -Wpedantic so warnings surface as signal.",
+      },
+      {
+        heading: "Limitations",
+        body: "200,000 PBKDF2-HMAC-SHA256 iterations is below the 600,000 that OWASP’s Password Storage Cheat Sheet now recommends, and PBKDF2 is not memory-hard (Argon2id would resist GPU cracking better). The iteration count is stored in the vault header, so it can be raised without breaking existing vaults.",
       },
     ],
     outcome:
-      "A genuinely secure, tested systems-C++ project that backs the ‘I can build the code I defend’ claim — real authenticated encryption, sound key management, and a threat model that is honest about what it does and does not protect.",
+      "A tested systems-C++ project that backs the ‘I can build the code I defend’ claim: real authenticated encryption, sound key management, and a threat model that is honest about what it does and does not protect.",
     tools: ["C++", "OpenSSL", "CMake"],
     tags: ["C++", "Cryptography", "Secure Coding", "AES-256"],
     repo: "https://github.com/WalBuk28/secure-password-manager-cpp",
