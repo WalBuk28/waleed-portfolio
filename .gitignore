@@ -63,3 +63,8 @@ con_*
 conthml
 Gemini_Generated_Image_*
 .agents/
+
+# awwwards / jury working files
+DESIGN.md
+.shots/
+.jury/
