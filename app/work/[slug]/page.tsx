@@ -116,6 +116,7 @@ export default async function WorkPage({
                     <Github className="h-3 w-3" /> Code
                   </a>
                 )}
+                {study.repoNote && <span className="chip">{study.repoNote}</span>}
               </div>
             </Reveal>
           </header>

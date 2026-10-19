@@ -177,6 +177,7 @@ export type CaseStudy = {
   tools: string[];
   tags: string[];
   repo?: string;
+  repoNote?: string; // shown when there is no public repo
   demo?: string;
   // optional visualisations
   architecture?: { title: string; nodes: FlowNode[] };
@@ -189,26 +190,26 @@ export const caseStudies: CaseStudy[] = [
     slug: "walsec-atioc-hub",
     title: "WalSec A-TIOC Hub",
     tagline: "A privacy-first SIEM-Lite that fuses network forensics with local LLMs",
-    category: "Final-Year Project · SOC Platform",
+    category: "Final-year project (CTEC3451D) · SOC platform",
     year: "2025–26",
     accent: "emerald",
     icon: "ShieldCheck",
     featured: true,
-    demo: "https://walsec.com",
+    repoNote: "Private repository · demo on request",
     summary:
-      "An air-gapped SIEM-Lite that automates deep packet inspection and grounds a local LLM in live threat intelligence — giving SMEs enterprise-grade threat hunting without the cloud, the cost, or the GDPR risk.",
+      "An air-gapped SIEM-Lite for small organisations: it automates deep packet inspection, pulls live threat intelligence, and grounds a local LLM in that evidence, so no telemetry leaves the building.",
     context:
-      "WalSec A-TIOC Hub was my BSc final-year development project (CTEC3451D). It is a fully self-hosted “SIEM-Lite” that bridges automated network forensics with locally-hosted Large Language Models, so a resource-constrained Security Operations Centre can triage threats with AI that never leaves its own perimeter.",
+      "WalSec A-TIOC Hub was my BSc final-year development project (CTEC3451D). It was faculty-commended and formally recommended for publication. It is a self-hosted “SIEM-Lite” that joins automated network forensics to locally hosted language models, so a small Security Operations Centre can triage threats with AI that never leaves its own perimeter.",
     problem:
-      "Modern SOCs drown in noise — an estimated 67% of security alerts are ignored due to volume and cognitive overload. Enterprise SIEMs are prohibitively expensive for SMEs, and pushing sensitive telemetry to cloud AI (e.g. OpenAI) creates serious GDPR and data-sovereignty exposure. The challenge: deliver grounded, automated threat analysis entirely on-premise.",
+      "Analysts face thousands of alerts a day, most of them noise. Enterprise SIEMs cost more than small organisations can pay, and sending packet captures to a cloud AI service (OpenAI, for example) can expose personal data and break GDPR and data-sovereignty rules. The challenge: grounded, automated threat analysis that runs entirely on-premise.",
     approach:
-      "I built a decoupled architecture: a cyberpunk-styled React 18 + Vite SPA over a Flask 3.0 API on Eventlet, offloading CPU-heavy PyShark dissection to Python multiprocessing pools. A RAG pipeline (BGE-M3 multi-vector embeddings + Ollama-hosted Llama 3.2 / Qwen2.5) grounds every inference in evidence pulled from a WAL-optimised SQLite store, so the model correlates findings to MITRE ATT&CK instead of hallucinating them.",
+      "I built a decoupled architecture: a React 18 + Vite single-page app over a Flask 3.0 API on Eventlet, with CPU-heavy PyShark dissection moved into Python multiprocessing pools. A RAG pipeline (BGE-M3 embeddings, local Qwen and DeepSeek models served by Ollama) grounds every answer in evidence from a SQLite store in WAL mode, and the AI analyst maps that evidence to MITRE ATT&CK techniques through prompts backed by technique and mapping tables in the same database.",
     stack: [
       "React 18 + Vite",
       "Flask 3.0 (Eventlet)",
-      "Python Multiprocessing",
+      "Python multiprocessing",
       "PyShark / TShark",
-      "Ollama · Llama 3.2 / Qwen2.5",
+      "Ollama · Qwen · DeepSeek",
       "RAG · BGE-M3",
       "SQLite (WAL)",
       "WebSockets",
@@ -217,10 +218,10 @@ export const caseStudies: CaseStudy[] = [
       "Docker Compose",
     ],
     metrics: [
-      { value: "100%", label: "Hallucination prevention", sub: "Evidentiary-vacuum tested" },
-      { value: "1.8–2.4s", label: "AI time-to-first-token", sub: "Async SOC triage" },
-      { value: "3,200+", label: "Concurrent threat writes", sub: "SQLite WAL, no locking" },
-      { value: "30+", label: "MITRE ATT&CK techniques", sub: "via 15 custom signatures" },
+      { value: "9,000+", label: "IOCs ingested", sub: "from the ThreatFox API · stored count, Oct 2026" },
+      { value: "50 MB", label: "PCAP upload cap", sub: "enforced in code with file.seek, tested" },
+      { value: "Refused", label: "Out-of-evidence query", sub: "test TC-AI-02: non-existent domain → “Not Found”" },
+      { value: "Offline", label: "AI inference", sub: "Qwen · DeepSeek via Ollama, no cloud API" },
     ],
     architecture: {
       title: "Decoupled, fully-local pipeline",
@@ -229,35 +230,39 @@ export const caseStudies: CaseStudy[] = [
         { id: "pcap", label: "PCAP Upload\n≤ 50MB DPI", kind: "in" },
         { id: "flask", label: "Flask 3.0 API\nEventlet + multiprocessing", kind: "core" },
         { id: "db", label: "SQLite (WAL)\nACID evidence store", kind: "core" },
-        { id: "rag", label: "RAG · BGE-M3\nLlama 3.2 (Ollama)", kind: "ai" },
+        { id: "rag", label: "RAG · BGE-M3\nQwen · DeepSeek (Ollama)", kind: "ai" },
         { id: "ui", label: "React SPA\nWebSocket telemetry", kind: "out" },
       ],
     },
     sections: [
       {
         heading: "Automated forensic ingestion",
-        body: "The system eliminates manual TShark triage. Asynchronous Deep Packet Inspection parses uploaded PCAPs (hard-capped at 50MB via byte-pointer logic to protect the event loop), while APScheduler workers pull fresh OSINT from ThreatFox and URLhaus every 30–60 minutes.",
+        body: "The system replaces manual TShark triage. Asynchronous deep packet inspection parses uploaded PCAPs (capped at 50 MB by checking the file size with file.seek before parsing, to protect the event loop), while APScheduler workers pull fresh indicators from ThreatFox and URLhaus every 30–60 minutes. The local store held over 9,000 ThreatFox IOCs in October 2026.",
         bullets: [
           "Normalisation pipeline strips port metadata for uniform IP vectors",
           "Database-level deduplication via composite (Type + Value) keys",
-          "Controlled, scheduled enrichment from Abuse.ch and ip-api.com",
+          "Scheduled pulls from the abuse.ch ThreatFox and URLhaus APIs",
         ],
       },
       {
         heading: "Grounded AI, not generative guesswork",
-        body: "Unbounded LLMs hallucinate threat intel in a vacuum. I subjected the system to “Evidentiary Vacuum” testing — querying non-existent IPs and domains — and achieved a 100% hallucination-prevention rate. Strict prompt boundaries force SQL joins to override model generation; with no local evidence the model returns “Insufficient local evidence” rather than fabricating.",
+        body: "A language model with no evidence will invent threat intelligence. Strict prompt boundaries make the answer depend on what the SQL lookups return: with no local evidence, the model replies “Insufficient local evidence” (or “Not Found”) instead of making something up. The test matrix records this case: TC-AI-02 asked about a domain that doesn't exist, and the model refused to extrapolate. That is one recorded test, not a measured rate.",
       },
       {
         heading: "Dynamic threat scoring",
-        body: "A 100-point scalar function ranks indicators so analysts hit the most critical threats first, combining base confidence, a recency modifier, a malware-family boost and tag-severity weighting.",
+        body: "Each indicator gets a score out of 100 so analysts see the most critical first: Score = min(100, Base + Recency + MalwareBoost + TagsBoost). Recency adds 20 points for indicators up to a day old, falling to 5 at 30 days; a known malware family adds 15.",
       },
       {
         heading: "Engineered for robustness",
-        body: "Cooperative multitasking under Eventlet initially caused cron jobs to miss triggers by up to 14 minutes under heavy PyShark load; I solved it by isolating the dissection engine into detached multiprocessing pools. Comprehensive try/except wrappers keep core threading stable through catastrophic external-API outages, and byte-pointer logic (file.seek) physically halts memory buffering beyond 50MB.",
+        body: "Under Eventlet's cooperative multitasking, heavy PyShark work blocked the scheduler: APScheduler logged the ThreatFox ingestion job missing its slot by 14 minutes 30 seconds. I moved the dissection engine into separate multiprocessing pools so the event loop keeps running. Exception handling keeps ingestion alive when an external feed is unreachable (the logs record a URLhaus outage that the app survived).",
+      },
+      {
+        heading: "Limitations",
+        body: "The out-of-evidence behaviour is shown by one recorded test, not a measured rate. No latency figure is given: the earlier one was measured on Llama 3.2 on unrecorded hardware, and the platform now runs Qwen and DeepSeek. Setup is not zero-configuration: it needs a Linux host with Docker and Ollama, the models pulled in advance, and dependencies installed offline.",
       },
     ],
     outcome:
-      "Delivered a viable, zero-configuration SIEM-Lite for resource-constrained environments with 100% local execution — bridging raw TShark packet inspection and strategic, C-level MITRE reporting via generative AI. Roadmap: Redis-backed rate limiting, agentic RAG (AI-instructed historical PCAP re-scans), and Kubernetes scaling for concurrent inference.",
+      "A working SIEM-Lite for small, resource-constrained teams that runs entirely on local hardware, from raw TShark packet inspection to ATT&CK-mapped reports written by a local model. Faculty-commended and recommended for publication. Roadmap: Redis-backed rate limiting, agentic RAG (AI-instructed re-scans of historical PCAPs) and scaling inference across more hardware.",
     tools: ["React", "Flask", "PyShark", "Ollama", "SQLite", "Docker", "Leaflet"],
     tags: ["SOC Automation", "LLM / RAG", "Network Forensics", "Full-Stack"],
   },
