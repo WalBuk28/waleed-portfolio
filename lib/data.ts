@@ -23,7 +23,6 @@ export const profile = {
     "I build the bridge between deep network forensics and intelligent automation — turning raw packets, malware and threat feeds into decisions a SOC can act on.",
   location: "Dubai, United Arab Emirates",
   email: "waleedbukhari2000@gmail.com",
-  phone: "+971 50 690 8284",
   linkedin: "https://linkedin.com/in/muhammad-waleed-b43997202",
   github: "https://github.com/WalBuk28",
   site: "https://walsec.com",
