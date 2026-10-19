@@ -178,10 +178,14 @@ export type CaseStudy = {
   repos?: string[];
   repoNote?: string; // shown when there is no public repo
   demo?: string;
+  updated?: string; // ISO date of the last content change (sitemap); defaults to siteUpdated
   // optional visualisations
   architecture?: { title: string; nodes: FlowNode[] };
   killChain?: KillStage[];
 };
+
+// Last content change, for the sitemap. Bump it (or a study's `updated`) when the copy changes.
+export const siteUpdated = "2026-10-19";
 
 export const caseStudies: CaseStudy[] = [
   // ---------------------------------------------------------------------------
