@@ -12,7 +12,8 @@ const toneClass: Record<string, string> = {
 
 /**
  * A faux-terminal that types the boot sequence line by line. Reduced-motion
- * renders the whole log statically. Purely decorative — aria-hidden.
+ * jumps straight to the whole log (from the effect, so the server HTML and the
+ * first client render match). Purely decorative — aria-hidden.
  */
 export function Terminal() {
   const reduce = useReducedMotion();
@@ -62,8 +63,7 @@ export function Terminal() {
       <div className="min-h-[11.5rem] space-y-1.5 p-4 leading-relaxed sm:min-h-[12.5rem]">
         {bootSequence.map((line, i) => {
           if (i > lineIdx) return null;
-          const text =
-            i < lineIdx || reduce ? line.text : line.text.slice(0, charIdx);
+          const text = i < lineIdx ? line.text : line.text.slice(0, charIdx);
           const tag = line.text.match(/^\[(ok|warn|info)\]/i);
           return (
             <div key={i} className="flex gap-2 break-all">
@@ -78,7 +78,7 @@ export function Terminal() {
                 }
               >
                 {text}
-                {i === lineIdx && !reduce && !done && (
+                {i === lineIdx && !done && (
                   <span className="ml-0.5 inline-block h-3.5 w-2 translate-y-0.5 bg-emerald-accent animate-blink" />
                 )}
               </span>

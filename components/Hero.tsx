@@ -104,9 +104,9 @@ export function Hero() {
                 <AnimatePresence mode="wait">
                   <motion.span
                     key={roleIdx}
-                    initial={{ opacity: 0, y: reduce ? 0 : 14 }}
+                    initial={{ opacity: 0, y: 14 }}
                     animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: reduce ? 0 : -14 }}
+                    exit={{ opacity: 0, y: -14 }}
                     transition={{ duration: 0.4 }}
                     className="grad-text inline-block font-display font-bold"
                   >

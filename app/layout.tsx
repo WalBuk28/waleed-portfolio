@@ -87,7 +87,8 @@ export default function RootLayout({
           Skip to content
         </a>
         <Providers>{children}</Providers>
-        <Analytics />
+        {/* Vercel serves the analytics script; elsewhere (local review) it would 404. */}
+        {process.env.VERCEL === "1" && <Analytics />}
       </body>
     </html>
   );
