@@ -195,7 +195,11 @@ export function Hero() {
           {profile.stats.map((s) => (
             <div key={s.label} className="bg-surface/80 px-5 py-6 text-center">
               <div className="font-display text-3xl font-bold text-ink sm:text-4xl">
-                <Counter to={s.value} suffix={s.suffix} />
+                {typeof s.value === "number" ? (
+                  <Counter to={s.value} suffix={s.suffix} />
+                ) : (
+                  s.value
+                )}
               </div>
               <div className="mt-1.5 text-xs leading-snug text-ink-muted">
                 {s.label}

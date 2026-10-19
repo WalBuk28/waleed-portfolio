@@ -31,7 +31,11 @@ export function DossierNode() {
 
   const quat = useMemo(() => facing(ANCHORS.dossier, SEC.center), []);
   const stats = useMemo(
-    () => profile.stats.map((s) => ({ head: `${s.value}${s.suffix}`, label: s.label.toUpperCase() })),
+    () =>
+      profile.stats.map((s) => ({
+        head: `${typeof s.value === "number" ? s.value.toLocaleString("en-GB") : s.value}${s.suffix ?? ""}`,
+        label: s.label.toUpperCase(),
+      })),
     []
   );
 

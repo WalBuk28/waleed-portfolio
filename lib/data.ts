@@ -31,12 +31,13 @@ export const profile = {
   availability: "Open to SOC Analyst and blue-team roles",
   summary:
     "BSc (Hons) Cyber Security, First Class Honours, from De Montfort University, studied at DMU Dubai. I work on threat intelligence, network forensics and SOC automation, and I write the software to back it up: an offline SIEM-Lite with a local LLM, an ML phishing detector and C++ security tooling. My industry experience is a cyber security internship at Receptive Tech Communications (Lahore, 2025), where I tuned SIEM correlation rules and alert thresholds, ran vulnerability scans and drafted playbooks. I've also completed virtual job simulations (Forage) with Telstra, Mastercard and Deloitte.",
+  // Each label says what the value is and how it was counted.
   stats: [
-    { value: 10, suffix: "+", label: "Technical projects shipped" },
-    { value: 4, suffix: "", label: "Industry programs" },
-    { value: 30, suffix: "+", label: "MITRE ATT&CK techniques mapped" },
-    { value: 100, suffix: "%", label: "Local, air-gapped AI analysis" },
-  ],
+    { value: "First Class", label: "Honours · BSc Cyber Security, DMU, 2026" },
+    { value: 10, label: "Case studies · 8 with public repos" },
+    { value: 9000, suffix: "+", label: "IOCs ingested from ThreatFox · stored count, Oct 2026" },
+    { value: "Offline", label: "AI analysis · local models via Ollama" },
+  ] as { value: number | string; suffix?: string; label: string }[],
 };
 
 // ── Hero boot sequence (typed terminal) ───────────────────────────────────

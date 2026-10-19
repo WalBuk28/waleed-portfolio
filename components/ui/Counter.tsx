@@ -58,7 +58,7 @@ export function Counter({
   return (
     <span className="tabular-nums">
       {prefix}
-      {display.toLocaleString()}
+      {display.toLocaleString("en-GB")}
       {suffix}
     </span>
   );
