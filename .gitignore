@@ -46,3 +46,19 @@ yarn-error.log*
 
 # claude conversation handoff / context (local only, keep out of public repo)
 CLAUDE_CONTEXT.md
+
+# --- Claude Code upgrade kit: private working files, never published ---
+CLAUDE.md
+HOW_TO_RUN.md
+.claude/settings.json
+.claude/rules/
+.claude/skills/
+skills-lock.json
+docs/
+studio/
+.review/
+.taste-skill/
+# local scratch files already in this folder (they're not in the GitHub repo)
+con_*
+conthml
+Gemini_Generated_Image_*
