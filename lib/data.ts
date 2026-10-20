@@ -933,7 +933,7 @@ const affine = Array.from({ length: 30 }, (_, x) => 0.18 + (0.82 * ((7 * x + 4) 
 export const weaves: Record<string, Weave> = {
   "walsec-atioc-hub": {
     rows: [0.36, 0.46, 0.56, 0.68, 0.82, 1].map((l) => Array<number>(8).fill(l)),
-    caption: "Placeholder until captures of the platform arrive: its six parts, one row each, from the threat feeds and PCAP upload in to the analyst's screen.",
+    caption: "Placeholder until captures of the platform arrive: its six parts, one row each, from the threat feeds and PCAP upload in to the analyst’s screen.",
     placeholder: true,
   },
   "pentest-malware": {
@@ -943,7 +943,7 @@ export const weaves: Record<string, Weave> = {
   "network-forensics": {
     rows: [[0.55, 0.55, 0.55, 0.55, 0.55, 0.55, 0.55, 1, 1]],
     layout: "path",
-    caption: "The 9 ATT&CK techniques mapped, one cell each, stepping along the lattice in the report's order: 7 Enterprise, then the 2 ICS techniques, brightest.",
+    caption: "The 9 ATT&CK techniques mapped, one cell each, stepping along the lattice in the report’s order: 7 Enterprise, then the 2 ICS techniques, brightest.",
   },
   "incident-response-maturity": {
     rows: sim3.map((d) => d.params.map((p) => (p.score >= p.target ? 1 : 0.16))),
@@ -951,7 +951,7 @@ export const weaves: Record<string, Weave> = {
   },
   "ai-phishing-detection": {
     rows: spread(20, 236, 101),
-    caption: "PhiUSIIL's 235,795 URLs at one cell per 1,000. Lit: the 43% that are phishing.",
+    caption: "PhiUSIIL’s 235,795 URLs at one cell per 1,000. Lit: the 43% that are phishing.",
   },
   "secure-scripting": {
     rows: [[1, 1, 1, 1, 1, 0.3, 0.3, 1, 0.3, 1]],
@@ -964,7 +964,7 @@ export const weaves: Record<string, Weave> = {
   },
   cryptography: {
     rows: [affine.slice(0, 10), affine.slice(10, 20), affine.slice(20, 30)],
-    caption: "The cipher's 30-symbol alphabet, one cell each. Brightness shows where f(x) = (7x + 4) mod 30 sends the symbol.",
+    caption: "The cipher’s 30-symbol alphabet, one cell each. Brightness shows where f(x) = (7x + 4) mod 30 sends the symbol.",
   },
   "software-development": {
     rows: [Array<number>(14).fill(0.78), Array<number>(15).fill(1)],

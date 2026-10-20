@@ -167,12 +167,14 @@ export function scan() {
     })
     .sort((a, b) => a.top - b.top);
   // data-quiet: page text; "fixed": the frame's corners, which stay in the viewport; "box": the
-  // element's own box (a whole row); "sticky": a sticky element's box, followed per frame.
+  // element's own box (a whole row); "sticky": a sticky element's box, followed per frame;
+  // "shown": line boxes, only while the element is visible (a closed window's caption).
   // Plain rects are the text's own line boxes (a headline's short last line doesn't quiet the
   // cells beside it); neighbouring lines of similar width merge into one block.
   st.quiet = [];
   document.querySelectorAll<HTMLElement>("[data-quiet]").forEach((el) => {
     const mode = el.dataset.quiet;
+    if (mode === "shown" && getComputedStyle(el).visibility === "hidden") return;
     if (mode === "box" || mode === "sticky") {
       const r = el.getBoundingClientRect();
       if (r.width < 1 || r.height < 1) return;
