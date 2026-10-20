@@ -100,12 +100,14 @@ void main() {
         * smoothstep(uHot.z - S, uHot.z + S * 2.0, c.x);
     open = max(open, 0.9 * hot);
   }
+  float tap = 0.0;
   if (uTap.w > 0.0) {
-    // a tap opens the cell, then ring 1 and ring 2, 60 ms apart; holds 0.8 s, then closes
+    // a tap opens the cell, then ring 1 and ring 2, 60 ms apart; holds 0.8 s, then closes,
+    // and lets light through where it opens
     float ring = floor(distance(c, uTap.xy) / S + 0.5);
     float t = uTime - uTap.z - ring * 0.06;
-    float a = smoothstep(0.0, 0.16, t) * (1.0 - smoothstep(0.96, 1.4, t));
-    open = max(open, a * step(ring, 2.5) * (1.0 - ring * 0.2));
+    tap = smoothstep(0.0, 0.16, t) * (1.0 - smoothstep(0.96, 1.4, t)) * step(ring, 2.5) * (1.0 - ring * 0.25);
+    open = max(open, tap);
   }
 
   // The jali casts: the open pattern projected and skewed at 30° as a pool of light.
@@ -153,7 +155,7 @@ void main() {
   }
 
   // Light behind the screen, and how much of it comes through.
-  float back = uBack + 1.15 * exp(-pow(sunD / (uSunR * 1.8), 2.0)) + 0.9 * hot + 0.6 * pool;
+  float back = uBack + 1.15 * exp(-pow(sunD / (uSunR * 1.8), 2.0)) + 0.9 * hot + 0.6 * pool + 0.9 * tap;
   back += uHeroOpen * 1.2 * exp(-pow(heroD / (S * 1.3), 2.0));
   float glint = uGlint * step(0.82, rnd) * pow(max(0.0, sin(uTime * 0.7 + rnd * 61.0)), 40.0);
   back = mix(back, min(back, 0.2), quiet) + glint * 0.5 * (1.0 - quiet);
