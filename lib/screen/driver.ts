@@ -17,7 +17,10 @@ import { pointer, startPointer } from "./pointer";
 
 type Source = () => { y: number; velocity: number };
 type Section = { n: Chapter; top: number; h: number; sun: [number, number] | null };
-type Rect = { x: number; y: number; w: number; h: number; fixed?: boolean }; // page px (viewport px if fixed)
+// Page px (viewport px if fixed). A sticky rect's top is worked out each frame from where it
+// sits in its container (top0), its sticky offset and where it has to let go (end).
+type Rect = { x: number; y: number; w: number; h: number; fixed?: boolean; sticky?: { top0: number; stick: number; end: number } };
+type Box = { x: number; y: number; w: number; h: number };
 
 /** Tweened by the hero's intro; at rest the screen is locked, the hero cell open, the shaft on. */
 export const intro = { lock: 1e9, hero: 1, beam: 1, len: 1e5 };
@@ -50,6 +53,12 @@ const st = {
   slow: { frames: 0, avg: 0, warm: false },
   running: false,
   chapter: null as Chapter | null,
+  // the work list's window: where it's going, where it is (page px), how open it is
+  win: { to: null as Box | null, at: null as Box | null, open: 0 },
+  // the skills hover: the jali pool's band follows the hovered group (page px), or the scroll
+  pool: { to: null as [number, number] | null, band: null as number | null },
+  // daylight: 0 to 1 over 0.7 s when the reading line enters or leaves About (never scrubbed)
+  dayP: 0,
   scanFns: new Set<() => void>(),
   chapterFns: new Set<(n: Chapter) => void>(),
 };
@@ -70,6 +79,14 @@ export function onChapter(fn: (n: Chapter) => void) {
   };
 }
 export const currentChapter = () => st.chapter;
+/** Open the work list's window over a page rect, or close it (null). Fine pointers only. */
+export function setWindow(r: Box | null) {
+  st.win.to = r;
+}
+/** Draw the jali pool onto a point (page px), or give it back to the scroll (null). */
+export function setPool(at: [number, number] | null) {
+  st.pool.to = at;
+}
 /** Hold one chapter (case pages, stage 4): `local` is its progress. */
 export function pinChapter(n: Chapter | null, local = 0.6) {
   st.pinned = n ? { n, local } : null;
@@ -149,12 +166,25 @@ export function scan() {
       return { n: Math.min(6, Math.max(1, +el.dataset.chapter! || 1)) as Chapter, top: r.y, h: Math.max(1, r.h), sun: t ? ([t.x + t.w / 2, t.y + t.h / 2] as [number, number]) : null };
     })
     .sort((a, b) => a.top - b.top);
-  // data-quiet: page text; data-quiet="fixed": the frame's corners, which stay in the viewport.
-  // The rects are the text's own line boxes (a headline's short last line doesn't quiet the
+  // data-quiet: page text; "fixed": the frame's corners, which stay in the viewport; "box": the
+  // element's own box (a whole row); "sticky": a sticky element's box, followed per frame.
+  // Plain rects are the text's own line boxes (a headline's short last line doesn't quiet the
   // cells beside it); neighbouring lines of similar width merge into one block.
   st.quiet = [];
   document.querySelectorAll<HTMLElement>("[data-quiet]").forEach((el) => {
-    const fixed = el.dataset.quiet === "fixed";
+    const mode = el.dataset.quiet;
+    if (mode === "box" || mode === "sticky") {
+      const r = el.getBoundingClientRect();
+      if (r.width < 1 || r.height < 1) return;
+      const box: Rect = { x: r.left, y: r.top + sy, w: r.width, h: r.height };
+      if (mode === "sticky") {
+        const c = el.parentElement!.getBoundingClientRect();
+        box.sticky = { top0: c.top + sy, stick: parseFloat(getComputedStyle(el).top) || 0, end: c.bottom + sy - r.height };
+      }
+      st.quiet.push(box);
+      return;
+    }
+    const fixed = mode === "fixed";
     const dy = fixed ? 0 : sy;
     for (const r of textBlocks(el)) st.quiet.push({ x: r.left, y: r.top + dy, w: r.width, h: r.height, fixed });
   });
@@ -253,8 +283,13 @@ function tick(time: number, dt: number) {
   const w = next ? smooth(0.8, 1, local) : 0;
   const s = next && w > 0 ? mix(A, chapterState(next.n, 0, g.phone, st.daylight), w) : A;
 
-  // The DOM follows the same variable, with or without GL: the ink and the section label.
-  writeInk(s.day);
+  // Daylight flips in time, not with the scroll: no resting position sits at half contrast.
+  const dayTo = st.daylight && A.day > 0.5 ? 1 : 0;
+  st.dayP = Math.min(1, Math.max(0, st.dayP + (dayTo ? 1 : -1) * (dt / 1000 / 0.7)));
+  const day = st.dayP * st.dayP * (3 - 2 * st.dayP);
+  // The DOM follows the same variable: the ink (only while the screen floods it; without GL the
+  // daylight section paints its own) and the section label (always).
+  writeInk(screen ? day : 0);
   const label = LABELS[n];
   if (label !== st.label) {
     st.label = label;
@@ -312,17 +347,36 @@ function tick(time: number, dt: number) {
   u.uBeamLen.value = intro.len;
   u.uLock.value = intro.lock;
   u.uJali.value = s.jali;
-  u.uBand.value = s.band * (vw * 0.5 + vh * COS30);
+  // The pool: the scroll's band, or the hovered skills group (eased between the two).
+  const scrollBand = s.band * (vw * 0.5 + vh * COS30);
+  const poolTo = st.pool.to ? (st.pool.to[0] * 0.5 + (st.pool.to[1] - y) * COS30) : scrollBand;
+  st.pool.band = st.pool.band === null ? poolTo : st.pool.band + (poolTo - st.pool.band) * (1 - Math.pow(0.9, ratio));
+  u.uBand.value = st.pool.band;
   u.uSwing.value = s.swing;
   u.uRetract.value = s.retract;
-  u.uDay.value = s.day;
+  u.uDay.value = day;
+
+  // The window: it glides to its rect and eases open; on the first open it starts in place.
+  const win = st.win;
+  if (win.to && (!win.at || win.open < 0.02)) win.at = { ...win.to };
+  else if (win.to && win.at) {
+    const g = 1 - Math.pow(0.82, ratio);
+    win.at.x += (win.to.x - win.at.x) * g;
+    win.at.y += (win.to.y - win.at.y) * g;
+    win.at.w += (win.to.w - win.at.w) * g;
+    win.at.h += (win.to.h - win.at.h) * g;
+  }
+  win.open = Math.min(1, Math.max(0, win.open + (win.to ? 1 : -1) * (dt / 1000 / 0.45)));
+  const wo = win.open * win.open * (3 - 2 * win.open);
+  u.uHotOpen.value = win.at ? wo : 0;
+  if (win.at) u.uHot.value = [win.at.x, win.at.y - y, win.at.w, win.at.h];
   u.uTap.value = [st.tap.x, st.tap.y - y, st.tap.t, time - st.tap.t < 2 ? 1 : 0];
 
   // Quiet rects near the viewport, at most twelve.
   const q = u.uQuiet.value as number[];
   let nq = 0;
   for (const r of st.quiet) {
-    const top = r.fixed ? r.y : r.y - y;
+    const top = r.sticky ? Math.min(Math.max(r.sticky.top0 - y, r.sticky.stick), r.sticky.end - y) : r.fixed ? r.y : r.y - y;
     if (top + r.h < -vh * 0.25 || top > vh * 1.25) continue;
     q[nq * 4] = r.x;
     q[nq * 4 + 1] = top;

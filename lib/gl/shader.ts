@@ -18,6 +18,7 @@ uniform float uSunR, uOpen, uBack, uGlint, uVel, uRim, uDust;
 uniform vec2 uHero;
 uniform float uHeroOpen, uBeam, uBeamLen, uLock;
 uniform vec4 uHot;
+uniform float uHotOpen;
 uniform float uJali, uBand, uSwing, uRetract, uDay;
 uniform vec4 uTap;
 uniform vec4 uQuiet[12];
@@ -64,9 +65,10 @@ void main() {
   vec2 q = p;
   float depth = 1.0, beyond = 0.0;
   float f = 1500.0, sa = sin(uSwing), ca = cos(uSwing);
+  float xp = p.x - uMargin; // x on the screen's own plane
   if (uSwing > 0.001) {
     float xs = p.x - uMargin;
-    float xp = xs / max(ca - xs * sa / f, 1e-3);
+    xp = xs / max(ca - xs * sa / f, 1e-3);
     depth = f / (f + xp * sa);
     q = vec2(uMargin + xp, uRes.y * 0.5 + (p.y - uRes.y * 0.5) / depth);
     beyond = smoothstep(uRes.x - 4.0, uRes.x + 4.0, uMargin + xp);
@@ -94,11 +96,13 @@ void main() {
   float heroD = distance(c, uHero);
   float hero = 1.0 - smoothstep(0.35 * S, 0.6 * S, heroD);
   open = max(open, uHeroOpen * hero);
+  // The work list's window (x, y, w, h in viewport px): cells inside open, then retract, so the
+  // light comes through; cells on its border open part way, a soft lattice edge.
   float hot = 0.0;
-  if (uHot.w > 0.0) {
-    hot = uHot.w * (1.0 - smoothstep(uHot.y * 0.5, uHot.y * 0.5 + S * 0.6, abs(c.y - uHot.x)))
-        * smoothstep(uHot.z - S, uHot.z + S * 2.0, c.x);
-    open = max(open, 0.9 * hot);
+  if (uHotOpen > 0.0) {
+    vec2 hd = max(uHot.xy - cv, cv - uHot.xy - uHot.zw);
+    hot = uHotOpen * (1.0 - smoothstep(-0.15 * S, 0.6 * S, max(hd.x, hd.y)));
+    open = max(open, hot);
   }
   float tap = 0.0;
   if (uTap.w > 0.0) {
@@ -113,12 +117,12 @@ void main() {
   // The jali casts: the open pattern projected and skewed at 30° as a pool of light.
   float pool = 0.0, jl = 0.0;
   if (uJali > 0.0) {
-    pool = uJali * exp(-pow((dot(p, vec2(0.5, C30)) - uBand) / 240.0, 2.0));
-    vec2 pj = vec2(p.x + (p.y + uScroll) * T30, p.y + uScroll) / (uS0 * 1.35);
+    pool = uJali * exp(-pow((dot(p, vec2(0.5, C30)) - uBand) / 280.0, 2.0));
+    vec2 pj = vec2(p.x + (p.y + uScroll) * T30, p.y + uScroll) / (uS0 * 0.9);
     vec2 lj, cj; float ej;
     markCell(pj, lj, cj, ej);
     jl = (1.0 - piece(lj, 3.0) * smoothstep(0.004, 0.03, ej)) * pool;
-    open = max(open, 0.5 * pool);
+    open = max(open, 0.4 * pool);
   }
 
   // Quiet rects: openness and light are capped behind text.
@@ -138,8 +142,10 @@ void main() {
   float alpha = smoothstep(0.0, 0.45, lockP);
   open = mix(1.0, open, smoothstep(0.25, 1.0, lockP));
 
-  // Daylight: the pieces retract toward the cell centre until the screen is gone.
-  vec2 lr = lo / (1.0 - uRetract * 0.985);
+  // Daylight: the pieces retract toward the cell centre until the screen is gone. Inside the
+  // window they retract most of the way, leaving a thin lattice.
+  float ret = max(uRetract, 0.8 * smoothstep(0.55, 1.0, hot));
+  vec2 lr = lo / (1.0 - ret * 0.985);
   float inCell = step(abs(lr.x), 0.5) * step(abs(lr.y), HH);
 
   open = clamp(open, 0.0, 1.0);
@@ -155,15 +161,17 @@ void main() {
   }
 
   // Light behind the screen, and how much of it comes through.
-  float back = uBack + 1.15 * exp(-pow(sunD / (uSunR * 1.8), 2.0)) + 0.9 * hot + 0.6 * pool + 0.9 * tap;
+  float back = uBack + 1.15 * exp(-pow(sunD / (uSunR * 1.8), 2.0)) + 0.5 * hot + 0.5 * pool + 0.9 * tap;
   back += uHeroOpen * 1.2 * exp(-pow(heroD / (S * 1.3), 2.0));
   float glint = uGlint * step(0.82, rnd) * pow(max(0.0, sin(uTime * 0.7 + rnd * 61.0)), 40.0);
   back = mix(back, min(back, 0.2), quiet) + glint * 0.5 * (1.0 - quiet);
   float through = clamp(back * (0.22 + 0.78 * open), 0.0, 1.2) * mix(0.25, 1.0, lockP);
   vec3 lightCol = mix(LIGHT * 0.75, HI, pow(clamp(through - 0.45, 0.0, 1.0), 1.6));
-  vec3 gap = mix(FACE * 0.62, lightCol, smoothstep(0.03, 1.0, through)) + LIGHT * 0.35 * jl;
+  vec3 gap = mix(FACE * 0.62, lightCol, smoothstep(0.03, 1.0, through)) + LIGHT * 0.22 * jl;
+  // the window's room: a dim, even light behind the evidence drawn over it
+  gap = mix(gap, GROUND + LIGHT * 0.16, smoothstep(0.6, 1.0, hot));
   float spill = exp(-pow(sunD / (uSunR * 1.4), 2.0)) * (1.0 - 0.7 * quiet);
-  vec3 face = FACE * (0.8 + 0.9 * spill) + LIGHT * 0.05 * spill + HI * 0.09 * jl;
+  vec3 face = FACE * (0.8 + 0.9 * spill) + LIGHT * 0.05 * spill + HI * 0.05 * jl;
   vec3 col = mix(gap, face, m);
   col += lightCol * m * (1.0 - m2) * 0.55 * clamp(through, 0.0, 1.0);     // rims facing the light
   col += LIGHT * 0.10 * exp(-pow(distance(p, uSun) / (uSunR * 2.4), 2.0)) * (1.0 - 0.9 * quiet);
@@ -173,6 +181,9 @@ void main() {
     col = mix(GROUND, col, clamp(depth * 1.15 - 0.1, 0.0, 1.0));
     vec3 room = GROUND + LIGHT * (0.05 + 0.2 * exp(-pow(distance(p, uSun) / (uSunR * 2.0), 2.0)));
     col = mix(col, room, beyond);
+    // the screen's far edge catches the light beyond it: a thin lit rim
+    float rim = exp(-pow((uRes.x - uMargin - xp) * depth / 2.5, 2.0));
+    col += (LIGHT * 0.55 + HI * 0.25) * rim * smoothstep(0.03, 0.25, uSwing);
   }
 
   if (uBeam > 0.0) {
@@ -190,6 +201,9 @@ void main() {
     col += ((LIGHT * 0.40 + HI * 0.16) * shaft + HI * dust * 0.6) * uBeam;
   }
 
-  col = mix(col, DAY, uDay);
+  // Daylight: the room floods. The screen's shadow stays on the ground, faint, and shrinks
+  // with it as it retracts.
+  vec3 day = DAY * (1.0 - 0.075 * m * (1.0 - uRetract)) - vec3(0.012, 0.0, 0.006) * m;
+  col = mix(col, day, uDay);
   gl_FragColor = vec4(col, 1.0);
 }`;

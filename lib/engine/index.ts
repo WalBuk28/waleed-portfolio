@@ -59,7 +59,7 @@ function initPage() {
   });
   // The screen starts on the first page that declares a state (data-screen), not before.
   const wantsScreen = !!document.querySelector("[data-screen]");
-  const screen = wantsScreen ? startScreen({ source: scrollState, daylight: false }) : null;
+  const screen = wantsScreen ? startScreen({ source: scrollState, daylight: true }) : null;
   if (!screen) document.documentElement.classList.remove("gl-pending", "intro-pending");
   ready = true;
   pageFns.forEach(runPageFn);

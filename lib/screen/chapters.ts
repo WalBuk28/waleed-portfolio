@@ -40,7 +40,7 @@ const base: State = {
   scale: 1, jali: 0, band: 0, swing: 0, retract: 0, day: 0,
 };
 
-/** `daylight: false` keeps About at night (stage 2 on the home page, Waleed's call). */
+/** `daylight: false` keeps About at night (pages that don't compose it for daylight). */
 export function chapterState(n: Chapter, local: number, phone: boolean, daylight: boolean): State {
   const r = phone ? 0.62 : 1;
   switch (n) {
@@ -49,7 +49,7 @@ export function chapterState(n: Chapter, local: number, phone: boolean, daylight
         ...base, open: 0.05, back: 0.12, beam: 1, heroOpen: 1, sunR: 210 * r,
         sunX: phone ? 0.75 : 0.772, sunY: phone ? 0.23 : 0.298,
       };
-    case 2: // Windows: shut; a hovered row opens a window (uHot, stage 3)
+    case 2: // Windows: shut; a hovered row opens its window (the driver's setWindow)
       return { ...base, open: 0.06, sunR: 80 * r, back: 0.1 };
     case 3: // The jali casts: a fine weave, a patterned pool sliding across at 30°
       return {
@@ -67,9 +67,10 @@ export function chapterState(n: Chapter, local: number, phone: boolean, daylight
         // with one small sun behind the right-hand column, away from the text.
         return { ...base, open: 0.1, sunX: 0.8, sunY: 0.45, sunR: 170 * r, back: 0.1, retract: smooth(0.05, 0.65, local) };
       }
+      // `day: 1` asks for daylight; the driver flips it in time when the reading line arrives.
       return {
         ...base, open: 0.1, sunX: 0.7, sunY: 0.4, sunR: 330 * r, back: 0.16,
-        retract: smooth(0.05, 0.65, local), day: smooth(0.1, 0.5, local),
+        retract: smooth(0.05, 0.75, local), day: 1,
       };
     case 6: // Lantern: night again, a large open cluster around "Email me"
       return { ...base, open: 0.1, sunX: 0.72, sunY: 0.5, sunR: 330 * r, back: 0.16 };

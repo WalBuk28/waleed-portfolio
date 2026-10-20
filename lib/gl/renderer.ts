@@ -70,6 +70,7 @@ export function createScreen(
     uBeamLen: { value: 1e5 },
     uLock: { value: 1e9 },
     uHot: { value: [0, 0, 0, 0] },
+    uHotOpen: { value: 0 },
     uJali: { value: 0 },
     uBand: { value: 0 },
     uSwing: { value: 0 },
