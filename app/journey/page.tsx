@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { JourneyGate } from "@/experience";
 import { FlatSite } from "@/components/FlatSite";
+import { Providers } from "@/components/Providers";
 
 export const metadata: Metadata = {
   title: "3D Journey",
@@ -16,8 +17,10 @@ export const metadata: Metadata = {
  */
 export default function JourneyPage() {
   return (
-    <JourneyGate defaultMode="3d">
-      <FlatSite />
-    </JourneyGate>
+    <Providers>
+      <JourneyGate defaultMode="3d">
+        <FlatSite />
+      </JourneyGate>
+    </Providers>
   );
 }

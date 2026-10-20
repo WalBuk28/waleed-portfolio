@@ -2,9 +2,10 @@
 
 import { useState } from "react";
 import { CommandPalette } from "@/components/CommandPalette";
+import type { PaletteItem } from "@/lib/palette";
 
-/** ⌘K / Ctrl+K on the home page. No visible trigger until the palette is restyled. */
-export function Palette() {
+/** ⌘K / Ctrl+K on the home page; the footer names the shortcut. */
+export function Palette({ items }: { items: PaletteItem[] }) {
   const [open, setOpen] = useState(false);
-  return <CommandPalette open={open} setOpen={setOpen} />;
+  return <CommandPalette open={open} setOpen={setOpen} items={items} />;
 }

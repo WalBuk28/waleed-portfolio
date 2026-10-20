@@ -7,6 +7,8 @@ import { Icon } from "@/lib/icons";
 import { Background } from "@/components/Background";
 import { SiteChrome } from "@/components/SiteChrome";
 import { Footer } from "@/components/Footer";
+import { Providers } from "@/components/Providers";
+import { paletteItems } from "@/lib/palette";
 import { Reveal } from "@/components/ui/Reveal";
 import { FlowDiagram } from "@/components/case/FlowDiagram";
 import { KillChain } from "@/components/case/KillChain";
@@ -63,9 +65,9 @@ export default async function WorkPage({
   const next = caseStudies[(idx + 1) % caseStudies.length];
 
   return (
-    <>
+    <Providers>
       <Background />
-      <SiteChrome />
+      <SiteChrome items={paletteItems()} />
       <main id="main" className="pt-24">
         <article className="section pb-16">
           {/* back */}
@@ -276,7 +278,7 @@ export default async function WorkPage({
         </article>
       </main>
       <Footer />
-    </>
+    </Providers>
   );
 }
 

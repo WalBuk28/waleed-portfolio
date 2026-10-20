@@ -10,6 +10,7 @@ import { About } from "@/components/About";
 import { Contact } from "@/components/Contact";
 import { Footer } from "@/components/Footer";
 import { posterTile } from "@/components/screen/poster";
+import { paletteItems } from "@/lib/palette";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/" },
@@ -24,7 +25,7 @@ export default function Home() {
   return (
     <div className="screen-page" data-screen="home" style={{ "--poster-tile": posterTile() } as CSSProperties}>
       <Frame />
-      <Palette />
+      <Palette items={paletteItems()} />
       <main id="main" tabIndex={-1}>
         <Hero />
         <CaseStudies />

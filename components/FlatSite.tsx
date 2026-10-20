@@ -7,6 +7,7 @@ import { Experience } from "@/components/Experience";
 import { About } from "@/components/About";
 import { Contact } from "@/components/Contact";
 import { Footer } from "@/components/Footer";
+import { paletteItems } from "@/lib/palette";
 
 /**
  * The complete 2D site — served to crawlers, no-JS readers, reduced-motion
@@ -16,7 +17,7 @@ export function FlatSite() {
   return (
     <>
       <Background />
-      <SiteChrome />
+      <SiteChrome items={paletteItems()} />
       <main id="main">
         <Hero />
         <CaseStudies />

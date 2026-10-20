@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Archivo, Martian_Mono } from "next/font/google";
 import { profile } from "@/lib/data";
-import { Providers } from "@/components/Providers";
 import { Analytics } from "@vercel/analytics/next";
 import { Engine } from "@/lib/engine/next";
 import "./globals.css";
@@ -102,7 +101,7 @@ export default function RootLayout({
           </svg>
           <span data-cursor-label />
         </div>
-        <Providers>{children}</Providers>
+        {children}
         {/* Vercel serves the analytics script; elsewhere (local review) it would 404. */}
         {process.env.VERCEL === "1" && <Analytics />}
         <Engine />
