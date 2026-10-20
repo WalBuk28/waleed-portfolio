@@ -10,6 +10,7 @@ import {
   Linkedin,
 } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { scrollToTarget } from "@/lib/engine/scroll";
 import { useRouter } from "next/navigation";
 import { caseStudies, navLinks, profile } from "@/lib/data";
 import { Icon } from "@/lib/icons";
@@ -46,7 +47,7 @@ export function CommandPalette({
       if (window.location.pathname !== "/") {
         router.push(`/${href}`);
       } else {
-        document.querySelector(href)?.scrollIntoView({ behavior: "smooth" });
+        scrollToTarget(href); // through Lenis when it runs, so the two never fight
       }
     };
     return [

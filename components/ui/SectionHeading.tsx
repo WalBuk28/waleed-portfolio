@@ -12,7 +12,7 @@ export function SectionHeading({
   id?: string;
 }) {
   return (
-    <div className="max-w-2xl">
+    <div className="max-w-2xl" data-quiet>
       <Reveal>
         <span className="eyebrow">
           <span className="h-1 w-1 rounded-full bg-emerald-accent" />

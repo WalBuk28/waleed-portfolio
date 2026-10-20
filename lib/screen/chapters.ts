@@ -62,9 +62,14 @@ export function chapterState(n: Chapter, local: number, phone: boolean, daylight
         swing: smooth(0, 0.85, local) * DEG55,
       };
     case 5: // Daylight: the screen retracts and the room floods
+      if (!daylight) {
+        // Until About is composed for daylight (stage 3), the screen retracts into a night room
+        // with one small sun behind the right-hand column, away from the text.
+        return { ...base, open: 0.1, sunX: 0.8, sunY: 0.45, sunR: 170 * r, back: 0.1, retract: smooth(0.05, 0.65, local) };
+      }
       return {
         ...base, open: 0.1, sunX: 0.7, sunY: 0.4, sunR: 330 * r, back: 0.16,
-        retract: smooth(0.05, 0.65, local), day: daylight ? smooth(0.1, 0.5, local) : 0,
+        retract: smooth(0.05, 0.65, local), day: smooth(0.1, 0.5, local),
       };
     case 6: // Lantern: night again, a large open cluster around "Email me"
       return { ...base, open: 0.1, sunX: 0.72, sunY: 0.5, sunR: 330 * r, back: 0.16 };

@@ -150,17 +150,46 @@ export function scan() {
     })
     .sort((a, b) => a.top - b.top);
   // data-quiet: page text; data-quiet="fixed": the frame's corners, which stay in the viewport.
-  st.quiet = [...document.querySelectorAll<HTMLElement>("[data-quiet]")]
-    .map((el) => {
-      const fixed = el.dataset.quiet === "fixed";
-      const r = page(el);
-      return fixed ? { ...r, y: r.y - sy, fixed } : r;
-    })
-    .filter((r) => r.w > 0);
+  // The rects are the text's own line boxes (a headline's short last line doesn't quiet the
+  // cells beside it); neighbouring lines of similar width merge into one block.
+  st.quiet = [];
+  document.querySelectorAll<HTMLElement>("[data-quiet]").forEach((el) => {
+    const fixed = el.dataset.quiet === "fixed";
+    const dy = fixed ? 0 : sy;
+    for (const r of textBlocks(el)) st.quiet.push({ x: r.left, y: r.top + dy, w: r.width, h: r.height, fixed });
+  });
   const first = st.sections.find((s) => s.n === 1);
   st.hero = first ? heroCellFor(st.vw, st.vh, first.top) : null;
   st.label = "";
   st.scanFns.forEach((fn) => fn());
+}
+
+function textBlocks(el: HTMLElement): DOMRect[] {
+  const range = document.createRange();
+  range.selectNodeContents(el);
+  const lines: DOMRect[] = [];
+  for (const r of range.getClientRects()) {
+    if (r.width < 1 || r.height < 1) continue;
+    const line = lines.find((l) => Math.abs(l.top - r.top) < r.height * 0.5);
+    if (line) {
+      const x0 = Math.min(line.left, r.left);
+      const x1 = Math.max(line.right, r.right);
+      lines[lines.indexOf(line)] = new DOMRect(x0, Math.min(line.top, r.top), x1 - x0, Math.max(line.bottom, r.bottom) - Math.min(line.top, r.top));
+    } else lines.push(new DOMRect(r.left, r.top, r.width, r.height));
+  }
+  lines.sort((a, b) => a.top - b.top);
+  const blocks: DOMRect[] = [];
+  for (const l of lines) {
+    const b = blocks[blocks.length - 1];
+    const close = b && l.top - b.bottom < 12;
+    const similar = b && Math.min(l.width, b.width) / Math.max(l.width, b.width) > 0.7;
+    if (close && similar) {
+      const x0 = Math.min(b.left, l.left);
+      const x1 = Math.max(b.right, l.right);
+      blocks[blocks.length - 1] = new DOMRect(x0, b.top, x1 - x0, l.bottom - b.top);
+    } else blocks.push(l);
+  }
+  return blocks;
 }
 
 function onTap(e: PointerEvent) {

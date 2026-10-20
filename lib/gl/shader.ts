@@ -63,8 +63,8 @@ void main() {
   // The screen turns on a vertical hinge at the margin line; past its far edge is the room.
   vec2 q = p;
   float depth = 1.0, beyond = 0.0;
+  float f = 1500.0, sa = sin(uSwing), ca = cos(uSwing);
   if (uSwing > 0.001) {
-    float f = 1500.0, sa = sin(uSwing), ca = cos(uSwing);
     float xs = p.x - uMargin;
     float xp = xs / max(ca - xs * sa / f, 1e-3);
     depth = f / (f + xp * sa);
@@ -78,9 +78,17 @@ void main() {
   markCell(u, lo, ce, e);
   vec2 c = vec2(uMargin + ce.x * S, uRes.y * 0.5 + (ce.y - (uScroll + uRes.y * 0.5) / uS0) * S);
   float rnd = h21(ce);
+  // Where that cell's centre lands on screen (it differs from c only while the screen turns):
+  // light and quiet rects are tested there.
+  vec2 cv = c;
+  if (uSwing > 0.001) {
+    float xpc = c.x - uMargin;
+    float dc = f / (f + xpc * sa);
+    cv = vec2(uMargin + xpc * ca * dc, uRes.y * 0.5 + (c.y - uRes.y * 0.5) * dc);
+  }
 
   // How open the cell is: the base, the sun, the hero cell, the row window, the thumb.
-  float sunD = distance(c, uSun);
+  float sunD = distance(cv, uSun);
   float open = uOpen + (rnd - 0.5) * 0.06 + 0.95 * exp(-pow(sunD / uSunR, 2.0));
   open += uVel * exp(-pow(sunD / (uSunR * 1.7), 2.0));
   float heroD = distance(c, uHero);
@@ -116,10 +124,12 @@ void main() {
   for (int i = 0; i < 12; i++) {
     if (float(i) >= uQuietN) break;
     vec4 r = uQuiet[i];
-    vec2 d = max(r.xy - c, c - r.xy - r.zw);
-    quiet = max(quiet, 1.0 - smoothstep(0.0, S * 0.75, max(d.x, d.y)));
+    vec2 d = max(r.xy - cv, cv - r.xy - r.zw);
+    // any cell that touches the text (half a cell wide, 0.65 of one tall) is fully quiet
+    quiet = max(quiet, 1.0 - smoothstep(0.0, S * 0.4, max(d.x - S * 0.5, d.y - S * HH)));
   }
   open = mix(open, min(open, 0.14), quiet);
+  jl *= 1.0 - quiet; // the cast pattern stays off the text too
 
   // The intro: pieces fade in already apart, then lock together, outward from the hero cell.
   float lockP = clamp((uLock - heroD) / (S * 2.0), 0.0, 1.0);
@@ -146,15 +156,15 @@ void main() {
   float back = uBack + 1.15 * exp(-pow(sunD / (uSunR * 1.8), 2.0)) + 0.9 * hot + 0.6 * pool;
   back += uHeroOpen * 1.2 * exp(-pow(heroD / (S * 1.3), 2.0));
   float glint = uGlint * step(0.82, rnd) * pow(max(0.0, sin(uTime * 0.7 + rnd * 61.0)), 40.0);
-  back = mix(back, min(back, 0.3), quiet) + glint * 0.5;
+  back = mix(back, min(back, 0.2), quiet) + glint * 0.5 * (1.0 - quiet);
   float through = clamp(back * (0.22 + 0.78 * open), 0.0, 1.2) * mix(0.25, 1.0, lockP);
   vec3 lightCol = mix(LIGHT * 0.75, HI, pow(clamp(through - 0.45, 0.0, 1.0), 1.6));
   vec3 gap = mix(FACE * 0.62, lightCol, smoothstep(0.03, 1.0, through)) + LIGHT * 0.35 * jl;
-  float spill = exp(-pow(sunD / (uSunR * 1.4), 2.0));
+  float spill = exp(-pow(sunD / (uSunR * 1.4), 2.0)) * (1.0 - 0.7 * quiet);
   vec3 face = FACE * (0.8 + 0.9 * spill) + LIGHT * 0.05 * spill + HI * 0.09 * jl;
   vec3 col = mix(gap, face, m);
   col += lightCol * m * (1.0 - m2) * 0.55 * clamp(through, 0.0, 1.0);     // rims facing the light
-  col += LIGHT * 0.10 * exp(-pow(distance(p, uSun) / (uSunR * 2.4), 2.0)) * (1.0 - 0.6 * quiet);
+  col += LIGHT * 0.10 * exp(-pow(distance(p, uSun) / (uSunR * 2.4), 2.0)) * (1.0 - 0.9 * quiet);
   col = mix(GROUND, col, alpha);
 
   if (uSwing > 0.001) {
@@ -173,7 +183,7 @@ void main() {
     float shaft = exp(-pow(s / w, 2.0)) * exp(-max(t, 0.0) / 950.0) * smoothstep(0.0, 40.0, t);
     shaft *= 1.0 - smoothstep(uBeamLen - 160.0, uBeamLen, t);
     shaft *= 1.0 - 0.5 * exp(-pow(s / (0.10 * w), 2.0));                 // the mullion's shadow
-    shaft *= mix(1.0, 0.8, quiet);
+    shaft *= mix(1.0, 0.55, quiet);
     float dust = uDust * step(0.996, h21(floor((p - D * uTime * 9.0) / 2.0))) * shaft;
     col += ((LIGHT * 0.40 + HI * 0.16) * shaft + HI * dust * 0.6) * uBeam;
   }

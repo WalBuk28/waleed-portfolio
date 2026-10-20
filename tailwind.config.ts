@@ -25,7 +25,7 @@ const config: Config = {
         ink: {
           DEFAULT: "#e6edf3",
           secondary: "#9fb1c1",
-          muted: "#5f7080",
+          muted: "#93a39c", // DESIGN.md muted: 7.4:1 on the ground (the old #5f7080 failed AA)
         },
         emerald: {
           glow: "#5eead4",
