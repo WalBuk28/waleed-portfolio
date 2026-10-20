@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { caseStudies, weaves } from "@/lib/data";
+import { caseStudies, indicators, weaves } from "@/lib/data";
+import { EvidenceLookup } from "./EvidenceLookup";
 import { Weave, WeaveDefs } from "./work/Weave";
 import { WorkMotion } from "./work/WorkMotion";
 
@@ -63,6 +64,7 @@ export function CaseStudies() {
         Nine are university coursework or my final-year project; one is a personal build. Each page
         says which, and links its repo where it’s public.
       </p>
+      <EvidenceLookup indicators={indicators} titles={Object.fromEntries(caseStudies.map((c) => [c.slug, c.title]))} />
       <WorkMotion />
     </section>
   );
