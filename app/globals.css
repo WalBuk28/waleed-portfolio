@@ -295,7 +295,7 @@
   @keyframes markLock {
     from {
       opacity: 0;
-      transform: translate(var(--lx, 0), var(--ly, 0));
+      transform: translate(calc(var(--lx, 0px) * var(--lk, 1)), calc(var(--ly, 0px) * var(--lk, 1)));
     }
   }
   @media (prefers-reduced-motion: reduce) {
@@ -1587,5 +1587,140 @@ html:not(.gl-on) .work__frame {
   .lookup__ask,
   .lookup__out {
     grid-column: 1 / -1;
+  }
+}
+
+/* ── Skills: a gallery wall; the middle column hangs lower, like the lattice's offset rows ── */
+.skills {
+  position: relative;
+  padding: calc(16 * var(--u)) var(--margin) calc(18 * var(--u));
+}
+.skills__head {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--gutter);
+  align-items: end;
+}
+.skills__h2 {
+  grid-column: 1 / span 8;
+}
+.skills__lede {
+  grid-column: 9 / span 4;
+  max-width: 36ch;
+  margin: 0;
+  font-size: var(--t-body);
+  line-height: 1.55;
+  color: var(--muted);
+}
+.skills__wall {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  column-gap: var(--gutter);
+  margin-top: clamp(56px, 7vw, 104px);
+}
+.skills__col {
+  display: grid;
+  align-content: start;
+  gap: clamp(48px, 6vw, 88px);
+  padding-right: calc(var(--gutter) * 2);
+}
+.skills__col:nth-child(2) {
+  margin-top: clamp(64px, 9vw, 150px);
+}
+.skills__group {
+  position: relative;
+  color: var(--ink);
+}
+.skills__tile {
+  --lk: 4;
+  display: block;
+  width: 30px;
+  height: auto;
+  margin-bottom: 18px;
+  color: var(--ink-soft);
+  overflow: visible;
+  transition: color 0.35s;
+}
+/* the tile locks in when its group arrives (JS adds .is-in; without JS it's already locked) */
+.motion .skills__group:not(.is-in) .skills__tile polygon {
+  animation-play-state: paused;
+}
+.skills__group.is-lit .skills__tile,
+.skills__group:focus-within .skills__tile {
+  color: var(--lit);
+}
+.skills__h3 {
+  margin: 0;
+  font-size: var(--t-m);
+  font-weight: 500;
+  font-stretch: 112%;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+}
+.skills__tools {
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--t-body);
+  line-height: 1.7;
+  color: var(--ink-soft);
+}
+.skills__shown {
+  margin: 22px 0 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+.skills__evidence {
+  display: grid;
+  gap: 6px;
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 15px;
+  line-height: 1.45;
+}
+.skills__evidence .ilink {
+  display: inline-block;
+  padding: 3px 0 4px;
+}
+/* a lit group: its evidence links light (signal) */
+.skills__group.is-lit .ilink,
+.skills__group:focus-within .ilink {
+  background-size: 100% 2px, 0% 1px;
+}
+@media (max-width: 1023px) {
+  .skills__wall {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .skills__col {
+    display: contents;
+  }
+  .skills__col:nth-child(2) {
+    margin-top: 0;
+  }
+  .skills__group {
+    margin-bottom: 56px;
+    padding-right: var(--gutter);
+  }
+  .skills__group:nth-child(even) {
+    margin-top: 0;
+  }
+}
+@media (max-width: 767px) {
+  .skills {
+    padding: calc(12 * var(--u)) var(--margin);
+  }
+  .skills__head {
+    display: block;
+  }
+  .skills__lede {
+    margin-top: 18px;
+  }
+  .skills__wall {
+    display: block;
+  }
+  .skills__group {
+    margin-bottom: 48px;
+    padding-right: 0;
   }
 }

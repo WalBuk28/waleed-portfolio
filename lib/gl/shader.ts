@@ -21,7 +21,7 @@ uniform vec4 uHot;
 uniform float uHotOpen;
 uniform float uJali, uBand, uSwing, uRetract, uDay;
 uniform vec4 uTap;
-uniform vec4 uQuiet[12];
+uniform vec4 uQuiet[16];
 uniform float uQuietN;
 
 const vec3 GROUND = vec3(0.039, 0.055, 0.051); // #0a0e0d
@@ -127,7 +127,7 @@ void main() {
 
   // Quiet rects: openness and light are capped behind text.
   float quiet = 0.0;
-  for (int i = 0; i < 12; i++) {
+  for (int i = 0; i < 16; i++) {
     if (float(i) >= uQuietN) break;
     vec4 r = uQuiet[i];
     vec2 d = max(r.xy - cv, cv - r.xy - r.zw);

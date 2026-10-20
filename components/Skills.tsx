@@ -1,51 +1,57 @@
-"use client";
+import Link from "next/link";
+import { caseStudies, skillGroups } from "@/lib/data";
+import { WalSecMark } from "./brand/WalSecMark";
+import { SkillsMotion } from "./skills/SkillsMotion";
 
-import { skillGroups } from "@/lib/data";
-import { Icon } from "@/lib/icons";
-import { SectionHeading } from "./ui/SectionHeading";
-import { Reveal, RevealGroup, RevealItem } from "./ui/Reveal";
-import { SkillsEvidence } from "./SkillsEvidence";
+const titleOf = (slug: string) => caseStudies.find((c) => c.slug === slug)?.title ?? slug;
 
+/**
+ * Skills (DESIGN.md §11, gallery wall): six groups hung on the column 1, 5 and 9 lines, the
+ * middle column hung lower, so the wall reads like the lattice's offset rows. Each group hangs
+ * from a mark tile that locks in as it arrives. No self-ratings: each names the case studies
+ * where the work can be checked. The jali's patterned light slides across with the scroll, and
+ * falls on a group while it's hovered or focused.
+ */
 export function Skills() {
+  const columns = [skillGroups.slice(0, 2), skillGroups.slice(2, 4), skillGroups.slice(4, 6)];
   return (
-    <section id="skills" data-chapter="3" className="section scroll-mt-24 py-24">
-      <SectionHeading
-        eyebrow="Capability map"
-        title={<>The stack behind the defence</>}
-        intro="Deepest in threat intelligence and network forensics, with offensive testing, secure development, applied AI and cryptography alongside. No self-ratings: each domain links to the case studies where you can check the work."
-      />
-
-      <div className="mt-12 grid gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:gap-14">
-        {/* evidence map */}
-        <Reveal className="panel flex items-center justify-center p-6 lg:sticky lg:top-24 lg:self-start">
-          <SkillsEvidence />
-        </Reveal>
-
-        {/* grouped skills */}
-        <RevealGroup className="grid gap-4 sm:grid-cols-2">
-          {skillGroups.map((g) => (
-            <RevealItem key={g.title}>
-              <div className="panel group h-full p-5 transition-colors hover:border-emerald-accent/30">
-                <div className="flex items-center gap-3">
-                  <span className="grid h-9 w-9 place-items-center rounded-lg border border-edge bg-raised text-emerald-accent transition-colors group-hover:text-emerald-glow">
-                    <Icon name={g.icon} className="h-4.5 w-4.5" />
-                  </span>
-                  <h3 className="font-display text-sm font-semibold text-ink">
-                    {g.title}
-                  </h3>
-                </div>
-                <ul className="mt-4 flex flex-wrap gap-1.5">
+    <section id="skills" data-chapter="3" className="skills" aria-labelledby="skills-title">
+      <div className="skills__head">
+        <h2 id="skills-title" className="h2 skills__h2" data-split data-quiet>
+          Skills, with the evidence
+        </h2>
+        <p className="skills__lede" data-reveal="fade" data-quiet>
+          No self-ratings. Each group names the case studies where you can check the work.
+        </p>
+      </div>
+      <div className="skills__wall">
+        {columns.map((col, i) => (
+          <div key={i} className="skills__col">
+            {col.map((g) => (
+              <article key={g.title} className="skills__group" data-group data-quiet="box">
+                <WalSecMark className="skills__tile" color="currentColor" lockIn />
+                <h3 className="skills__h3">{g.title}</h3>
+                <ul className="skills__tools">
                   {g.skills.map((s) => (
-                    <li key={s} className="chip">
-                      {s}
+                    <li key={s}>{s}</li>
+                  ))}
+                </ul>
+                <p className="skills__shown">Shown in</p>
+                <ul className="skills__evidence">
+                  {g.evidence.map((slug) => (
+                    <li key={slug}>
+                      <Link href={`/work/${slug}`} className="ilink">
+                        {titleOf(slug)}
+                      </Link>
                     </li>
                   ))}
                 </ul>
-              </div>
-            </RevealItem>
-          ))}
-        </RevealGroup>
+              </article>
+            ))}
+          </div>
+        ))}
       </div>
+      <SkillsMotion />
     </section>
   );
 }

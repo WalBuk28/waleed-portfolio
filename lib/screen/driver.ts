@@ -235,6 +235,8 @@ function sunOf(n: Chapter, s: State, sec: Section | undefined, y: number): [numb
   return [s.sunX * st.vw, s.sunY * st.vh];
 }
 
+const QUIET_MAX = 16; // the shader's uQuiet array
+
 const tri = (x: number) => 1 - Math.abs((((x % 2) + 2) % 2) - 1); // 0 → 1 → 0 every 2 units
 const DRIFT: [number, number] = [COS30, -0.5];
 
@@ -374,17 +376,21 @@ function tick(time: number, dt: number) {
   if (win.at) u.uHot.value = [win.at.x, win.at.y - y, win.at.w, win.at.h];
   u.uTap.value = [st.tap.x, st.tap.y - y, st.tap.t, time - st.tap.t < 2 ? 1 : 0];
 
-  // Quiet rects near the viewport, at most twelve.
+  // Quiet rects, at most sixteen: the ones on screen first, then those just off it.
   const q = u.uQuiet.value as number[];
   let nq = 0;
-  for (const r of st.quiet) {
-    const top = r.sticky ? Math.min(Math.max(r.sticky.top0 - y, r.sticky.stick), r.sticky.end - y) : r.fixed ? r.y : r.y - y;
-    if (top + r.h < -vh * 0.25 || top > vh * 1.25) continue;
-    q[nq * 4] = r.x;
-    q[nq * 4 + 1] = top;
-    q[nq * 4 + 2] = r.w;
-    q[nq * 4 + 3] = r.h;
-    if (++nq === 12) break;
+  for (const pass of [0, 1]) {
+    for (const r of st.quiet) {
+      const top = r.sticky ? Math.min(Math.max(r.sticky.top0 - y, r.sticky.stick), r.sticky.end - y) : r.fixed ? r.y : r.y - y;
+      const on = top + r.h > 0 && top < vh;
+      if (pass === 0 ? !on : on || top + r.h < -vh * 0.25 || top > vh * 1.25) continue;
+      q[nq * 4] = r.x;
+      q[nq * 4 + 1] = top;
+      q[nq * 4 + 2] = r.w;
+      q[nq * 4 + 3] = r.h;
+      if (++nq === QUIET_MAX) break;
+    }
+    if (nq === QUIET_MAX) break;
   }
   u.uQuietN.value = nq;
   screen.render();

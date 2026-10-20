@@ -77,7 +77,7 @@ export function createScreen(
     uRetract: { value: 0 },
     uDay: { value: 0 },
     uTap: { value: [0, 0, -10, 0] },
-    uQuiet: { value: new Array(48).fill(0) },
+    uQuiet: { value: new Array(64).fill(0) },
     uQuietN: { value: 0 },
   };
 
