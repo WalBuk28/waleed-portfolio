@@ -20,7 +20,7 @@ uniform float uHeroOpen, uBeam, uBeamLen, uLock;
 uniform vec4 uHot;
 uniform float uJali, uBand, uSwing, uRetract, uDay;
 uniform vec4 uTap;
-uniform vec4 uQuiet[8];
+uniform vec4 uQuiet[12];
 uniform float uQuietN;
 
 const vec3 GROUND = vec3(0.039, 0.055, 0.051); // #0a0e0d
@@ -113,7 +113,7 @@ void main() {
 
   // Quiet rects: openness and light are capped behind text.
   float quiet = 0.0;
-  for (int i = 0; i < 8; i++) {
+  for (int i = 0; i < 12; i++) {
     if (float(i) >= uQuietN) break;
     vec4 r = uQuiet[i];
     vec2 d = max(r.xy - c, c - r.xy - r.zw);
@@ -173,9 +173,9 @@ void main() {
     float shaft = exp(-pow(s / w, 2.0)) * exp(-max(t, 0.0) / 950.0) * smoothstep(0.0, 40.0, t);
     shaft *= 1.0 - smoothstep(uBeamLen - 160.0, uBeamLen, t);
     shaft *= 1.0 - 0.5 * exp(-pow(s / (0.10 * w), 2.0));                 // the mullion's shadow
-    shaft *= mix(1.0, 0.6, quiet);
-    float dust = uDust * step(0.9965, h21(floor((p - D * uTime * 9.0) / 2.0))) * shaft;
-    col += ((LIGHT * 0.26 + HI * 0.10) * shaft + HI * dust * 0.5) * uBeam;
+    shaft *= mix(1.0, 0.8, quiet);
+    float dust = uDust * step(0.996, h21(floor((p - D * uTime * 9.0) / 2.0))) * shaft;
+    col += ((LIGHT * 0.40 + HI * 0.16) * shaft + HI * dust * 0.6) * uBeam;
   }
 
   col = mix(col, DAY, uDay);

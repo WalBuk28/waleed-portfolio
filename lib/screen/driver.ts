@@ -17,7 +17,7 @@ import { pointer, startPointer } from "./pointer";
 
 type Source = () => { y: number; velocity: number };
 type Section = { n: Chapter; top: number; h: number; sun: [number, number] | null };
-type Rect = { x: number; y: number; w: number; h: number }; // page px
+type Rect = { x: number; y: number; w: number; h: number; fixed?: boolean }; // page px (viewport px if fixed)
 
 /** Tweened by the hero's intro; at rest the screen is locked, the hero cell open, the shaft on. */
 export const intro = { lock: 1e9, hero: 1, beam: 1, len: 1e5 };
@@ -48,7 +48,10 @@ const st = {
   vel: 0,
   tap: { x: 0, y: 0, t: -10 },
   slow: { frames: 0, avg: 0, warm: false },
+  running: false,
+  chapter: null as Chapter | null,
   scanFns: new Set<() => void>(),
+  chapterFns: new Set<(n: Chapter) => void>(),
 };
 
 export const screenGrid = () => st.g;
@@ -59,6 +62,14 @@ export function onScan(fn: () => void) {
   st.scanFns.add(fn);
   return () => st.scanFns.delete(fn);
 }
+/** Run fn whenever the reader enters another section (the nav marker follows it). */
+export function onChapter(fn: (n: Chapter) => void) {
+  st.chapterFns.add(fn);
+  return () => {
+    st.chapterFns.delete(fn);
+  };
+}
+export const currentChapter = () => st.chapter;
 /** Hold one chapter (lab, case pages): `local` is its progress. */
 export function pinChapter(n: Chapter | null, local = 0.6) {
   st.pinned = n ? { n, local } : null;
@@ -70,17 +81,25 @@ export function glAllowed() {
   return "WebGLRenderingContext" in window;
 }
 
-/** Start once. Resolves to null when the poster stays (no GL, reduced motion, Save-Data). */
+/**
+ * Start once. The driver runs on every page that declares a screen state, GL or not (the label
+ * and the ink still follow the reader); the WebGL screen joins it when WebGL, motion and data
+ * allow. Resolves to the screen, or null when the poster stays.
+ */
 export function startScreen(opts: { source?: Source; daylight?: boolean; timing?: boolean; dprCap?: number } = {}) {
   if (st.starting) return st.starting;
   st.starting = (async () => {
     const html = document.documentElement;
-    const host = document.getElementById("gl");
-    if (!host || !glAllowed()) return fail();
     if (opts.source) st.source = opts.source;
     st.daylight = !!opts.daylight;
     st.touch = matchMedia("(hover: none), (pointer: coarse)").matches;
     measure(false);
+    st.running = true;
+    scan();
+    addEventListener("resize", () => measure(true));
+    gsap.ticker.add(tick);
+    const host = document.getElementById("gl");
+    if (!host || !glAllowed()) return fail();
     const { createScreen } = await import("@/lib/gl/renderer");
     const screen = createScreen(host, { phone: st.g.phone || st.touch, timing: opts.timing, dprCap: opts.dprCap });
     if (!screen) return fail();
@@ -88,10 +107,8 @@ export function startScreen(opts: { source?: Source; daylight?: boolean; timing?
     screen.resize(st.vw, st.vh);
     scan();
     if (!st.touch) startPointer();
-    addEventListener("resize", () => measure(true));
     addEventListener("pointerdown", onTap, { passive: true });
     tick(gsap.ticker.time, 16.7); // first frame before the canvas shows: no flash of an empty buffer
-    gsap.ticker.add(tick);
     html.classList.remove("gl-pending");
     html.classList.add("gl-on");
     return screen;
@@ -116,7 +133,7 @@ function measure(rescan: boolean) {
 
 /** Read the page's layout once (page init, resize, ScrollTrigger refresh): no layout reads per frame. */
 export function scan() {
-  if (!st.screen) return;
+  if (!st.running) return;
   const sy = window.scrollY;
   const page = (el: Element): Rect => {
     const r = el.getBoundingClientRect();
@@ -132,7 +149,14 @@ export function scan() {
       return { n: Math.min(6, Math.max(1, +el.dataset.chapter! || 1)) as Chapter, top: r.y, h: Math.max(1, r.h), sun: t ? ([t.x + t.w / 2, t.y + t.h / 2] as [number, number]) : null };
     })
     .sort((a, b) => a.top - b.top);
-  st.quiet = [...document.querySelectorAll("[data-quiet]")].map(page).filter((r) => r.w > 0);
+  // data-quiet: page text; data-quiet="fixed": the frame's corners, which stay in the viewport.
+  st.quiet = [...document.querySelectorAll<HTMLElement>("[data-quiet]")]
+    .map((el) => {
+      const fixed = el.dataset.quiet === "fixed";
+      const r = page(el);
+      return fixed ? { ...r, y: r.y - sy, fixed } : r;
+    })
+    .filter((r) => r.w > 0);
   const first = st.sections.find((s) => s.n === 1);
   st.hero = first ? heroCellFor(st.vw, st.vh, first.top) : null;
   st.label = "";
@@ -172,9 +196,9 @@ function govern(screen: Screen, dt: number) {
 }
 
 function tick(time: number, dt: number) {
+  if (!st.running || !st.enabled || document.hidden) return;
   const screen = st.screen;
-  if (!screen || !st.enabled || document.hidden) return;
-  govern(screen, dt);
+  if (screen) govern(screen, dt);
   const ratio = gsap.ticker.deltaRatio(60);
   const { vw, vh, g } = st;
   const { y, velocity } = st.source();
@@ -199,6 +223,17 @@ function tick(time: number, dt: number) {
   const A = chapterState(n, local, g.phone, st.daylight);
   const w = next ? smooth(0.8, 1, local) : 0;
   const s = next && w > 0 ? mix(A, chapterState(next.n, 0, g.phone, st.daylight), w) : A;
+
+  // The DOM follows the same variable, with or without GL: the ink and the section label.
+  writeInk(s.day);
+  const label = LABELS[n];
+  if (label !== st.label) {
+    st.label = label;
+    st.chapter = n;
+    document.querySelectorAll("[data-screen-label]").forEach((el) => (el.textContent = label));
+    st.chapterFns.forEach((fn) => fn(n));
+  }
+  if (!screen) return;
 
   // The sun: the pointer, or the chapter's resting place (on touch: the reading line).
   const rest = sunOf(n, A, sec, y);
@@ -254,26 +289,19 @@ function tick(time: number, dt: number) {
   u.uDay.value = s.day;
   u.uTap.value = [st.tap.x, st.tap.y - y, st.tap.t, time - st.tap.t < 2 ? 1 : 0];
 
-  // Quiet rects near the viewport, at most eight.
+  // Quiet rects near the viewport, at most twelve.
   const q = u.uQuiet.value as number[];
   let nq = 0;
   for (const r of st.quiet) {
-    const top = r.y - y;
+    const top = r.fixed ? r.y : r.y - y;
     if (top + r.h < -vh * 0.25 || top > vh * 1.25) continue;
     q[nq * 4] = r.x;
     q[nq * 4 + 1] = top;
     q[nq * 4 + 2] = r.w;
     q[nq * 4 + 3] = r.h;
-    if (++nq === 8) break;
+    if (++nq === 12) break;
   }
   u.uQuietN.value = nq;
-
-  writeInk(s.day);
-  const label = LABELS[n];
-  if (label !== st.label) {
-    st.label = label;
-    document.querySelectorAll("[data-screen-label]").forEach((el) => (el.textContent = label));
-  }
   screen.render();
 }
 
