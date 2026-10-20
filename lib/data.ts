@@ -68,58 +68,58 @@ export type SkillGroup = { title: string; icon: string; skills: string[]; eviden
 
 export const skillGroups: SkillGroup[] = [
   {
-    title: "Threat intel & SOC",
+    title: "Threat intel and SOC",
     icon: "Radar",
     evidence: ["walsec-atioc-hub", "incident-response-maturity", "network-forensics"],
     skills: [
-      "MITRE ATT&CK (Enterprise + ICS)",
+      "MITRE ATT&CK (Enterprise and ICS)",
       "SIEM rule tuning",
       "Splunk",
-      "Wazuh / EDR",
+      "Wazuh, EDR",
       "Log analysis",
       "Incident response (NIST SP 800-61)",
-      "Threat feeds — ThreatFox · URLhaus",
+      "Threat feeds: ThreatFox, URLhaus",
     ],
   },
   {
-    title: "Offensive & forensics",
+    title: "Offensive and forensics",
     icon: "Bug",
     evidence: ["pentest-malware", "network-forensics"],
     skills: [
-      "Penetration Testing (black-box)",
-      "Nessus / Nmap / Metasploit",
+      "Penetration testing (black-box)",
+      "Nessus, Nmap, Metasploit",
       "Burp Suite",
-      "Malware Analysis (static + dynamic)",
-      "Reverse Engineering — IDA · GDB · REMnux",
-      "Wireshark / TShark / PyShark",
-      "testssl.sh / OpenSSL",
+      "Malware analysis (static and dynamic)",
+      "Reverse engineering: IDA, GDB, REMnux",
+      "Wireshark, TShark, PyShark",
+      "testssl.sh, OpenSSL",
     ],
   },
   {
-    title: "Networking & ICS",
+    title: "Networking and ICS",
     icon: "Network",
     evidence: ["network-forensics"],
     skills: [
-      "Packet Analysis & DPI",
-      "VLAN / NAT / Static Routing",
-      "Firewall Rules & Segmentation",
+      "Packet analysis and DPI",
+      "VLAN, NAT, static routing",
+      "Firewall rules and segmentation",
       "Cisco Packet Tracer",
-      "SCADA / OT Security",
-      "CARVER Risk Assessment",
+      "SCADA and OT security",
+      "CARVER risk assessment",
     ],
   },
   {
-    title: "Software & AI",
+    title: "Software and AI",
     icon: "Code2",
     evidence: ["walsec-atioc-hub", "ai-phishing-detection", "secure-password-manager", "contrust-os"],
     skills: [
-      "Python — Flask · PyShark · scikit-learn",
+      "Python: Flask, PyShark, scikit-learn",
       "C++",
-      "React / Next.js",
-      "Local LLMs — Ollama · Qwen · DeepSeek",
-      "RAG + BGE-M3 embeddings",
-      "ML — XGBoost · Random Forest · MLP",
-      "SQL / SQLite",
+      "React, Next.js",
+      "Local LLMs: Ollama, Qwen, DeepSeek",
+      "RAG with BGE-M3 embeddings",
+      "ML: XGBoost, Random Forest, MLP",
+      "SQL, SQLite",
     ],
   },
   {
@@ -128,10 +128,10 @@ export const skillGroups: SkillGroup[] = [
     evidence: ["secure-scripting", "secure-password-manager", "software-development"],
     skills: [
       "OWASP Top 10 self-testing",
-      "RBAC · CSRF tokens · CSP",
-      "JWT · bcrypt · PBKDF2",
+      "RBAC, CSRF tokens, CSP",
+      "JWT, bcrypt, PBKDF2",
       "Parameterised SQL",
-      "Unit tests — unittest · CTest",
+      "Unit tests: unittest, CTest",
       "UK GDPR analysis",
     ],
   },
@@ -140,11 +140,11 @@ export const skillGroups: SkillGroup[] = [
     icon: "KeyRound",
     evidence: ["cryptography", "secure-password-manager", "pentest-malware"],
     skills: [
-      "AES-256-GCM · HMAC-SHA256",
+      "AES-256-GCM, HMAC-SHA256",
       "RSA and cryptanalysis",
       "Key-exchange protocols",
       "Symmetric and public-key crypto",
-      "TLS / SSL configuration analysis",
+      "TLS and SSL configuration analysis",
     ],
   },
 ];
@@ -193,7 +193,7 @@ export const caseStudies: CaseStudy[] = [
     title: "WalSec A-TIOC Hub",
     tagline: "A privacy-first SIEM-Lite that fuses network forensics with local LLMs",
     category: "Final-year project (CTEC3451D) · SOC platform",
-    year: "2025–26",
+    year: "2025/26",
     accent: "emerald",
     icon: "ShieldCheck",
     featured: true,
@@ -272,10 +272,10 @@ export const caseStudies: CaseStudy[] = [
   // ---------------------------------------------------------------------------
   {
     slug: "pentest-malware",
-    title: "Penetration Testing & Malware Investigations",
+    title: "Penetration testing and malware investigations",
     tagline: "Black-box pentest + multi-sample malware reverse engineering",
     category: "Coursework (CSEC2003D) · Offensive security",
-    year: "2025–26",
+    year: "2025/26",
     accent: "electric",
     icon: "Bug",
     featured: true,
@@ -343,7 +343,7 @@ export const caseStudies: CaseStudy[] = [
   // ---------------------------------------------------------------------------
   {
     slug: "network-forensics",
-    title: "Network Forensics & ICS Security",
+    title: "Network forensics and ICS security",
     tagline: "Reconstructing a multi-stage SCADA attack from packets",
     category: "Coursework (CSEC3002) · Digital forensics · OT/ICS",
     year: "2025",
@@ -437,10 +437,10 @@ export const caseStudies: CaseStudy[] = [
   // ---------------------------------------------------------------------------
   {
     slug: "incident-response-maturity",
-    title: "Incident Response Maturity & Threat Intel",
+    title: "Incident response maturity and threat intel",
     tagline: "A SIM3 maturity assessment and STIX threat-intel structuring for a logistics SME",
     category: "Coursework (CSEC2002D) · Incident response · Threat intelligence",
-    year: "2025–26",
+    year: "2025/26",
     accent: "electric",
     icon: "ShieldAlert",
     summary:
@@ -493,7 +493,7 @@ export const caseStudies: CaseStudy[] = [
   // ---------------------------------------------------------------------------
   {
     slug: "ai-phishing-detection",
-    title: "AI-Driven Phishing Detection",
+    title: "AI-driven phishing detection",
     tagline: "Phishing detection on 235,795 URLs, with a leakage fix, a SOC cost model and a poisoning test",
     category: "Coursework (CSEC3004) · Machine learning",
     year: "2025",
@@ -561,10 +561,10 @@ export const caseStudies: CaseStudy[] = [
   // ---------------------------------------------------------------------------
   {
     slug: "secure-scripting",
-    title: "FreightDesk — Secure Business Application",
+    title: "FreightDesk, a secure business application",
     tagline: "A hardened Flask logistics portal with live FX, RBAC and a full security self-assessment",
     category: "Coursework (CSEC2001D) · Secure web app",
-    year: "2025–26",
+    year: "2025/26",
     accent: "emerald",
     icon: "Boxes",
     summary:
@@ -635,10 +635,10 @@ export const caseStudies: CaseStudy[] = [
   // ---------------------------------------------------------------------------
   {
     slug: "secure-password-manager",
-    title: "Secure Password Manager (C++)",
+    title: "Secure password manager in C++",
     tagline: "An AES-256-GCM credential vault in modern C++ built on real OpenSSL crypto",
     category: "Coursework (CSEC1003D) · Secure C++",
-    year: "2025–26",
+    year: "2025/26",
     accent: "electric",
     icon: "Lock",
     summary:
@@ -697,7 +697,7 @@ export const caseStudies: CaseStudy[] = [
   // ---------------------------------------------------------------------------
   {
     slug: "cryptography",
-    title: "Cryptography & Encryption",
+    title: "Cryptography and encryption",
     tagline: "Cipher design, RSA cryptanalysis and protocol attack simulation",
     category: "Coursework · Applied cryptography",
     year: "2025",
@@ -752,10 +752,10 @@ export const caseStudies: CaseStudy[] = [
   // ---------------------------------------------------------------------------
   {
     slug: "software-development",
-    title: "Secure Coding Fundamentals",
+    title: "Secure coding fundamentals",
     tagline: "Two small Python builds that show security thinking, not just working code",
     category: "Coursework (CSEC1003D) · Secure coding",
-    year: "2025–26",
+    year: "2025/26",
     accent: "emerald",
     icon: "Code2",
     summary:
@@ -830,6 +830,196 @@ export const caseStudies: CaseStudy[] = [
   },
 ];
 
+// ── SIM3 v2 scores for the incident-response case (MATURITY-ASSESSMENT.md in its public repo).
+// Scale 0 to 4 (non-existent to optimising); `target` is the ENISA Basic level. 8 of 45 meet it.
+export type Sim3Param = { id: string; name: string; score: number; target: number };
+export const sim3: { name: string; params: Sim3Param[] }[] = [
+  {
+    name: "Organisation",
+    params: [
+      { id: "O-1", name: "Mandate", score: 1, target: 3 },
+      { id: "O-2", name: "Constituency", score: 2, target: 3 },
+      { id: "O-3", name: "Authority", score: 1, target: 3 },
+      { id: "O-4", name: "Responsibility", score: 1, target: 3 },
+      { id: "O-5", name: "Service Description", score: 0, target: 3 },
+      { id: "O-6", name: "Public/Media Policy", score: 1, target: 2 },
+      { id: "O-7", name: "Service Level Description", score: 0, target: 3 },
+      { id: "O-8", name: "Incident Classification", score: 1, target: 2 },
+      { id: "O-9", name: "Participation in CSIRT Systems", score: 0, target: 3 },
+      { id: "O-10", name: "Organisational Framework", score: 1, target: 3 },
+      { id: "O-11", name: "Security Policy", score: 2, target: 2 },
+    ],
+  },
+  {
+    name: "Human",
+    params: [
+      { id: "H-1", name: "Code of Conduct / Ethics", score: 1, target: 2 },
+      { id: "H-2", name: "Staff Resilience", score: 1, target: 2 },
+      { id: "H-3", name: "Skillset Description", score: 0, target: 2 },
+      { id: "H-4", name: "Staff Development", score: 1, target: 2 },
+      { id: "H-5", name: "Technical Training", score: 1, target: 1 },
+      { id: "H-6", name: "Soft-Skills Training", score: 0, target: 1 },
+      { id: "H-7", name: "External Networking", score: 2, target: 2 },
+    ],
+  },
+  {
+    name: "Tools",
+    params: [
+      { id: "T-1", name: "IT Assets & Configurations", score: 1, target: 1 },
+      { id: "T-2", name: "Information Sources List", score: 1, target: 2 },
+      { id: "T-3", name: "Consolidated Messaging System(s)", score: 2, target: 1 },
+      { id: "T-4", name: "Incident Tracking System", score: 1, target: 2 },
+      { id: "T-5", name: "Resilient Voice Calls", score: 2, target: 2 },
+      { id: "T-6", name: "Resilient Messaging", score: 1, target: 2 },
+      { id: "T-7", name: "Resilient Internet Access", score: 2, target: 2 },
+      { id: "T-8", name: "Incident Prevention Toolset", score: 1, target: 2 },
+      { id: "T-9", name: "Incident Detection Toolset", score: 1, target: 2 },
+      { id: "T-10", name: "Incident Resolution Toolset", score: 1, target: 2 },
+    ],
+  },
+  {
+    name: "Process",
+    params: [
+      { id: "P-1", name: "Escalation to Governance Level", score: 1, target: 3 },
+      { id: "P-2", name: "Escalation to Press Function", score: 1, target: 2 },
+      { id: "P-3", name: "Escalation to Legal Function", score: 0, target: 2 },
+      { id: "P-4", name: "Incident Prevention Process", score: 1, target: 2 },
+      { id: "P-5", name: "Incident Detection Process", score: 1, target: 2 },
+      { id: "P-6", name: "Incident Resolution Process", score: 1, target: 2 },
+      { id: "P-7", name: "Specific Incident Processes", score: 0, target: 2 },
+      { id: "P-8", name: "Audit & Feedback Process", score: 1, target: 3 },
+      { id: "P-9", name: "Emergency Reachability Process", score: 1, target: 2 },
+      { id: "P-10", name: "Best-Practice Internet Presence", score: 2, target: 2 },
+      { id: "P-11", name: "Secure Information Handling", score: 1, target: 2 },
+      { id: "P-12", name: "Information Sources Process", score: 1, target: 2 },
+      { id: "P-13", name: "Outreach Process", score: 0, target: 2 },
+      { id: "P-14", name: "Governance Reporting Process", score: 1, target: 3 },
+      { id: "P-15", name: "Constituency Reporting Process", score: 1, target: 2 },
+      { id: "P-16", name: "Meeting Process", score: 1, target: 2 },
+      { id: "P-17", name: "Peer Collaboration Process", score: 0, target: 2 },
+    ],
+  },
+];
+
+// ── Evidence weaves: each case's own count drawn as lit cells of the lattice (home page work
+// list). `rows` holds each cell's light, 0 (shut) to 1 (brightest). Every count is on the case
+// page; the caption says what one cell is. `layout: "path"` steps the cells along the lattice
+// at about 30°; `random` redraws the pattern each time it opens (the vault's IV is random).
+export type Weave = {
+  rows: number[][];
+  caption: string;
+  layout?: "grid" | "path";
+  random?: boolean;
+  placeholder?: boolean;
+};
+
+/** Runs of cells at one light level each, wrapped into rows of `cols`. */
+const runs = (cols: number, parts: [n: number, level: number][]) => {
+  const flat = parts.flatMap(([n, level]) => Array<number>(n).fill(level));
+  return Array.from({ length: Math.ceil(flat.length / cols) }, (_, i) => flat.slice(i * cols, i * cols + cols));
+};
+/** `n` cells with `lit` of them lit, spread evenly (a golden-ratio sequence, so no clumps). */
+const spread = (cols: number, n: number, lit: number, on = 1, off = 0.14) => {
+  const order = Array.from({ length: n }, (_, i) => [((i * 0.6180339887) % 1), i] as const)
+    .sort((a, b) => a[0] - b[0])
+    .map(([, i]) => i);
+  const levels = Array<number>(n).fill(off);
+  order.slice(0, lit).forEach((i) => (levels[i] = on));
+  return Array.from({ length: Math.ceil(n / cols) }, (_, i) => levels.slice(i * cols, i * cols + cols));
+};
+// f(x) = (7x + 4) mod 30 on the cipher's 30-symbol alphabet: each cell's light is where x goes.
+const affine = Array.from({ length: 30 }, (_, x) => 0.18 + (0.82 * ((7 * x + 4) % 30)) / 29);
+
+export const weaves: Record<string, Weave> = {
+  "walsec-atioc-hub": {
+    rows: [0.36, 0.46, 0.56, 0.68, 0.82, 1].map((l) => Array<number>(8).fill(l)),
+    caption: "Placeholder until captures of the platform arrive: its six parts, one row each, from the threat feeds and PCAP upload in to the analyst's screen.",
+    placeholder: true,
+  },
+  "pentest-malware": {
+    rows: runs(12, [[2, 1], [15, 0.8], [26, 0.58], [8, 0.4], [45, 0.24]]),
+    caption: "96 Nessus findings on the lab host, one cell each. Brighter is more severe: 2 critical, 15 high, 26 medium, 8 low and 45 informational.",
+  },
+  "network-forensics": {
+    rows: [[0.55, 0.55, 0.55, 0.55, 0.55, 0.55, 0.55, 1, 1]],
+    layout: "path",
+    caption: "The 9 ATT&CK techniques mapped, one cell each, stepping along the lattice in the report's order: 7 Enterprise, then the 2 ICS techniques, brightest.",
+  },
+  "incident-response-maturity": {
+    rows: sim3.map((d) => d.params.map((p) => (p.score >= p.target ? 1 : 0.16))),
+    caption: "The 45 SIM3 parameters assessed, one row per domain: organisation, human, tools, process. Lit: the 8 at or above ENISA Basic.",
+  },
+  "ai-phishing-detection": {
+    rows: spread(20, 236, 101),
+    caption: "PhiUSIIL's 235,795 URLs at one cell per 1,000. Lit: the 43% that are phishing.",
+  },
+  "secure-scripting": {
+    rows: [[1, 1, 1, 1, 1, 0.3, 0.3, 1, 0.3, 1]],
+    caption: "The OWASP Top 10 (2021), A01 to A10, one cell each. Lit: the 7 with an automated test. Dim: A06, covered by pinned dependencies, and A07 and A09, shown in code.",
+  },
+  "secure-password-manager": {
+    rows: spread(12, 96, 48),
+    random: true,
+    caption: "A fresh random 96-bit IV on every save, one cell per bit. The pattern here is drawn at random each time, as the IV is.",
+  },
+  cryptography: {
+    rows: [affine.slice(0, 10), affine.slice(10, 20), affine.slice(20, 30)],
+    caption: "The cipher's 30-symbol alphabet, one cell each. Brightness shows where f(x) = (7x + 4) mod 30 sends the symbol.",
+  },
+  "software-development": {
+    rows: [Array<number>(14).fill(0.78), Array<number>(15).fill(1)],
+    caption: "29 unit tests in the two public repos, one cell each: 14 for the calculator, 15 for the card game.",
+  },
+  "contrust-os": {
+    rows: [],
+    caption: "No public evidence to show: a personal build for a friend.",
+  },
+};
+
+// ── Evidence lookup: indicators already published on the case-study pages ──
+// Nothing here is new: each value and note repeats what its case study shows. The lookup only
+// searches this list. (The incident-response scenario's STIX indicators return when its case
+// page shows the STIX graph.)
+export type Indicator = { value: string; type: string; slug: string; note: string; aliases?: string[] };
+
+export const indicators: Indicator[] = [
+  // pentest-malware
+  { value: "192.168.50.130", type: "IPv4", slug: "pentest-malware", note: "The lab host (“Besure Bank”) in the black-box penetration test." },
+  { value: "practicalmalwareanalysis[.]com", type: "Domain", slug: "pentest-malware", note: "C2 in the service DLL’s strings (hxxp://practicalmalwareanalysis[.]com/serve.html): the Practical Malware Analysis Lab 3-2 lab IOC, not a live threat." },
+  { value: "IPRIP", type: "Service name", slug: "pentest-malware", note: "The persistence service registered by the DLL, masquerading as “Intranet Network Awareness (INA+)”.", aliases: ["INA+", "Intranet Network Awareness", "Intranet Network Awareness (INA+)"] },
+  { value: "svchost.exe", type: "Process", slug: "pentest-malware", note: "The malicious DLL is loaded inside svchost.exe (netsvcs group).", aliases: ["netsvcs"] },
+  { value: "rundll32.exe", type: "Process", slug: "pentest-malware", note: "Detection: alert when rundll32 executes DLLs from user directories (T1218.011).", aliases: ["rundll32"] },
+  { value: "phpinfo.php", type: "File", slug: "pentest-malware", note: "Exposed on the lab web server, found in the penetration test." },
+  { value: "CVE-2014-3566", type: "CVE", slug: "pentest-malware", note: "POODLE: SSLv3 enabled on the lab host." },
+  { value: "CVE-2016-0800", type: "CVE", slug: "pentest-malware", note: "DROWN: SSLv2 enabled on the lab host." },
+  { value: "CVE-2003-0253", type: "CVE", slug: "pentest-malware", note: "Apache 2.0 buffer overflow, referenced in the penetration-test report." },
+  { value: "CVE-2007-1001", type: "CVE", slug: "pentest-malware", note: "PHP code injection: the lab host runs PHP 4.2.2, end of life." },
+  { value: "CVE-2008-0599", type: "CVE", slug: "pentest-malware", note: "PHP variable handling: the lab host runs PHP 4.2.2, end of life." },
+  { value: "T1566.001", type: "ATT&CK", slug: "pentest-malware", note: "Spearphishing Attachment, mapped from the weaponised PDF." },
+  { value: "T1204", type: "ATT&CK", slug: "pentest-malware", note: "User Execution, mapped from the malware evidence." },
+  { value: "T1218.011", type: "ATT&CK", slug: "pentest-malware", note: "Rundll32, mapped from the malware evidence." },
+  { value: "T1543.003", type: "ATT&CK", slug: "pentest-malware", note: "Windows Service: the IPRIP persistence service." },
+  { value: "T1112", type: "ATT&CK", slug: "pentest-malware", note: "Modify Registry, mapped from the malware evidence." },
+  // network-forensics (synthetic teaching captures)
+  { value: "192.168.121.151", type: "IPv4", slug: "network-forensics", note: "The public web server: scanned from three IPs on ports 22, 80 and 443, then the way in (scenario capture)." },
+  { value: "wp-login.php", type: "URL path", slug: "network-forensics", note: "Target of the brute force, which was detected but failed." },
+  { value: "JSESSIONID", type: "Cookie", slug: "network-forensics", note: "The stolen session cookie, reused to upload anonymous.gif to the ScadaBR HMI." },
+  { value: "anonymous.gif", type: "File", slug: "network-forensics", note: "The malicious upload that defaced the ScadaBR HMI." },
+  { value: "T1595", type: "ATT&CK", slug: "network-forensics", note: "Active Scanning: the distributed scan from three IPs." },
+  { value: "T1592", type: "ATT&CK", slug: "network-forensics", note: "Gather Victim Host Information." },
+  { value: "T1046", type: "ATT&CK", slug: "network-forensics", note: "Network Service Discovery." },
+  { value: "T1190", type: "ATT&CK", slug: "network-forensics", note: "Exploit Public-Facing Application: initial access through the public web server." },
+  { value: "T1110.001", type: "ATT&CK", slug: "network-forensics", note: "Password Guessing: the failed brute force." },
+  { value: "T1021.001", type: "ATT&CK", slug: "network-forensics", note: "Remote Desktop Protocol: the pivot into the operations workstation." },
+  { value: "T1552.001", type: "ATT&CK", slug: "network-forensics", note: "Credentials In Files: the stolen session cookie." },
+  { value: "T0866", type: "ATT&CK for ICS", slug: "network-forensics", note: "Exploitation of Remote Services: the malicious POST to the HMI web service." },
+  { value: "T0832", type: "ATT&CK for ICS", slug: "network-forensics", note: "Manipulation of View: the defaced HMI." },
+  { value: "T0862", type: "ATT&CK for ICS", slug: "network-forensics", note: "The ID the submitted report gave by mistake (Supply Chain Compromise); the page corrects it to T0866." },
+  { value: "T0880", type: "ATT&CK for ICS", slug: "network-forensics", note: "The ID the submitted report gave by mistake (Loss of Safety); the page corrects it to T0832." },
+  // ai-phishing-detection
+  { value: "T1566.002", type: "ATT&CK", slug: "ai-phishing-detection", note: "Phishing, named as the initial-access vector the detector addresses." },
+];
+
 // ── Experience (dates aligned to CV; the internship is the only employment) ──
 export type Experience = {
   company: string;
@@ -844,7 +1034,7 @@ export const experience: Experience[] = [
   {
     company: "Receptive Tech Communications",
     role: "Cyber Security Intern",
-    period: "Jun 2025 – Sep 2025",
+    period: "Jun to Sep 2025",
     location: "Lahore, Pakistan",
     kind: "Internship",
     points: [
@@ -909,7 +1099,7 @@ export const education = {
   degree: "BSc (Hons) Cyber Security",
   school: "De Montfort University (studied at DMU Dubai)",
   result: "First Class Honours · awarded 16 July 2026",
-  period: "Oct 2023 – Jul 2026",
+  period: "Oct 2023 to Jul 2026",
 };
 
 export const navLinks = [
