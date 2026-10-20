@@ -3,6 +3,7 @@ import { Inter, Sora, JetBrains_Mono } from "next/font/google";
 import { profile } from "@/lib/data";
 import { Providers } from "@/components/Providers";
 import { Analytics } from "@vercel/analytics/next";
+import { Engine } from "@/lib/engine/next";
 import "./globals.css";
 
 const inter = Inter({
@@ -68,6 +69,11 @@ export const viewport: Viewport = {
   colorScheme: "dark",
 };
 
+// Runs before first paint. `motion` gates hidden-before-reveal styles (content stays visible
+// without JS and under reduced motion); `gl-pending` hides the poster while the WebGL screen
+// may still arrive; `intro-pending` marks the first visit of the session (the intro plays).
+const flags = `(function(){var c=document.documentElement.classList;c.add('js');var m=!matchMedia('(prefers-reduced-motion: reduce)').matches;if(!m)return;c.add('motion');var n=navigator.connection;if(!(n&&n.saveData)&&'WebGLRenderingContext' in window)c.add('gl-pending');try{if(!sessionStorage.getItem('walsec-intro'))c.add('intro-pending')}catch(e){}})()`;
+
 export default function RootLayout({
   children,
 }: {
@@ -79,6 +85,9 @@ export default function RootLayout({
       className={`${inter.variable} ${sora.variable} ${mono.variable}`}
       suppressHydrationWarning
     >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: flags }} />
+      </head>
       <body className="bg-base text-ink">
         <a
           href="#main"
@@ -86,9 +95,18 @@ export default function RootLayout({
         >
           Skip to content
         </a>
+        {/* Persistent layers: the WebGL screen's host and the cursor follower. */}
+        <div id="gl" aria-hidden="true" />
+        <div id="cursor" aria-hidden="true">
+          <svg viewBox="-14 -18 28 36" width="26" height="34">
+            <polygon points="0,-17 13,-9.5 13,9.5 0,17 -13,9.5 -13,-9.5" />
+          </svg>
+          <span data-cursor-label />
+        </div>
         <Providers>{children}</Providers>
         {/* Vercel serves the analytics script; elsewhere (local review) it would 404. */}
         {process.env.VERCEL === "1" && <Analytics />}
+        <Engine />
       </body>
     </html>
   );

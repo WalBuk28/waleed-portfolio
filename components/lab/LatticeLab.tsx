@@ -30,7 +30,6 @@ export function LatticeLab() {
 
   return (
     <div data-screen="lab" style={{ position: "relative", zIndex: 1 }}>
-      <div id="gl" aria-hidden="true" />
       <main id="main" style={{ position: "relative", zIndex: 1 }}>
         {([1, 2, 3, 4, 5, 6] as Chapter[]).map((n) => (
           <section

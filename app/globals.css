@@ -13,8 +13,11 @@
     @apply border-edge;
   }
   html {
-    scroll-behavior: smooth;
     -webkit-text-size-adjust: 100%;
+  }
+  /* Lenis scrolls smoothly where it runs (anchors included); native smooth anchors elsewhere. */
+  html:not(.lenis) {
+    scroll-behavior: smooth;
   }
   @media (prefers-reduced-motion: reduce) {
     html {
@@ -111,6 +114,86 @@
     width: 100%;
     height: 100%;
     display: block;
+  }
+
+  /* ── Engine (lib/engine): hidden-before-reveal only when JS runs and motion is allowed ── */
+  .motion [data-split],
+  .motion [data-reveal="fade"] {
+    visibility: hidden;
+  }
+  .split-line {
+    padding-bottom: 0.08em;
+    margin-bottom: -0.08em;
+  }
+  html.lenis,
+  html.lenis body {
+    height: auto;
+  }
+  .lenis:not(.lenis-autoToggle).lenis-stopped {
+    overflow: clip;
+  }
+  .lenis [data-lenis-prevent] {
+    overscroll-behavior: contain;
+  }
+
+  /* The cursor follower: the mark's outline on the shared lagged pointer. It never replaces
+     the native cursor. Over a [data-cursor] target it fills with light and names the action. */
+  #cursor {
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 80;
+    width: 0;
+    height: 0;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  #cursor.is-on {
+    opacity: 1;
+  }
+  #cursor svg {
+    position: absolute;
+    left: -13px;
+    top: -17px;
+    overflow: visible;
+    transition: scale 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  #cursor polygon {
+    fill: transparent;
+    stroke: #d9f6ea;
+    stroke-width: 1.25;
+    transition: fill 0.3s;
+  }
+  #cursor span {
+    position: absolute;
+    left: 22px;
+    top: -9px;
+    font-size: 13px;
+    font-weight: 600;
+    font-stretch: 112%;
+    line-height: 18px;
+    white-space: nowrap;
+    color: #d9f6ea;
+    opacity: 0;
+    translate: -6px 0;
+    transition: opacity 0.25s, translate 0.35s cubic-bezier(0.165, 0.84, 0.44, 1);
+  }
+  #cursor.is-active svg {
+    scale: 1.15;
+  }
+  #cursor.is-active polygon {
+    fill: #33997d;
+    stroke: #33997d;
+  }
+  #cursor.is-active span {
+    opacity: 1;
+    translate: 0 0;
+  }
+  @media (hover: none), (pointer: coarse), (prefers-reduced-motion: reduce) {
+    #cursor {
+      display: none;
+    }
   }
 
   /* ── Homepage brand backdrop (components/brand/WallBackdrop.tsx) ──

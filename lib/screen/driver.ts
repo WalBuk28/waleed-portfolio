@@ -9,10 +9,11 @@
 //  paint, and only where WebGL, motion and data allow it.
 // =============================================================================
 import { gsap } from "@/lib/gsap";
-import { cellCentre, COS30, grid, type Grid } from "@/lib/gl/lattice";
+import { COS30, grid } from "@/lib/gl/lattice";
 import type { Screen } from "@/lib/gl/renderer";
 import { LABELS, chapterState, mix, smooth, type Chapter, type State } from "./chapters";
-import { pointer, startPointer, stepPointer } from "./pointer";
+import { heroCellFor } from "./hero";
+import { pointer, startPointer } from "./pointer";
 
 type Source = () => { y: number; velocity: number };
 type Section = { n: Chapter; top: number; h: number; sun: [number, number] | null };
@@ -43,6 +44,7 @@ const st = {
   label: "",
   day: -1,
   sun: [0, 0],
+  sunSet: false,
   vel: 0,
   tap: { x: 0, y: 0, t: -10 },
   slow: { frames: 0, avg: 0, warm: false },
@@ -114,6 +116,7 @@ function measure(rescan: boolean) {
 
 /** Read the page's layout once (page init, resize, ScrollTrigger refresh): no layout reads per frame. */
 export function scan() {
+  if (!st.screen) return;
   const sy = window.scrollY;
   const page = (el: Element): Rect => {
     const r = el.getBoundingClientRect();
@@ -131,10 +134,7 @@ export function scan() {
     .sort((a, b) => a.top - b.top);
   st.quiet = [...document.querySelectorAll("[data-quiet]")].map(page).filter((r) => r.w > 0);
   const first = st.sections.find((s) => s.n === 1);
-  if (first) {
-    const s = chapterState(1, 0, st.g.phone, false);
-    st.hero = cellCentre(s.sunX * st.vw, first.top + s.sunY * st.vh, st.g.S, st.g.margin, 0);
-  } else st.hero = null;
+  st.hero = first ? heroCellFor(st.vw, st.vh, first.top) : null;
   st.label = "";
   st.scanFns.forEach((fn) => fn());
 }
@@ -207,23 +207,29 @@ function tick(time: number, dt: number) {
     rest[0] += (b[0] - rest[0]) * w;
     rest[1] += (b[1] - rest[1]) * w;
   }
-  let target: [number, number];
-  if (st.touch) {
-    const k = smooth(0, vh * 0.5, y);
-    const read: [number, number] = [g.margin + (vw - 2 * g.margin) * tri(y / vh), vh * 0.4];
-    target = n === 1 ? [rest[0] + (read[0] - rest[0]) * k, rest[1] + (read[1] - rest[1]) * k] : read;
-    st.vel = Math.max(Math.min(1, Math.abs(velocity) / 25) * 0.55, st.vel * Math.pow(0.92, ratio));
-  } else {
-    stepPointer(ratio);
-    if (pointer.active) target = [pointer.tx, pointer.ty];
-    else {
-      const d = 12 * Math.sin(time * 0.35); // idle: the resting sun drifts ±12 px along 30°
-      target = [rest[0] + DRIFT[0] * d, rest[1] + DRIFT[1] * d];
-    }
-  }
   const k = 1 - Math.pow(1 - 0.16, ratio);
-  st.sun[0] += (target[0] - st.sun[0]) * k;
-  st.sun[1] += (target[1] - st.sun[1]) * k;
+  if (!st.sunSet) {
+    st.sun = [rest[0], rest[1]];
+    st.sunSet = true;
+  }
+  if (st.touch) {
+    const h = smooth(0, vh * 0.5, y);
+    const read: [number, number] = [g.margin + (vw - 2 * g.margin) * tri(y / vh), vh * 0.4];
+    const target = n === 1 ? [rest[0] + (read[0] - rest[0]) * h, rest[1] + (read[1] - rest[1]) * h] : read;
+    st.sun[0] += (target[0] - st.sun[0]) * k;
+    st.sun[1] += (target[1] - st.sun[1]) * k;
+    st.vel = Math.max(Math.min(1, Math.abs(velocity) / 25) * 0.55, st.vel * Math.pow(0.92, ratio));
+  } else if (pointer.active) {
+    st.sun[0] = pointer.x; // the follower and the light are the same point
+    st.sun[1] = pointer.y;
+  } else {
+    const d = 12 * Math.sin(time * 0.35); // idle: the resting sun drifts ±12 px along 30°
+    st.sun[0] += (rest[0] + DRIFT[0] * d - st.sun[0]) * k;
+    st.sun[1] += (rest[1] + DRIFT[1] * d - st.sun[1]) * k;
+    pointer.x = st.sun[0]; // park the pointer on the sun: the next move starts from the light
+    pointer.y = st.sun[1];
+    pointer.anchored = true;
+  }
 
   const u = screen.uniforms;
   u.uTime.value = time;

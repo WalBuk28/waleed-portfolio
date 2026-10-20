@@ -1,14 +1,18 @@
 // One lagged pointer for the whole site. The sun and the cursor follower both
 // read `pointer.x / pointer.y`, so the light and the follower always agree.
-// Stepped on gsap.ticker by the driver; fine pointers only.
+// While the pointer is away, the driver parks it on the resting sun, so on the
+// first move the follower travels from the light to the hand. Fine pointers only.
+import { gsap } from "@/lib/gsap";
 
 export const pointer = {
   x: 0, // lagged, viewport px
   y: 0,
   tx: 0, // latest raw position
   ty: 0,
-  /** The pointer has moved over the page and hasn't left it. */
+  /** The pointer is over the page. */
   active: false,
+  /** The driver is parking the pointer on the sun while it's away. */
+  anchored: false,
 };
 
 const LAG = 0.16; // share of the distance covered per 60 Hz frame
@@ -23,22 +27,21 @@ export function startPointer() {
       if (e.pointerType === "touch") return;
       pointer.tx = e.clientX;
       pointer.ty = e.clientY;
-      if (!pointer.active) {
-        pointer.active = true;
+      if (!pointer.active && !pointer.anchored) {
         pointer.x = e.clientX;
         pointer.y = e.clientY;
       }
+      pointer.active = true;
     },
     { passive: true },
   );
   document.documentElement.addEventListener("pointerleave", () => {
     pointer.active = false;
   });
-}
-
-/** Ease the lagged position toward the raw one. `ratio` is gsap.ticker.deltaRatio(). */
-export function stepPointer(ratio: number) {
-  const k = 1 - Math.pow(1 - LAG, ratio);
-  pointer.x += (pointer.tx - pointer.x) * k;
-  pointer.y += (pointer.ty - pointer.y) * k;
+  gsap.ticker.add(() => {
+    if (!pointer.active) return;
+    const k = 1 - Math.pow(1 - LAG, gsap.ticker.deltaRatio(60));
+    pointer.x += (pointer.tx - pointer.x) * k;
+    pointer.y += (pointer.ty - pointer.y) * k;
+  });
 }
