@@ -1,7 +1,7 @@
 import { profile } from "@/lib/data";
 import { ogCard, ogContentType, ogSize } from "@/lib/og";
 
-export const alt = `${profile.name} (${profile.cvName}) — ${profile.role}, Dubai`;
+export const alt = `${profile.name} (${profile.cvName}), ${profile.role} in Dubai`;
 export const size = ogSize;
 export const contentType = ogContentType;
 
