@@ -27,6 +27,17 @@ export const PIECE_IDS: readonly PieceId[] = [
 
 export const BRAND_GREEN = "#33997d";
 
+// Each piece's lattice normal: the offset it slides home from when the mark
+// locks together (floor first, roof last), with its stagger. The WebGL screen
+// opens its cells along the same vectors.
+export const LOCK_IN: Record<PieceId, [dx: number, dy: number, delayMs: number]> = {
+  BL: [-30, 52, 0], BR: [30, 52, 0],
+  ML: [-24, 42, 60], MR: [24, 42, 60],
+  L: [-56, 0, 120], R: [56, 0, 120],
+  NL: [-34, 0, 180], NR: [34, 0, 180],
+  TL: [-30, -52, 240], TR: [30, -52, 240],
+};
+
 const K = Math.tan(Math.PI / 6); // rise per unit run of a 30° edge
 const COS30 = Math.cos(Math.PI / 6);
 

@@ -93,6 +93,26 @@
     }
   }
 
+  /* ── The screen (lib/screen, lib/gl): one WebGL canvas, fixed under the content.
+     Shown only on pages that declare a screen state, once GL is running. */
+  #gl {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    visibility: hidden;
+  }
+  html.gl-on.screen-on #gl {
+    visibility: visible;
+  }
+  .gl-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
   /* ── Homepage brand backdrop (components/brand/WallBackdrop.tsx) ──
      The WalSec mark, fixed behind the content. The stage is sized in svh so
      mobile URL bars never resize it; every piece is its own composited layer

@@ -1,0 +1,290 @@
+// =============================================================================
+//  The driver: one variable, every visual (DESIGN.md §8).
+//
+//  The reading position (scroll, resolved to a chapter and its local progress)
+//  sets the shader's uniforms, the global ink variables on <html> and the
+//  frame's section label. The pointer (on touch: the reading line and taps)
+//  places the sun; an idle term keeps it breathing. Everything runs on
+//  gsap.ticker. The GL module is imported only once this starts, after first
+//  paint, and only where WebGL, motion and data allow it.
+// =============================================================================
+import { gsap } from "@/lib/gsap";
+import { cellCentre, COS30, grid, type Grid } from "@/lib/gl/lattice";
+import type { Screen } from "@/lib/gl/renderer";
+import { LABELS, chapterState, mix, smooth, type Chapter, type State } from "./chapters";
+import { pointer, startPointer, stepPointer } from "./pointer";
+
+type Source = () => { y: number; velocity: number };
+type Section = { n: Chapter; top: number; h: number; sun: [number, number] | null };
+type Rect = { x: number; y: number; w: number; h: number }; // page px
+
+/** Tweened by the hero's intro; at rest the screen is locked, the hero cell open, the shaft on. */
+export const intro = { lock: 1e9, hero: 1, beam: 1, len: 1e5 };
+
+const INK = {
+  night: { ink: [233, 238, 235], soft: [183, 194, 189], muted: [147, 163, 156], ground: [10, 14, 13], lit: [217, 246, 234] },
+  day: { ink: [6, 17, 13], soft: [6, 17, 13], muted: [46, 74, 63], ground: [207, 233, 222], lit: [31, 107, 85] },
+} as const;
+
+const st = {
+  screen: null as Screen | null,
+  starting: null as Promise<Screen | null> | null,
+  source: (() => ({ y: window.scrollY, velocity: 0 })) as Source,
+  daylight: false,
+  touch: false,
+  vw: 0,
+  vh: 0,
+  g: grid(1440),
+  sections: [] as Section[],
+  quiet: [] as Rect[],
+  hero: null as [number, number] | null, // the hero cell's centre, page px
+  enabled: false,
+  pinned: null as { n: Chapter; local: number } | null,
+  label: "",
+  day: -1,
+  sun: [0, 0],
+  vel: 0,
+  tap: { x: 0, y: 0, t: -10 },
+  slow: { frames: 0, avg: 0, warm: false },
+  scanFns: new Set<() => void>(),
+};
+
+export const screenGrid = () => st.g;
+export const heroCell = () => st.hero;
+export const screenOn = () => !!st.screen;
+/** Run fn after every page scan (layout known): the hero uses it to place the h1's band. */
+export function onScan(fn: () => void) {
+  st.scanFns.add(fn);
+  return () => st.scanFns.delete(fn);
+}
+/** Hold one chapter (lab, case pages): `local` is its progress. */
+export function pinChapter(n: Chapter | null, local = 0.6) {
+  st.pinned = n ? { n, local } : null;
+}
+
+export function glAllowed() {
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return false;
+  if ((navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData) return false;
+  return "WebGLRenderingContext" in window;
+}
+
+/** Start once. Resolves to null when the poster stays (no GL, reduced motion, Save-Data). */
+export function startScreen(opts: { source?: Source; daylight?: boolean; timing?: boolean; dprCap?: number } = {}) {
+  if (st.starting) return st.starting;
+  st.starting = (async () => {
+    const html = document.documentElement;
+    const host = document.getElementById("gl");
+    if (!host || !glAllowed()) return fail();
+    if (opts.source) st.source = opts.source;
+    st.daylight = !!opts.daylight;
+    st.touch = matchMedia("(hover: none), (pointer: coarse)").matches;
+    measure(false);
+    const { createScreen } = await import("@/lib/gl/renderer");
+    const screen = createScreen(host, { phone: st.g.phone || st.touch, timing: opts.timing, dprCap: opts.dprCap });
+    if (!screen) return fail();
+    st.screen = screen;
+    screen.resize(st.vw, st.vh);
+    scan();
+    if (!st.touch) startPointer();
+    addEventListener("resize", () => measure(true));
+    addEventListener("pointerdown", onTap, { passive: true });
+    tick(gsap.ticker.time, 16.7); // first frame before the canvas shows: no flash of an empty buffer
+    gsap.ticker.add(tick);
+    html.classList.remove("gl-pending");
+    html.classList.add("gl-on");
+    return screen;
+  })();
+  return st.starting;
+}
+
+function fail() {
+  const html = document.documentElement;
+  html.classList.remove("gl-pending");
+  html.classList.add("no-gl");
+  return null;
+}
+
+function measure(rescan: boolean) {
+  st.vw = window.innerWidth;
+  st.vh = window.innerHeight;
+  st.g = grid(st.vw);
+  st.screen?.resize(st.vw, st.vh);
+  if (rescan) scan();
+}
+
+/** Read the page's layout once (page init, resize, ScrollTrigger refresh): no layout reads per frame. */
+export function scan() {
+  const sy = window.scrollY;
+  const page = (el: Element): Rect => {
+    const r = el.getBoundingClientRect();
+    return { x: r.left, y: r.top + sy, w: r.width, h: r.height };
+  };
+  st.enabled = !!document.querySelector("[data-screen]");
+  document.documentElement.classList.toggle("screen-on", st.enabled);
+  st.sections = [...document.querySelectorAll<HTMLElement>("[data-chapter]")]
+    .map((el) => {
+      const r = page(el);
+      const target = el.querySelector("[data-sun]");
+      const t = target ? page(target) : null;
+      return { n: Math.min(6, Math.max(1, +el.dataset.chapter! || 1)) as Chapter, top: r.y, h: Math.max(1, r.h), sun: t ? ([t.x + t.w / 2, t.y + t.h / 2] as [number, number]) : null };
+    })
+    .sort((a, b) => a.top - b.top);
+  st.quiet = [...document.querySelectorAll("[data-quiet]")].map(page).filter((r) => r.w > 0);
+  const first = st.sections.find((s) => s.n === 1);
+  if (first) {
+    const s = chapterState(1, 0, st.g.phone, false);
+    st.hero = cellCentre(s.sunX * st.vw, first.top + s.sunY * st.vh, st.g.S, st.g.margin, 0);
+  } else st.hero = null;
+  st.label = "";
+  st.scanFns.forEach((fn) => fn());
+}
+
+function onTap(e: PointerEvent) {
+  if (e.pointerType !== "touch" || !st.enabled) return;
+  if ((e.target as Element).closest?.("a, button, input, textarea, select, label, summary, [role='button'], [data-no-ripple]")) return;
+  st.tap = { x: e.clientX, y: e.clientY + st.source().y, t: gsap.ticker.time };
+}
+
+function sunOf(n: Chapter, s: State, sec: Section | undefined, y: number): [number, number] {
+  if (sec?.sun) return [sec.sun[0], sec.sun[1] - y];
+  return [s.sunX * st.vw, s.sunY * st.vh];
+}
+
+const tri = (x: number) => 1 - Math.abs((((x % 2) + 2) % 2) - 1); // 0 → 1 → 0 every 2 units
+const DRIFT: [number, number] = [COS30, -0.5];
+
+// Down-only quality governor: if frames keep running long (software GL, a slow GPU), render
+// the screen at a lower resolution. It's soft light, so it survives the scale; the text is DOM.
+function govern(screen: Screen, dt: number) {
+  const s = st.slow;
+  if (dt > 1000) return; // a stall or a tab coming back, not the shader
+  s.frames++;
+  s.avg += dt; // ms accumulated over the current window
+  if (s.avg < 1200) return;
+  const mean = s.avg / s.frames;
+  if (s.warm && mean > 24 && screen.dpr > 0.5) {
+    screen.quality *= mean > 60 ? 0.5 : 0.7;
+    screen.resize(st.vw, st.vh);
+  }
+  s.warm = true; // the first window holds the shader compile and the atlas upload
+  s.frames = 0;
+  s.avg = 0;
+}
+
+function tick(time: number, dt: number) {
+  const screen = st.screen;
+  if (!screen || !st.enabled || document.hidden) return;
+  govern(screen, dt);
+  const ratio = gsap.ticker.deltaRatio(60);
+  const { vw, vh, g } = st;
+  const { y, velocity } = st.source();
+
+  // Where the reader is: a chapter and the progress through it.
+  let i = 0;
+  let n: Chapter = 1;
+  let local = 0.6;
+  let next: Section | undefined;
+  if (st.pinned) {
+    n = st.pinned.n;
+    local = st.pinned.local;
+  } else if (st.sections.length) {
+    const a = y + vh * 0.5;
+    while (i < st.sections.length - 1 && st.sections[i + 1].top <= a) i++;
+    const sec = st.sections[i];
+    n = sec.n;
+    local = Math.min(1, Math.max(0, (a - sec.top) / sec.h));
+    next = st.sections[i + 1];
+  }
+  const sec = st.pinned ? undefined : st.sections[i];
+  const A = chapterState(n, local, g.phone, st.daylight);
+  const w = next ? smooth(0.8, 1, local) : 0;
+  const s = next && w > 0 ? mix(A, chapterState(next.n, 0, g.phone, st.daylight), w) : A;
+
+  // The sun: the pointer, or the chapter's resting place (on touch: the reading line).
+  const rest = sunOf(n, A, sec, y);
+  if (next && w > 0) {
+    const b = sunOf(next.n, chapterState(next.n, 0, g.phone, st.daylight), next, y);
+    rest[0] += (b[0] - rest[0]) * w;
+    rest[1] += (b[1] - rest[1]) * w;
+  }
+  let target: [number, number];
+  if (st.touch) {
+    const k = smooth(0, vh * 0.5, y);
+    const read: [number, number] = [g.margin + (vw - 2 * g.margin) * tri(y / vh), vh * 0.4];
+    target = n === 1 ? [rest[0] + (read[0] - rest[0]) * k, rest[1] + (read[1] - rest[1]) * k] : read;
+    st.vel = Math.max(Math.min(1, Math.abs(velocity) / 25) * 0.55, st.vel * Math.pow(0.92, ratio));
+  } else {
+    stepPointer(ratio);
+    if (pointer.active) target = [pointer.tx, pointer.ty];
+    else {
+      const d = 12 * Math.sin(time * 0.35); // idle: the resting sun drifts ±12 px along 30°
+      target = [rest[0] + DRIFT[0] * d, rest[1] + DRIFT[1] * d];
+    }
+  }
+  const k = 1 - Math.pow(1 - 0.16, ratio);
+  st.sun[0] += (target[0] - st.sun[0]) * k;
+  st.sun[1] += (target[1] - st.sun[1]) * k;
+
+  const u = screen.uniforms;
+  u.uTime.value = time;
+  u.uS.value = g.S * s.scale;
+  u.uS0.value = g.S;
+  u.uMargin.value = g.margin;
+  u.uScroll.value = y;
+  u.uSun.value = [st.sun[0], st.sun[1]];
+  u.uSunR.value = s.sunR;
+  u.uOpen.value = s.open;
+  u.uBack.value = s.back;
+  u.uVel.value = st.vel;
+  u.uHero.value = st.hero ? [st.hero[0], st.hero[1] - y] : [-1e5, -1e5];
+  u.uHeroOpen.value = s.heroOpen * intro.hero;
+  u.uBeam.value = s.beam * intro.beam;
+  u.uBeamLen.value = intro.len;
+  u.uLock.value = intro.lock;
+  u.uJali.value = s.jali;
+  u.uBand.value = s.band * (vw * 0.5 + vh * COS30);
+  u.uSwing.value = s.swing;
+  u.uRetract.value = s.retract;
+  u.uDay.value = s.day;
+  u.uTap.value = [st.tap.x, st.tap.y - y, st.tap.t, time - st.tap.t < 2 ? 1 : 0];
+
+  // Quiet rects near the viewport, at most eight.
+  const q = u.uQuiet.value as number[];
+  let nq = 0;
+  for (const r of st.quiet) {
+    const top = r.y - y;
+    if (top + r.h < -vh * 0.25 || top > vh * 1.25) continue;
+    q[nq * 4] = r.x;
+    q[nq * 4 + 1] = top;
+    q[nq * 4 + 2] = r.w;
+    q[nq * 4 + 3] = r.h;
+    if (++nq === 8) break;
+  }
+  u.uQuietN.value = nq;
+
+  writeInk(s.day);
+  const label = LABELS[n];
+  if (label !== st.label) {
+    st.label = label;
+    document.querySelectorAll("[data-screen-label]").forEach((el) => (el.textContent = label));
+  }
+  screen.render();
+}
+
+// The global ink follows the ground (only the daylight chapter flips it).
+function writeInk(day: number) {
+  const d = Math.round(day * 50) / 50;
+  if (d === st.day) return;
+  st.day = d;
+  const style = document.documentElement.style;
+  const lerp = (a: readonly number[], b: readonly number[]) => `rgb(${a.map((v, j) => Math.round(v + (b[j] - v) * d)).join(" ")})`;
+  if (d === 0) {
+    for (const name of ["--ink", "--ink-soft", "--muted", "--ground", "--lit"]) style.removeProperty(name);
+    return;
+  }
+  style.setProperty("--ink", lerp(INK.night.ink, INK.day.ink));
+  style.setProperty("--ink-soft", lerp(INK.night.soft, INK.day.soft));
+  style.setProperty("--muted", lerp(INK.night.muted, INK.day.muted));
+  style.setProperty("--ground", lerp(INK.night.ground, INK.day.ground));
+  style.setProperty("--lit", lerp(INK.night.lit, INK.day.lit));
+}
