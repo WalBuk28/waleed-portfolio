@@ -1,26 +1,25 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Sora, JetBrains_Mono } from "next/font/google";
+import { Archivo, Martian_Mono } from "next/font/google";
 import { profile } from "@/lib/data";
 import { Providers } from "@/components/Providers";
 import { Analytics } from "@vercel/analytics/next";
 import { Engine } from "@/lib/engine/next";
 import "./globals.css";
 
-const inter = Inter({
+// Two OFL families, self-hosted by next/font (DESIGN.md §5). Archivo carries display and text
+// through its width axis; Martian Mono sets data only (IDs, CVEs, dates), so it isn't preloaded.
+const archivo = Archivo({
   subsets: ["latin"],
+  axes: ["wdth"],
   variable: "--font-sans",
   display: "swap",
 });
-const sora = Sora({
+const martian = Martian_Mono({
   subsets: ["latin"],
-  variable: "--font-display",
-  weight: ["500", "600", "700", "800"],
-  display: "swap",
-});
-const mono = JetBrains_Mono({
-  subsets: ["latin"],
+  axes: ["wdth"],
   variable: "--font-mono",
   display: "swap",
+  preload: false,
 });
 
 const url = "https://walsec.com";
@@ -65,7 +64,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#090d12",
+  themeColor: "#0a0e0d",
   colorScheme: "dark",
 };
 
@@ -82,16 +81,16 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${sora.variable} ${mono.variable}`}
+      className={`${archivo.variable} ${martian.variable}`}
       suppressHydrationWarning
     >
       <head>
         <script dangerouslySetInnerHTML={{ __html: flags }} />
       </head>
-      <body className="bg-base text-ink">
+      <body className="text-ink">
         <a
           href="#main"
-          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-lg focus:bg-emerald-accent focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-void"
+          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:bg-[var(--light-hi)] focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-[var(--on-light)]"
         >
           Skip to content
         </a>
