@@ -91,7 +91,7 @@ export function createScreen(
   const mesh = new Mesh(gl, { geometry: new Triangle(gl), program });
   host.appendChild(canvas);
 
-  // GPU timing (lab and gate only): EXT_disjoint_timer_query_webgl2.
+  // GPU timing for performance gates (off on the site): EXT_disjoint_timer_query_webgl2.
   const gl2 = gl as WebGL2RenderingContext;
   const ext = timing && renderer.isWebgl2 ? gl2.getExtension("EXT_disjoint_timer_query_webgl2") : null;
   const pending: WebGLQuery[] = [];

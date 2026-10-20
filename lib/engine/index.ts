@@ -25,8 +25,8 @@ let intro: gsap.core.Timeline | null = null;
 let ready = false;
 let booted = false;
 
-// Routes that keep native scroll and no screen: the R3F journey, and the stage 2 gate.
-const isNative = (path: string) => path.startsWith("/journey") || path.startsWith("/lab");
+// Routes that keep native scroll and no screen: the R3F journey runs its own.
+const isNative = (path: string) => path.startsWith("/journey");
 
 /** Run fn on every page load (and now, if a page is ready). Returns an unsubscribe. */
 export function onPage(fn: PageFn) {

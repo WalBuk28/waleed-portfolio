@@ -70,7 +70,7 @@ export function onChapter(fn: (n: Chapter) => void) {
   };
 }
 export const currentChapter = () => st.chapter;
-/** Hold one chapter (lab, case pages): `local` is its progress. */
+/** Hold one chapter (case pages, stage 4): `local` is its progress. */
 export function pinChapter(n: Chapter | null, local = 0.6) {
   st.pinned = n ? { n, local } : null;
 }
