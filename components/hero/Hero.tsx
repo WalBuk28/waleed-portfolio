@@ -1,0 +1,58 @@
+import Link from "next/link";
+import { profile } from "@/lib/data";
+import { HeroMotion } from "./HeroMotion";
+
+const fmt = (n: number) => n.toLocaleString("en-GB");
+
+/**
+ * The first screen (DESIGN.md §11): the headline in the light of one shaft, the role, one line
+ * of what he does, the way into the work, and four facts with their methods. Server-rendered
+ * and complete without JavaScript; the h1 never changes opacity or position (it is the LCP).
+ */
+export function Hero() {
+  return (
+    <section id="top" className="hero" data-chapter="1" data-hero aria-labelledby="hero-title">
+      <h1 id="hero-title" className="hero__h1" data-band data-quiet>
+        Signal through the noise
+      </h1>
+      <p className="hero__role" data-split data-intro data-quiet>
+        {profile.role}
+      </p>
+      <div className="hero__row">
+        <p className="hero__lede" data-reveal="fade" data-intro data-delay="0.2" data-quiet>
+          {profile.tagline}
+        </p>
+        <Link
+          className="btn btn--primary hero__cta"
+          href="/work/walsec-atioc-hub"
+          data-magnetic
+          data-cursor="Open"
+        >
+          <span className="btn__shape" aria-hidden="true" />
+          Read the A-TIOC case study
+          <span className="btn__arrow" aria-hidden="true">
+            →
+          </span>
+        </Link>
+      </div>
+      <ul className="hero__facts" data-reveal="fade" data-intro data-delay="0.35" data-quiet>
+        {profile.stats.map((s) => (
+          <li key={s.label}>
+            <span className="hero__fact">
+              {typeof s.value === "number" ? (
+                <span data-count={s.value} data-suffix={s.suffix ?? ""}>
+                  {fmt(s.value)}
+                  {s.suffix}
+                </span>
+              ) : (
+                s.value
+              )}
+            </span>
+            <span className="hero__note">{s.label}</span>
+          </li>
+        ))}
+      </ul>
+      <HeroMotion />
+    </section>
+  );
+}

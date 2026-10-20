@@ -121,7 +121,7 @@ function CaseCard({ study, wide }: { study: CaseStudy; wide?: boolean }) {
 export function CaseStudies() {
   const [flagship, ...rest] = caseStudies;
   return (
-    <section id="work" className="section scroll-mt-24 py-24">
+    <section id="work" data-chapter="2" className="section scroll-mt-24 py-24">
       <SectionHeading
         eyebrow="Selected work"
         title={

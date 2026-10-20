@@ -83,13 +83,16 @@ export function Footer() {
 
         <div className="mt-10 flex flex-col items-center justify-between gap-3 border-t border-edge pt-6 sm:flex-row">
           <p className="font-mono text-2xs text-ink-muted">
-            © {year} {profile.fullName}. Built with Next.js, Tailwind & Framer
-            Motion.
+            © {year} {profile.fullName}. Built with Next.js, Tailwind, GSAP and OGL.
           </p>
-          <p className="flex items-center gap-1.5 font-mono text-2xs text-ink-muted">
-            <span className="h-1.5 w-1.5 rounded-full bg-emerald-accent animate-pulse-dot" />
-            Systems nominal
-          </p>
+          {/* A full page load: the 3D journey runs its own renderer and native scroll. */}
+          <a
+            href="/journey"
+            data-no-transition
+            className="font-mono text-[13px] text-ink-muted underline underline-offset-4 transition-colors hover:text-ink"
+          >
+            3D version
+          </a>
         </div>
       </div>
     </footer>

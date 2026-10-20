@@ -25,7 +25,7 @@ const pillars = [
 
 export function About() {
   return (
-    <section id="about" className="section scroll-mt-24 py-24">
+    <section id="about" data-chapter="5" className="section scroll-mt-24 py-24">
       <div className="grid gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16">
         <SectionHeading
           eyebrow="Who I am"

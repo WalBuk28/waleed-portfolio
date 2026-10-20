@@ -8,7 +8,7 @@ import { SkillsEvidence } from "./SkillsEvidence";
 
 export function Skills() {
   return (
-    <section id="skills" className="section scroll-mt-24 py-24">
+    <section id="skills" data-chapter="3" className="section scroll-mt-24 py-24">
       <SectionHeading
         eyebrow="Capability map"
         title={<>The stack behind the defence</>}

@@ -192,20 +192,24 @@
   }
   #cursor span {
     position: absolute;
-    left: 22px;
-    top: -9px;
+    left: 16px;
+    top: 10px;
+    padding: 5px 9px;
     font-size: 13px;
     font-weight: 600;
     font-stretch: 112%;
-    line-height: 18px;
+    line-height: 16px;
     white-space: nowrap;
-    color: #d9f6ea;
+    color: var(--light-hi);
+    background: var(--ground);
     opacity: 0;
     translate: -6px 0;
     transition: opacity 0.25s, translate 0.35s cubic-bezier(0.165, 0.84, 0.44, 1);
   }
+  /* Over a target: the outline shrinks to a lit tile beside the native cursor and names the
+     action in a dark chip, so it never hides the label it's over. */
   #cursor.is-active svg {
-    scale: 1.15;
+    scale: 0.55;
   }
   #cursor.is-active polygon {
     fill: #33997d;
@@ -467,5 +471,472 @@
   .mask-fade-b {
     -webkit-mask-image: linear-gradient(to bottom, #000 60%, transparent);
     mask-image: linear-gradient(to bottom, #000 60%, transparent);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   The screen page (home): poster, frame, buttons, hero (DESIGN.md §5 to §11)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Poster: the mark tile as a low-contrast relief, page-attached like the GL lattice, its
+   origin on the left margin line. Hidden while the WebGL screen is coming or running.
+   Behind the tile, the hero's static light: the open cluster in silhouette. */
+.screen-page {
+  position: relative;
+}
+.screen-page::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image: var(--poster-tile),
+    radial-gradient(circle 300px at 77.2% calc(29.8 * 1vh), rgb(51 153 125 / 0.62), rgb(51 153 125 / 0.16) 55%, transparent 100%);
+  background-image: var(--poster-tile),
+    radial-gradient(circle 300px at 77.2% calc(29.8 * 1svh), rgb(51 153 125 / 0.62), rgb(51 153 125 / 0.16) 55%, transparent 100%);
+  background-repeat: repeat, no-repeat;
+  background-size: max(72px, calc((100vw - 2 * var(--margin) + 24px) / 15)) auto, auto;
+  background-position: var(--margin) 0, 0 0;
+  transition: opacity 0.6s;
+}
+@media (max-width: 767px) {
+  .screen-page::before {
+    background-image: var(--poster-tile),
+      radial-gradient(circle 190px at 75% calc(23 * 1svh), rgb(51 153 125 / 0.62), rgb(51 153 125 / 0.16) 55%, transparent 100%);
+    background-size: 56px auto, auto;
+  }
+}
+html.gl-pending .screen-page::before,
+html.gl-on .screen-page::before {
+  opacity: 0;
+}
+.screen-page > main,
+.screen-page > footer {
+  position: relative;
+  z-index: 1;
+}
+/* Each chapter's static light, where its sun rests (poster only). */
+html:not(.gl-on) .screen-page [data-chapter="2"] {
+  background: radial-gradient(circle 260px at 80% 45%, rgb(51 153 125 / 0.1), transparent);
+}
+html:not(.gl-on) .screen-page [data-chapter="3"] {
+  background: radial-gradient(ellipse 60% 40% at 70% 60%, rgb(51 153 125 / 0.1), transparent);
+}
+html:not(.gl-on) .screen-page [data-chapter="4"] {
+  background: radial-gradient(circle 340px at 92% 50%, rgb(51 153 125 / 0.12), transparent);
+}
+html:not(.gl-on) .screen-page [data-chapter="5"],
+html:not(.gl-on) .screen-page [data-chapter="6"] {
+  background: radial-gradient(circle 360px at 72% 50%, rgb(51 153 125 / 0.12), transparent);
+}
+/* The sections awaiting stage 3 sit on the live canvas: no backdrop re-blurred every frame. */
+.screen-page .panel {
+  backdrop-filter: none;
+  background-color: rgb(15 21 27 / 0.88);
+}
+
+/* ── Buttons: a chamfered shape; light floods in from the chamfered corner along 30° ── */
+.btn {
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  font-size: 15px;
+  font-weight: 600;
+  font-stretch: 112%;
+  line-height: 1;
+  white-space: nowrap;
+  transition: scale 0.2s;
+}
+.btn__shape {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  clip-path: var(--chamfer);
+  background: var(--btn-bg);
+}
+.btn__shape::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--btn-flood);
+  clip-path: polygon(0 0, 0 0, calc(-1 * var(--run)) 100%, 0 100%);
+  transition: clip-path 0.45s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+.btn:focus-visible .btn__shape::after,
+.btn:active .btn__shape::after {
+  clip-path: polygon(0 0, calc(100% + var(--run)) 0, 100% 100%, 0 100%);
+}
+.btn:active {
+  scale: 0.97;
+}
+.btn__arrow {
+  transition: translate 0.35s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+.btn:focus-visible .btn__arrow {
+  translate: 5px 0;
+}
+@media (hover: hover) {
+  .btn:hover .btn__shape::after {
+    clip-path: polygon(0 0, calc(100% + var(--run)) 0, 100% 100%, 0 100%);
+  }
+  .btn:hover .btn__arrow {
+    translate: 5px 0;
+  }
+}
+.btn--primary {
+  --btn-bg: var(--light);
+  --btn-flood: var(--light-hi);
+  --run: 96px;
+  padding: 21px 26px;
+  color: var(--on-light);
+}
+.btn--cv {
+  --btn-bg: var(--ink);
+  --btn-flood: var(--light);
+  --run: 70px;
+  padding: 13px 18px;
+  color: var(--ground);
+}
+
+/* ── The frame: four corners that step aside on scroll down and return on scroll up ── */
+.frame {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  pointer-events: none;
+  font-stretch: 112%;
+}
+html:not(.js) .frame {
+  position: absolute;
+  bottom: auto;
+  height: 100vh;
+  height: 100svh;
+}
+.frame > * {
+  position: absolute;
+  margin: 0;
+  pointer-events: auto;
+  transition: translate 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+/* scrims, so the frame stays legible when it returns over content */
+.frame::before,
+.frame::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: calc(var(--margin) + 76px);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.4s, translate 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.frame::before {
+  top: 0;
+  background: linear-gradient(var(--ground) 35%, transparent);
+}
+.frame::after {
+  bottom: 0;
+  background: linear-gradient(transparent, var(--ground) 65%);
+}
+html.frame-scrolled .frame::before,
+html.frame-scrolled .frame::after {
+  opacity: 0.94;
+}
+html.frame-away .frame__tl,
+html.frame-away .frame__tr,
+html.frame-away .frame::before {
+  translate: 0 calc(-100% - var(--margin) - 16px);
+}
+html.frame-away .frame__bl,
+html.frame-away .frame__br,
+html.frame-away .frame::after {
+  translate: 0 calc(100% + var(--margin) + 16px);
+}
+.frame__tl {
+  top: var(--margin);
+  left: var(--margin);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink);
+}
+.frame__mark {
+  width: 20px;
+  height: auto;
+}
+.frame__tr {
+  top: var(--margin);
+  right: var(--margin);
+  display: flex;
+  align-items: center;
+  gap: 30px;
+}
+.frame__navwrap {
+  position: relative;
+}
+.frame__nav {
+  display: flex;
+  gap: 28px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.frame__link {
+  display: inline-block;
+  padding: 13px 0;
+  font-size: 14px;
+  color: var(--ink);
+}
+.frame__marker {
+  position: absolute;
+  left: 0;
+  bottom: -4px;
+  width: 10px;
+  height: 13px;
+  background: var(--light);
+  clip-path: polygon(50% 0, 100% 22%, 100% 78%, 50% 100%, 0 78%, 0 22%);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+.frame__menu {
+  display: none;
+  min-height: 44px;
+  padding: 0 2px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink);
+}
+@media (hover: hover) {
+  .frame__menu:hover {
+    text-decoration: underline;
+    text-underline-offset: 0.3em;
+  }
+}
+.frame__bl,
+.frame__br {
+  bottom: var(--margin);
+  font-size: 13px;
+  line-height: 18px;
+  color: var(--muted);
+}
+.frame__bl {
+  left: var(--margin);
+}
+.frame__br {
+  right: var(--margin);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.frame__tile {
+  width: 8px;
+  height: 10px;
+  fill: var(--light);
+  animation: tileBreathe 3.2s ease-in-out infinite; /* idle life: the availability tile breathes */
+}
+@keyframes tileBreathe {
+  50% {
+    opacity: 0.4;
+  }
+}
+@media (max-width: 1023px) {
+  .frame__navwrap,
+  .frame__tr > .btn--cv {
+    display: none;
+  }
+  .frame__menu {
+    display: inline-flex;
+    align-items: center;
+  }
+}
+@media (max-width: 767px) {
+  .frame__bl,
+  .frame__br,
+  .frame::after {
+    display: none;
+  }
+}
+
+/* The phone menu (basic; stage 4 finishes it). */
+.menu {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  display: flex;
+  flex-direction: column;
+  gap: 36px;
+  padding: calc(var(--margin) + 72px) var(--margin) var(--margin);
+  background: var(--ground);
+  font-stretch: 112%;
+}
+.menu[hidden] {
+  display: none;
+}
+.menu__list {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.menu__list a {
+  display: block;
+  padding: 8px 0;
+  font-size: var(--t-xl);
+  font-weight: 300;
+  font-stretch: 125%;
+  letter-spacing: -0.035em;
+  line-height: 1;
+  color: var(--ink);
+}
+.menu__cv {
+  align-self: flex-start;
+}
+.menu__close {
+  position: absolute;
+  top: var(--margin);
+  right: var(--margin);
+  min-height: 44px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+/* ── Hero: poster plus four corners, 100svh ── */
+.hero {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  min-height: 100vh;
+  min-height: 100svh;
+  padding: calc(var(--margin) + 84px) var(--margin) calc(var(--margin) + 58px);
+}
+.hero__h1 {
+  max-width: 9.4em;
+  margin: 0 0 0 -0.05em;
+  font-size: var(--t-mega);
+  font-weight: 300;
+  font-stretch: 125%;
+  letter-spacing: -0.04em;
+  line-height: 0.98;
+  color: var(--ink-soft);
+  text-wrap: balance;
+}
+/* "Light passes": a band where the shaft crosses the headline. Its stops (--b0 to --b3) are
+   placed from the lattice by lib/screen/hero.ts; --band lights it (the intro sweeps it on). */
+@supports ((background-clip: text) or (-webkit-background-clip: text)) {
+  .hero__h1 {
+    --band: 1;
+    --band-c: color-mix(in srgb, #f6fffb calc(var(--band) * 100%), var(--ink-soft));
+    background-image: linear-gradient(
+      150deg,
+      var(--ink-soft) var(--b0, 30%),
+      var(--band-c) var(--b1, 40%),
+      var(--band-c) var(--b2, 47%),
+      var(--ink-soft) var(--b3, 57%)
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  html.intro-pending .hero__h1 {
+    --band: 0;
+  }
+}
+.hero__role {
+  margin: 28px 0 0;
+  font-size: 15px;
+  font-weight: 600;
+  font-stretch: 125%;
+  letter-spacing: 0.14em;
+  text-transform: uppercase; /* the only uppercase on the site */
+  color: var(--lit);
+}
+.hero__row {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--gutter);
+  align-items: end;
+  margin-top: 16px;
+}
+.hero__lede {
+  grid-column: 1 / span 5;
+  max-width: 34ch;
+  margin: 0;
+  font-size: var(--t-body);
+  line-height: 1.55;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+.hero__cta {
+  grid-column: 8 / span 5;
+  justify-self: end;
+}
+.hero__facts {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  column-gap: var(--gutter);
+  margin: 44px 0 0;
+  padding: 18px 0 0;
+  border-top: 1px solid var(--line);
+  list-style: none;
+}
+.hero__facts li {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.hero__fact {
+  font-size: 19px;
+  font-weight: 500;
+  font-stretch: 112%;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+.hero__note {
+  max-width: 36ch;
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--muted);
+}
+@media (max-width: 767px) {
+  .hero {
+    padding: calc(var(--margin) + 64px) var(--margin) 28px;
+  }
+  .hero__h1 {
+    max-width: 7em;
+    line-height: 1;
+  }
+  .hero__role {
+    margin-top: 22px;
+    font-size: 13px;
+  }
+  .hero__row {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 24px;
+    margin-top: 12px;
+  }
+  .hero__lede {
+    max-width: 30ch;
+  }
+  .hero__cta {
+    width: 100%;
+  }
+  .hero__facts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    row-gap: 18px;
+    margin-top: 28px;
   }
 }

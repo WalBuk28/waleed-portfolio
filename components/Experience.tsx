@@ -11,7 +11,7 @@ import { Reveal, RevealGroup, RevealItem } from "./ui/Reveal";
 
 export function Experience() {
   return (
-    <section id="experience" className="section scroll-mt-24 py-24">
+    <section id="experience" data-chapter="4" className="section scroll-mt-24 py-24">
       <SectionHeading
         eyebrow="Track record"
         title="Experience & credentials"

@@ -19,7 +19,7 @@ export function Contact() {
   };
 
   return (
-    <section id="contact" className="section scroll-mt-24 py-24">
+    <section id="contact" data-chapter="6" className="section scroll-mt-24 py-24">
       <Reveal>
         <div className="panel relative overflow-hidden p-8 sm:p-12">
           {/* ambient glow */}
@@ -48,7 +48,7 @@ export function Contact() {
               </p>
 
               <div className="mt-8 flex flex-wrap gap-3">
-                <a href={`mailto:${profile.email}`} className="btn-primary">
+                <a href={`mailto:${profile.email}`} className="btn-primary" data-sun>
                   <Mail className="h-4 w-4" />
                   Hire me
                 </a>

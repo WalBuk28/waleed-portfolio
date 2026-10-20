@@ -19,8 +19,7 @@ export const profile = {
     "Secure Software",
     "Applied AI Defence",
   ],
-  tagline:
-    "I build the bridge between deep network forensics and intelligent automation — turning raw packets, malware and threat feeds into decisions a SOC can act on.",
+  tagline: "I turn raw packets, malware and threat feeds into decisions a SOC can act on.",
   location: "Dubai, United Arab Emirates",
   email: "waleedbukhari2000@gmail.com",
   linkedin: "https://linkedin.com/in/muhammad-waleed-b43997202",

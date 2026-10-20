@@ -1,7 +1,6 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import Link from "next/link";
 import { ReactNode, useEffect, useLayoutEffect, useState } from "react";
 import { EV, journey } from "./state";
 
@@ -69,14 +68,6 @@ export function JourneyGate({
     <>
       <div hidden={mode === "3d"}>{children}</div>
       {mode === "3d" && <Journey />}
-      {mode === "flat" && (
-        <Link
-          href="/journey"
-          className="fixed bottom-5 right-5 z-50 rounded-xl border border-emerald-accent/40 bg-surface/80 px-4 py-2 font-mono text-2xs uppercase tracking-wider2 text-emerald-glow shadow-glow-emerald backdrop-blur-md transition-all hover:border-emerald-accent hover:brightness-110"
-        >
-          ◉ Enter 3D journey
-        </Link>
-      )}
     </>
   );
 }
