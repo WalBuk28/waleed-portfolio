@@ -29,6 +29,9 @@ export const profile = {
   availability: "Open to SOC Analyst and blue-team roles",
   summary:
     "BSc (Hons) Cyber Security, First Class Honours, from De Montfort University, studied at DMU Dubai. I work on threat intelligence, network forensics and SOC automation, and I write the software to back it up: an offline SIEM-Lite with a local LLM, an ML phishing detector and C++ security tooling. My industry experience is a cyber security internship at Receptive Tech Communications (Lahore, 2025), where I tuned SIEM correlation rules and alert thresholds, ran vulnerability scans and drafted playbooks. I've also completed virtual job simulations (Forage) with Telstra, Mastercard and Deloitte.",
+  // About's statement in daylight: the part of the summary that Experience doesn't repeat.
+  statement:
+    "I work on threat intelligence, network forensics and SOC automation, and I write the software to back it up: an offline SIEM-Lite with a local LLM, an ML phishing detector and C++ security tooling.",
   // Each label says what the value is and how it was counted.
   stats: [
     { value: "First Class", label: "Honours · BSc Cyber Security, DMU, 2026" },
