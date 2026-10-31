@@ -95,7 +95,7 @@ export default function RootLayout({
         </a>
         {/* Persistent layers: the WebGL screen's host and the cursor follower. */}
         <div id="gl" aria-hidden="true" />
-        <div id="cursor" aria-hidden="true">
+        <div id="cursor" aria-hidden="true" data-ground>
           <svg viewBox="-14 -18 28 36" width="26" height="34">
             <polygon points="0,-17 13,-9.5 13,9.5 0,17 -13,9.5 -13,-9.5" />
           </svg>

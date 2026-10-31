@@ -115,7 +115,7 @@ export function Frame() {
 
   return (
     <>
-      <header className="frame">
+      <header className="frame" data-ground>
         <a className="frame__tl frame__brand" href="#top" data-quiet="fixed">
           <WalSecMark className="frame__mark" color="currentColor" />
           <span>{profile.name}</span>
@@ -164,6 +164,7 @@ export function Frame() {
         ref={menu}
         id="menu"
         className="menu"
+        data-ground
         role="dialog"
         aria-modal="true"
         aria-label="Menu"

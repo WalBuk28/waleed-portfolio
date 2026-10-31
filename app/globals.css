@@ -1379,6 +1379,11 @@ html.frame-away .frame::after {
 .work__frame {
   aspect-ratio: 8 / 5;
   color: rgb(235 238 248 / 0.1); /* the background lattice's hairlines */
+  /* Off-screen weaves skip style, layout and paint: they hold three quarters of the page's
+     elements (cells and their <use> shadow trees), so every page-wide restyle (the daylight
+     flip) and every frame's layerize stays small. The frame's size comes from its aspect
+     ratio, never from its contents, so skipping them moves nothing. */
+  content-visibility: auto;
 }
 html:not(.gl-on) .work__frame {
   clip-path: var(--chamfer);

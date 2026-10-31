@@ -405,8 +405,11 @@ function tick(time: number, dt: number) {
 // the whole flip; the text inks cross in its middle fifth, so text keeps its contrast against
 // the ground on both sides of the crossing; it dips below 4.5:1 for under 70 ms of the 0.7 s.
 // A custom property on <html> restyles the whole page, so each one is written only when its
-// value changes, and the ground (which only the frame's scrims read) moves in twelfths.
+// value changes. The ground isn't written there at all: while the screen is up, the canvas is
+// the ground, and only the elements marked data-ground (the frame's scrims, the menu, the
+// follower's chip) read the variable, so it moves on them alone, in twelfths.
 const written: Record<string, string> = {};
+const groundHosts = () => document.querySelectorAll<HTMLElement>("[data-ground]");
 function writeInk(day: number) {
   const d = Math.round(day * 50) / 50;
   if (d === st.day) return;
@@ -414,7 +417,8 @@ function writeInk(day: number) {
   const style = document.documentElement.style;
   if (d === 0) {
     for (const name of Object.keys(written)) {
-      style.removeProperty(name);
+      if (name === "--ground") groundHosts().forEach((el) => el.style.removeProperty(name));
+      else style.removeProperty(name);
       delete written[name];
     }
     return;
@@ -425,7 +429,8 @@ function writeInk(day: number) {
   const set = (name: string, value: string) => {
     if (written[name] === value) return;
     written[name] = value;
-    style.setProperty(name, value);
+    if (name === "--ground") groundHosts().forEach((el) => el.style.setProperty(name, value));
+    else style.setProperty(name, value);
   };
   set("--ink", mixed(INK.night.ink, INK.day.ink, t));
   set("--ink-soft", mixed(INK.night.soft, INK.day.soft, t));
