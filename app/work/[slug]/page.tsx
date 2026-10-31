@@ -131,28 +131,28 @@ export default async function WorkPage({ params }: { params: Promise<{ slug: str
           </header>
 
           <Section id="problem" label="Problem" title="Problem">
-            <p className="case__lead" data-reveal="fade" data-quiet>
+            <p className="case__lead" data-reveal="fade">
               {study.context}
             </p>
-            <p data-reveal="fade" data-quiet>
+            <p data-reveal="fade">
               {study.problem}
             </p>
           </Section>
 
           <Section id="what-i-did" label="What I did" title="What I did">
-            <p className="case__lead" data-reveal="fade" data-quiet>
+            <p className="case__lead" data-reveal="fade">
               {study.approach}
             </p>
             {details.map((d) => (
               <div key={d.heading} className="case__detail">
-                <h3 className="case__h3" data-quiet>
+                <h3 className="case__h3">
                   {d.heading}
                 </h3>
-                <p data-reveal="fade" data-quiet>
+                <p data-reveal="fade">
                   {d.body}
                 </p>
                 {d.bullets && (
-                  <ul className="case__list" data-reveal="fade" data-quiet>
+                  <ul className="case__list" data-reveal="fade">
                     {d.bullets.map((b) => (
                       <li key={b}>{b}</li>
                     ))}
@@ -164,7 +164,7 @@ export default async function WorkPage({ params }: { params: Promise<{ slug: str
 
           <Section id="evidence" label="Evidence" title="Evidence">
             {study.metrics.length > 0 && (
-              <dl className="case__facts" data-quiet="box">
+              <dl className="case__facts">
                 {study.metrics.map((m) => (
                   <div key={m.label} className="case__fact">
                     <dt>{m.label}</dt>
@@ -176,10 +176,10 @@ export default async function WorkPage({ params }: { params: Promise<{ slug: str
             )}
             {study.architecture && <CaseFlow title={study.architecture.title} nodes={study.architecture.nodes} />}
             <div className="case__stack">
-              <h3 className="case__h3" data-quiet>
+              <h3 className="case__h3">
                 Stack and tools
               </h3>
-              <ul className="case__tags mono" data-quiet>
+              <ul className="case__tags mono">
                 {study.stack.map((s) => (
                   <li key={s}>{s}</li>
                 ))}
@@ -195,7 +195,7 @@ export default async function WorkPage({ params }: { params: Promise<{ slug: str
           )}
 
           <Section id="result" label="Result" title="Result">
-            <p className="case__lead" data-reveal="fade" data-quiet>
+            <p className="case__lead" data-reveal="fade">
               {study.outcome}
             </p>
           </Section>
@@ -203,7 +203,7 @@ export default async function WorkPage({ params }: { params: Promise<{ slug: str
           {limits.length > 0 && (
             <Section id="limitations" label="Limitations" title="Limitations">
               {limits.map((l) => (
-                <p key={l.body} data-reveal="fade" data-quiet>
+                <p key={l.body} data-reveal="fade">
                   {l.body}
                 </p>
               ))}
@@ -211,7 +211,7 @@ export default async function WorkPage({ params }: { params: Promise<{ slug: str
           )}
 
           <Section id="links" label="Links" title="Links">
-            <ul className="case__links" data-quiet="box">
+            <ul className="case__links">
               {study.repos?.map((r) => (
                 <li key={r}>
                   <a className="ulink" href={r} target="_blank" rel="noopener noreferrer">
@@ -273,10 +273,14 @@ export default async function WorkPage({ params }: { params: Promise<{ slug: str
 function Section({ id, label, title, children }: { id: string; label: string; title: string; children: React.ReactNode }) {
   return (
     <section className="case__sec" data-label={label} aria-labelledby={id}>
-      <h2 id={id} className="case__h2" data-split data-quiet>
+      <h2 id={id} className="case__h2" data-split data-quiet="sticky">
         {title}
       </h2>
-      <div className="case__body">{children}</div>
+      {/* One quiet box for the whole text column: the screen's light stays out of it, and it
+          costs one of the shader's sixteen quiet rects, not one per paragraph. */}
+      <div className="case__body" data-quiet="box">
+        {children}
+      </div>
     </section>
   );
 }

@@ -194,9 +194,12 @@ export function scan() {
       const r = el.getBoundingClientRect();
       if (r.width < 1 || r.height < 1) return;
       const box: Rect = { x: r.left, y: r.top + sy, w: r.width, h: r.height };
-      if (mode === "sticky") {
+      // "sticky" follows a CSS sticky or a GSAP pin; where the element isn't stuck (a static
+      // heading on a phone, a figure not pinned), it is a plain box.
+      const cs = getComputedStyle(el);
+      if (mode === "sticky" && (cs.position === "sticky" || el.parentElement!.classList.contains("pin-spacer"))) {
         const c = el.parentElement!.getBoundingClientRect();
-        box.sticky = { top0: c.top + sy, stick: parseFloat(getComputedStyle(el).top) || 0, end: c.bottom + sy - r.height };
+        box.sticky = { top0: c.top + sy, stick: parseFloat(cs.top) || 0, end: c.bottom + sy - r.height };
       }
       st.quiet.push(box);
       return;

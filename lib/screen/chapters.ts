@@ -140,7 +140,8 @@ export function caseState(seed: string, phone: boolean): State {
   const m = MIXES[h % MIXES.length];
   return {
     ...base, open: 0.05, back: 0.1, sunR: (150 + 90 * draw(h, 0)) * r,
-    sunX: phone ? 0.68 + 0.2 * draw(h, 1) : 0.74 + 0.18 * draw(h, 1),
+    // on desktop past the text column's measure (it ends near 0.84 of the width at 1440)
+    sunX: phone ? 0.68 + 0.2 * draw(h, 1) : 0.88 + 0.08 * draw(h, 1),
     sunY: 0.2 + 0.45 * draw(h, 2),
     glass: m.glass, tint: m.tint, glowCol: m.glowCol,
     glow: [0.82 + 0.16 * draw(h, 3), 0.1 + 0.75 * draw(h, 4), (320 + 220 * draw(h, 5)) * r, 0.16],

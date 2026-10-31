@@ -2758,6 +2758,8 @@ html:not(.gl-on) .case__frame {
   border-left: 1px solid var(--line);
 }
 .attack__tactic {
+  position: relative;
+  z-index: 1; /* the light's path passes behind the names, never through them */
   display: block;
   min-height: 52px;
   font-size: 13px;
@@ -2902,8 +2904,11 @@ html:not(.gl-on) .case__frame {
     row-gap: 14px;
   }
   .attack__tactic {
+    justify-self: start;
     min-height: 0;
+    padding-right: 8px;
     font-stretch: 100%;
+    background: var(--ground);
   }
   .attack__tiles {
     display: flex;
