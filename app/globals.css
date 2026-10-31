@@ -228,6 +228,10 @@
     opacity: 1;
     translate: 0 0;
   }
+  /* a target that names itself: the light, no chip over its letters */
+  #cursor.is-active.is-quiet span {
+    opacity: 0;
+  }
   @media (hover: none), (pointer: coarse), (prefers-reduced-motion: reduce) {
     #cursor {
       display: none;

@@ -239,7 +239,7 @@ export default async function WorkPage({ params }: { params: Promise<{ slug: str
                 </Link>
               </li>
             </ul>
-            <a className="btn btn--primary case__cta" href={`mailto:${profile.email}`} data-magnetic data-cursor="Email">
+            <a className="btn btn--primary case__cta" href={`mailto:${profile.email}`} data-magnetic data-cursor-fill>
               <span className="btn__shape" aria-hidden="true" />
               Email me
               <span className="btn__arrow" aria-hidden="true">

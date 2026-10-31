@@ -1,6 +1,8 @@
 // Pointer craft, fine pointers only. The native cursor always stays visible.
 //   data-magnetic          the target leans toward the pointer, 6 px at most (the sun draws it)
 //   data-cursor="Open"     the follower fills with light and shows this word over the target
+//   data-cursor-fill       it fills with light but shows no word (a target that names itself, like
+//                          the giant "Email me": a chip there would sit on its letters)
 import { gsap } from "@/lib/gsap";
 import { pointer, startPointer } from "@/lib/screen/pointer";
 import { ease, isTouch, prefersReducedMotion } from "./env";
@@ -49,12 +51,14 @@ export function initCursor() {
     "pointermove",
     (e) => {
       if (e.pointerType === "touch") return;
-      const target = (e.target as Element | null)?.closest?.<HTMLElement>("[data-cursor]");
-      const next = target?.dataset.cursor || "";
+      const target = (e.target as Element | null)?.closest?.<HTMLElement>("[data-cursor], [data-cursor-fill]");
+      const said = target?.dataset.cursor || "";
+      const next = target ? said || "\u00b7fill" : "";
       if (next !== word) {
         word = next;
-        el.classList.toggle("is-active", !!word);
-        if (label && word) label.textContent = word;
+        el.classList.toggle("is-active", !!target);
+        el.classList.toggle("is-quiet", !!target && !said);
+        if (label && said) label.textContent = said;
       }
     },
     { passive: true },
@@ -68,5 +72,5 @@ export function initCursor() {
 
 /** Clear a stale label after a route change. */
 export function resetCursor() {
-  follower?.classList.remove("is-active");
+  follower?.classList.remove("is-active", "is-quiet");
 }

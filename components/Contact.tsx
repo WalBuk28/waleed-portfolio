@@ -19,7 +19,7 @@ export function Contact() {
           href={`mailto:${profile.email}`}
           data-sun
           data-magnetic
-          data-cursor="Email"
+          data-cursor-fill
           data-quiet="box"
         >
           <span className="contact__flood" aria-hidden="true" />
