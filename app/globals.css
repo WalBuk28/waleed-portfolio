@@ -54,7 +54,8 @@
     scroll-behavior: smooth;
   }
   @media (prefers-reduced-motion: reduce) {
-    html {
+    html,
+    html:not(.lenis) {
       scroll-behavior: auto;
     }
     *,
@@ -3050,5 +3051,37 @@ html:not(.gl-on) .case__frame {
     display: block;
     padding: 2px 0;
     border: 0;
+  }
+}
+
+/* The page transition's curtain: the screen, closed. The poster's lattice relief on the ground,
+   cut to a hexagon in the mark's outline that grows a ring at a time (transition.ts); a thin rim
+   of jade light runs round its edge. Above everything but the skip link. */
+#curtain {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  pointer-events: none;
+  visibility: hidden;
+}
+.curtain__panel,
+.curtain__rim {
+  position: absolute;
+  inset: 0;
+}
+.curtain__panel {
+  background:
+    var(--poster-tile) var(--margin) 0 / max(72px, calc((100vw - 2 * var(--margin) + 24px) / 15)) auto repeat,
+    radial-gradient(circle 60vmax at 70% 30%, #121a3a, var(--ground));
+}
+.curtain__rim {
+  background: var(--light);
+  opacity: 0.85;
+}
+@media (max-width: 767px) {
+  .curtain__panel {
+    background:
+      var(--poster-tile) var(--margin) 0 / 56px auto repeat,
+      radial-gradient(circle 60vmax at 70% 30%, #121a3a, var(--ground));
   }
 }

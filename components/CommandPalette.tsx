@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
 import { gsap } from "@/lib/gsap";
-import { ease, prefersReducedMotion, scrollToTarget, startScroll, stopScroll } from "@/lib/engine";
+import { ease, prefersReducedMotion, scrollToTarget, startScroll, stopScroll, transitioning } from "@/lib/engine";
+import { navigate } from "@/lib/engine/next";
 import type { PaletteItem } from "@/lib/palette";
 
 /**
@@ -20,7 +20,6 @@ export function CommandPalette({
   setOpen: (v: boolean) => void;
   items: PaletteItem[];
 }) {
-  const router = useRouter();
   const [query, setQuery] = useState("");
   const [active, setActive] = useState(0);
   const [mounted, setMounted] = useState(false);
@@ -56,7 +55,7 @@ export function CommandPalette({
       return;
     }
     if (!mounted) return;
-    startScroll();
+    if (!transitioning()) startScroll(); // a page transition holds the scroll until it lands
     const el = root.current;
     const done = () => {
       setMounted(false);
@@ -102,8 +101,8 @@ export function CommandPalette({
     setOpen(false);
     if (it.href.startsWith("#")) {
       if (location.pathname === "/") scrollToTarget(it.href);
-      else router.push(`/${it.href}`);
-    } else if (it.href.startsWith("/work/")) router.push(it.href);
+      else navigate(`/${it.href}`);
+    } else if (it.href.startsWith("/work/")) navigate(it.href);
     else if (it.href.startsWith("http")) window.open(it.href, "_blank", "noopener,noreferrer");
     else location.href = it.href;
   };

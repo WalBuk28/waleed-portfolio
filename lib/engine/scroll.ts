@@ -54,9 +54,30 @@ export const smoothScroll = () => !!lenis;
 
 export function resetScroll() {
   if (lenis) lenis.scrollTo(0, { immediate: true, force: true });
-  else window.scrollTo(0, 0);
+  // Through ScrollTrigger's own scroll function, so its cache agrees: a refresh would otherwise
+  // "restore" the old page's position (native scroll, under reduced motion).
+  else ScrollTrigger.getScrollFunc(window)(0);
   state.y = 0;
   state.velocity = 0;
+}
+
+/** Land on a page position at once (back and forward restore where the page was left). */
+export function jumpToY(y: number) {
+  if (lenis) lenis.scrollTo(y, { immediate: true, force: true });
+  else ScrollTrigger.getScrollFunc(window)(y);
+}
+
+/** Land on a hash target at once (after a page transition, behind the curtain). */
+export function jumpTo(hash: string) {
+  let el: HTMLElement | null = null;
+  try {
+    el = document.querySelector<HTMLElement>(hash);
+  } catch {
+    return; // not a valid selector
+  }
+  if (!el) return;
+  if (lenis) lenis.scrollTo(el, { immediate: true, force: true });
+  else ScrollTrigger.getScrollFunc(window)(Math.round(el.getBoundingClientRect().top + window.scrollY));
 }
 
 export function scrollToTarget(target: string | HTMLElement | number) {

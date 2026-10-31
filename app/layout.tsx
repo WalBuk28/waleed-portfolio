@@ -3,6 +3,7 @@ import { Archivo, Martian_Mono } from "next/font/google";
 import { profile } from "@/lib/data";
 import { Analytics } from "@vercel/analytics/next";
 import { Engine } from "@/lib/engine/next";
+import { posterTile } from "@/components/screen/poster";
 import "./globals.css";
 
 // Two OFL families, self-hosted by next/font (DESIGN.md §5). Archivo carries display and text
@@ -102,6 +103,11 @@ export default function RootLayout({
           <span data-cursor-label />
         </div>
         {children}
+        {/* The page transition's curtain: the screen, closed (lib/engine/transition.ts). */}
+        <div id="curtain" aria-hidden="true" style={{ "--poster-tile": posterTile() } as React.CSSProperties}>
+          <div className="curtain__rim" />
+          <div className="curtain__panel" />
+        </div>
         {/* Vercel serves the analytics script; elsewhere (local review) it would 404. */}
         {process.env.VERCEL === "1" && <Analytics />}
         <Engine />

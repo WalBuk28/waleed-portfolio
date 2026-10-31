@@ -12,7 +12,7 @@ export function CaseFigure({ weave, slug }: { weave: WeaveData; slug: string }) 
   return (
     <figure className={light ? "case__fig case__fig--light" : "case__fig"} data-case-fig data-random={weave.random ? "" : undefined}>
       <WeaveDefs />
-      <div className="case__frame" data-case-frame>
+      <div className="case__frame" data-case-frame data-focal>
         <Weave weave={weave} id={`case-${slug}`} />
       </div>
       <figcaption className="case__cap" data-quiet>

@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { navLinks, profile } from "@/lib/data";
 import { WalSecMark } from "@/components/brand/WalSecMark";
-import { ease, onScroll, prefersReducedMotion, scrollToTarget, startScroll, stopScroll } from "@/lib/engine";
+import { ease, onScroll, prefersReducedMotion, scrollToTarget, startScroll, stopScroll, transitioning } from "@/lib/engine";
 import { usePage } from "@/lib/engine/next";
 import { gsap } from "@/lib/gsap";
 import { currentLabel, onChapter } from "@/lib/screen/driver";
@@ -109,7 +109,7 @@ export function Frame({ page = "home", label }: { page?: FramePage; label?: stri
       return;
     }
     if (!shown) return;
-    startScroll();
+    if (!transitioning()) startScroll(); // a page transition holds the scroll until it lands
     const hide = () => setShown(false);
     if (reduce) return hide();
     gsap.to(root, { "--a": "0px", duration: 0.4, ease: ease.inOut, overwrite: true, onComplete: hide });
