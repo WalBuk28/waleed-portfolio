@@ -1,17 +1,17 @@
+import type { CSSProperties } from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, ArrowUpRight, ExternalLink, Github } from "lucide-react";
-import { caseStudies, profile } from "@/lib/data";
-import { Icon } from "@/lib/icons";
-import { Background } from "@/components/Background";
-import { SiteChrome } from "@/components/SiteChrome";
+import { caseStudies, profile, weaves } from "@/lib/data";
+import { Frame } from "@/components/frame/Frame";
+import { Palette } from "@/components/frame/Palette";
 import { Footer } from "@/components/Footer";
-import { Providers } from "@/components/Providers";
+import { CaseFigure } from "@/components/case/CaseFigure";
+import { CaseMotion } from "@/components/case/CaseMotion";
+import { posterTile } from "@/components/screen/poster";
 import { paletteItems } from "@/lib/palette";
-import { Reveal } from "@/components/ui/Reveal";
-import { FlowDiagram } from "@/components/case/FlowDiagram";
-import { KillChain } from "@/components/case/KillChain";
+
+export const dynamicParams = false;
 
 export function generateStaticParams() {
   return caseStudies.map((c) => ({ slug: c.slug }));
@@ -47,250 +47,226 @@ export async function generateMetadata({
   };
 }
 
-const accentText: Record<string, string> = {
-  emerald: "text-emerald-accent",
-  electric: "text-electric-accent",
-};
+/** Display titles never break at a hyphen ("A-TIOC"): such words are kept whole. */
+const keepWhole = (title: string) =>
+  title.split(" ").map((w, i) => (
+    <span key={i}>
+      {i > 0 && " "}
+      {w.includes("-") ? <span className="nowrap">{w}</span> : w}
+    </span>
+  ));
 
-export default async function WorkPage({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}) {
+const repoName = (url: string) => url.replace(/^https:\/\/github\.com\//, "github.com/");
+
+/**
+ * A case study (DESIGN.md §11), written up like an engagement report, in the order the content
+ * rules set: the problem, what he did, the evidence, the result, its limitations, the links.
+ * Server-rendered and complete without JavaScript. The page holds its own screen, seeded from
+ * the slug (data-screen="case"), with a window open behind the hero figure; each section names
+ * itself to the frame's bottom-left label (data-label).
+ */
+export default async function WorkPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const study = caseStudies.find((c) => c.slug === slug);
-  if (!study) notFound();
-
   const idx = caseStudies.findIndex((c) => c.slug === slug);
+  if (idx < 0) notFound();
+  const study = caseStudies[idx];
   const next = caseStudies[(idx + 1) % caseStudies.length];
+  const weave = weaves[study.slug];
+  const limits = study.sections.filter((s) => s.heading === "Limitations");
+  const details = study.sections.filter((s) => s.heading !== "Limitations");
 
   return (
-    <Providers>
-      <Background />
-      <SiteChrome items={paletteItems()} />
-      <main id="main" className="pt-24">
-        <article className="section pb-16">
-          {/* back */}
-          <Reveal>
-            <Link
-              href="/#work"
-              className="inline-flex items-center gap-2 font-mono text-2xs text-ink-muted transition-colors hover:text-emerald-accent"
-            >
-              <ArrowLeft className="h-3.5 w-3.5" />
-              All work
-            </Link>
-          </Reveal>
-
-          {/* header */}
-          <header className="mt-6 border-b border-edge pb-10">
-            <Reveal>
-              <div className="flex items-center gap-3">
-                <span
-                  className={`grid h-12 w-12 place-items-center rounded-xl border border-edge bg-raised ${accentText[study.accent]}`}
-                >
-                  <Icon name={study.icon} className="h-6 w-6" />
+    <div
+      className="screen-page case-page"
+      data-screen="case"
+      data-seed={study.slug}
+      style={{ "--poster-tile": posterTile() } as CSSProperties}
+    >
+      <Frame page="case" label="Case study" />
+      <Palette items={paletteItems()} />
+      <main id="main" tabIndex={-1}>
+        <article className="case" aria-labelledby="case-title">
+          <header className="case__head" data-label="Case study">
+            <p className="case__back">
+              <Link className="ulink" href="/#work" data-quiet>
+                <span className="ulink__arrow ulink__arrow--back" aria-hidden="true">
+                  ←
                 </span>
-                <div className="font-mono text-2xs uppercase tracking-wider2 text-ink-muted">
-                  <div>{study.category}</div>
-                  {study.year && (
-                    <div className="mt-0.5 text-ink-secondary">{study.year}</div>
-                  )}
+                All work
+              </Link>
+            </p>
+            <h1 id="case-title" className="case__h1" data-quiet>
+              {keepWhole(study.title)}
+            </h1>
+            <p className="case__tagline" data-reveal="fade" data-intro data-quiet>
+              {study.tagline}
+            </p>
+            <dl className="case__meta" data-reveal="fade" data-intro data-delay="0.1" data-quiet>
+              <div>
+                <dt>Context</dt>
+                <dd>{study.category}</dd>
+              </div>
+              {study.year && (
+                <div>
+                  <dt>Year</dt>
+                  <dd>{study.year}</dd>
                 </div>
+              )}
+              <div>
+                <dt>{study.repos && study.repos.length > 1 ? "Repositories" : "Repository"}</dt>
+                <dd>
+                  {study.repos?.length
+                    ? study.repos.map((r) => (
+                        <a key={r} className="ilink" href={r} target="_blank" rel="noopener noreferrer">
+                          {repoName(r)}
+                        </a>
+                      ))
+                    : (study.repoNote ?? "None public")}
+                </dd>
               </div>
-            </Reveal>
-            <Reveal delay={0.05}>
-              <h1 className="mt-6 max-w-3xl text-3xl font-bold leading-tight sm:text-5xl">
-                {study.title}
-              </h1>
-            </Reveal>
-            <Reveal delay={0.1}>
-              <p className="mt-4 max-w-2xl text-lg text-ink-secondary">
-                {study.tagline}
-              </p>
-            </Reveal>
-            <Reveal delay={0.15}>
-              <div className="mt-6 flex flex-wrap items-center gap-2">
-                {study.tags.map((t) => (
-                  <span key={t} className="chip">
-                    {t}
-                  </span>
-                ))}
-                {study.demo && (
-                  <a
-                    href={study.demo}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={`inline-flex items-center gap-1.5 rounded-full border border-emerald-accent/30 px-3 py-1 font-mono text-2xs ${accentText[study.accent]} transition-colors hover:bg-emerald-accent/10`}
-                  >
-                    Live <ExternalLink className="h-3 w-3" />
-                  </a>
-                )}
-                {study.repos?.map((repo) => (
-                  <a
-                    key={repo}
-                    href={repo}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 rounded-full border border-edge px-3 py-1 font-mono text-2xs text-ink-secondary transition-colors hover:border-ink-muted hover:text-ink"
-                  >
-                    <Github className="h-3 w-3" />
-                    {study.repos!.length > 1 ? repo.split("/").pop() : "Code"}
-                  </a>
-                ))}
-                {study.repoNote && <span className="chip">{study.repoNote}</span>}
-              </div>
-            </Reveal>
+            </dl>
+            {weave && <CaseFigure weave={weave} slug={study.slug} />}
           </header>
 
-          {/* metrics */}
-          {study.metrics.length > 0 && (
-          <Reveal>
-            <div className="mt-10 grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-edge bg-edge lg:grid-cols-4">
-              {study.metrics.map((m) => (
-                <div key={m.label} className="bg-surface/80 px-5 py-6">
-                  <div
-                    className={`font-display text-2xl font-bold sm:text-3xl ${accentText[study.accent]}`}
-                  >
-                    {m.value}
-                  </div>
-                  <div className="mt-1.5 text-xs font-medium text-ink">
-                    {m.label}
-                  </div>
-                  {m.sub && (
-                    <div className="mt-0.5 text-2xs text-ink-muted">{m.sub}</div>
-                  )}
-                </div>
-              ))}
-            </div>
-          </Reveal>
-          )}
+          <Section id="problem" label="Problem" title="Problem">
+            <p className="case__lead" data-reveal="fade" data-quiet>
+              {study.context}
+            </p>
+            <p data-reveal="fade" data-quiet>
+              {study.problem}
+            </p>
+          </Section>
 
-          {/* overview grid */}
-          <div className="mt-12 grid gap-8 lg:grid-cols-3">
-            <Reveal className="lg:col-span-2">
-              <div className="space-y-6">
-                <Block label="Context" body={study.context} />
-                <Block label="The problem" body={study.problem} />
-                <Block label="My approach" body={study.approach} />
+          <Section id="what-i-did" label="What I did" title="What I did">
+            <p className="case__lead" data-reveal="fade" data-quiet>
+              {study.approach}
+            </p>
+            {details.map((d) => (
+              <div key={d.heading} className="case__detail">
+                <h3 className="case__h3" data-quiet>
+                  {d.heading}
+                </h3>
+                <p data-reveal="fade" data-quiet>
+                  {d.body}
+                </p>
+                {d.bullets && (
+                  <ul className="case__list" data-reveal="fade" data-quiet>
+                    {d.bullets.map((b) => (
+                      <li key={b}>{b}</li>
+                    ))}
+                  </ul>
+                )}
               </div>
-            </Reveal>
+            ))}
+          </Section>
 
-            <Reveal delay={0.05}>
-              <aside className="panel h-fit p-5 lg:sticky lg:top-24">
-                <h2 className="font-mono text-2xs uppercase tracking-wider2 text-ink-muted">
-                  Stack & tooling
-                </h2>
-                <ul className="mt-4 flex flex-wrap gap-1.5">
-                  {study.stack.map((s) => (
-                    <li key={s} className="chip">
-                      {s}
-                    </li>
-                  ))}
-                </ul>
-              </aside>
-            </Reveal>
-          </div>
-
-          {/* visualisations */}
-          {(study.architecture || study.killChain) && (
-            <div className="mt-12 space-y-6">
-              {study.architecture && (
-                <Reveal>
-                  <FlowDiagram
-                    title={study.architecture.title}
-                    nodes={study.architecture.nodes}
-                  />
-                </Reveal>
-              )}
-              {study.killChain && (
-                <Reveal>
-                  <KillChain stages={study.killChain} />
-                </Reveal>
-              )}
+          <Section id="evidence" label="Evidence" title="Evidence">
+            {study.metrics.length > 0 && (
+              <dl className="case__facts" data-quiet="box">
+                {study.metrics.map((m) => (
+                  <div key={m.label} className="case__fact">
+                    <dt>{m.label}</dt>
+                    <dd className="case__value">{m.value}</dd>
+                    {m.sub && <dd className="case__method">{m.sub}</dd>}
+                  </div>
+                ))}
+              </dl>
+            )}
+            <div className="case__stack">
+              <h3 className="case__h3" data-quiet>
+                Stack and tools
+              </h3>
+              <ul className="case__tags mono" data-quiet>
+                {study.stack.map((s) => (
+                  <li key={s}>{s}</li>
+                ))}
+              </ul>
             </div>
+          </Section>
+
+          <Section id="result" label="Result" title="Result">
+            <p className="case__lead" data-reveal="fade" data-quiet>
+              {study.outcome}
+            </p>
+          </Section>
+
+          {limits.length > 0 && (
+            <Section id="limitations" label="Limitations" title="Limitations">
+              {limits.map((l) => (
+                <p key={l.body} data-reveal="fade" data-quiet>
+                  {l.body}
+                </p>
+              ))}
+            </Section>
           )}
 
-          {/* deep-dive sections */}
-          <div className="mt-12 space-y-8">
-            {study.sections.map((s, i) => (
-              <Reveal key={s.heading} delay={i * 0.03}>
-                <div className="grid gap-3 border-t border-edge pt-8 lg:grid-cols-[0.3fr_0.7fr]">
-                  <h2 className="font-display text-lg font-semibold text-ink">
-                    {s.heading}
-                  </h2>
-                  <div>
-                    <p className="text-base leading-relaxed text-ink-secondary">
-                      {s.body}
-                    </p>
-                    {s.bullets && (
-                      <ul className="mt-4 space-y-2">
-                        {s.bullets.map((b) => (
-                          <li
-                            key={b}
-                            className="flex gap-2.5 text-sm leading-relaxed text-ink-secondary"
-                          >
-                            <span
-                              className={`mt-2 h-1 w-1 flex-none rounded-full ${study.accent === "emerald" ? "bg-emerald-accent" : "bg-electric-accent"}`}
-                            />
-                            {b}
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                  </div>
-                </div>
-              </Reveal>
-            ))}
-          </div>
+          <Section id="links" label="Links" title="Links">
+            <ul className="case__links" data-quiet="box">
+              {study.repos?.map((r) => (
+                <li key={r}>
+                  <a className="ulink" href={r} target="_blank" rel="noopener noreferrer">
+                    {repoName(r)}
+                    <span className="ulink__arrow ulink__arrow--out" aria-hidden="true">
+                      ↗
+                    </span>
+                  </a>
+                </li>
+              ))}
+              {study.demo && (
+                <li>
+                  <a className="ulink" href={study.demo} target="_blank" rel="noopener noreferrer">
+                    Live demo
+                    <span className="ulink__arrow ulink__arrow--out" aria-hidden="true">
+                      ↗
+                    </span>
+                  </a>
+                </li>
+              )}
+              {!study.repos?.length && study.repoNote && <li className="case__note">{study.repoNote}</li>}
+              <li>
+                <Link className="ulink" href="/#work">
+                  All work
+                </Link>
+              </li>
+            </ul>
+            <a className="btn btn--primary case__cta" href={`mailto:${profile.email}`} data-magnetic data-cursor="Email">
+              <span className="btn__shape" aria-hidden="true" />
+              Email me
+              <span className="btn__arrow" aria-hidden="true">
+                →
+              </span>
+            </a>
+          </Section>
+        </article>
 
-          {/* outcome */}
-          <Reveal>
-            <div className="panel mt-12 p-6 sm:p-8">
-              <h2 className="eyebrow">
-                <span className="h-1 w-1 rounded-full bg-emerald-accent" />
-                Outcome
-              </h2>
-              <p className="mt-4 text-lg leading-relaxed text-ink">
-                {study.outcome}
-              </p>
-            </div>
-          </Reveal>
-
-          {/* next + CTA */}
-          <div className="mt-12 flex flex-col items-start justify-between gap-6 border-t border-edge pt-8 sm:flex-row sm:items-center">
-            <Link
-              href={`/work/${next.slug}`}
-              className="group inline-flex items-center gap-3"
-            >
-              <span className="font-mono text-2xs uppercase tracking-wider2 text-ink-muted">
-                Next case study
-                <span className="mt-1 block font-sans text-base font-semibold normal-case tracking-normal text-ink transition-colors group-hover:text-emerald-accent">
-                  {next.title}
+        <nav className="case__next" aria-label="Next case study" data-label="Next">
+          <Link className="case__nextlink" href={`/work/${next.slug}`} data-cursor="Open">
+            <span className="case__nextlabel mono">Next case study</span>
+            <span className="case__nextmask">
+              <span className="case__nexttitle" data-quiet>
+                {next.title}
+                {/* the arrow follows the last word */}
+                <span className="case__nextarrow" aria-hidden="true">
+                  →
                 </span>
               </span>
-              <ArrowUpRight className="h-5 w-5 text-ink-muted transition-colors group-hover:text-emerald-accent" />
-            </Link>
-            <Link href="/#contact" className="btn-primary">
-              Hire me
-              <ArrowUpRight className="h-4 w-4" />
-            </Link>
-          </div>
-        </article>
+            </span>
+          </Link>
+        </nav>
       </main>
       <Footer />
-    </Providers>
+      <CaseMotion />
+    </div>
   );
 }
 
-function Block({ label, body }: { label: string; body: string }) {
+function Section({ id, label, title, children }: { id: string; label: string; title: string; children: React.ReactNode }) {
   return (
-    <div>
-      <h2 className="font-mono text-2xs uppercase tracking-wider2 text-ink-muted">
-        {label}
+    <section className="case__sec" data-label={label} aria-labelledby={id}>
+      <h2 id={id} className="case__h2" data-split data-quiet>
+        {title}
       </h2>
-      <p className="mt-3 text-base leading-relaxed text-ink-secondary">
-        {body}
-      </p>
-    </div>
+      <div className="case__body">{children}</div>
+    </section>
   );
 }

@@ -2371,3 +2371,383 @@ html:not(.js) .btn--copy {
     grid-column: 1 / -1;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Case pages (stage 4, DESIGN.md §11): an engagement report on its own screen. Headings hang
+   on column 1, text on the column 5 line; the head pairs the title with the hero figure, the
+   case's evidence weave in the screen's window.
+   ═══════════════════════════════════════════════════════════════════════════ */
+/* The poster's light sits behind the hero figure (no hero cluster here). */
+.case-page::before {
+  background-image: var(--poster-tile),
+    radial-gradient(circle 340px at 78% calc(34 * 1svh), rgb(139 92 246 / 0.2), transparent 100%),
+    radial-gradient(circle 220px at 70% calc(28 * 1svh), rgb(46 230 184 / 0.12), transparent 100%);
+}
+@media (max-width: 767px) {
+  .case-page::before {
+    background-image: var(--poster-tile),
+      radial-gradient(circle 220px at 80% calc(62 * 1svh), rgb(139 92 246 / 0.2), transparent 100%);
+  }
+}
+.case {
+  padding: calc(var(--margin) + 104px) var(--margin) 0;
+}
+/* The head is the first screen, so the frame's bottom corners sit on its empty foot and never
+   on running text. */
+.case__head {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  grid-template-rows: auto auto auto 1fr;
+  column-gap: var(--gutter);
+  align-items: start;
+  min-height: calc(100svh - var(--margin) - 104px);
+  padding-bottom: 72px;
+}
+.case__back {
+  grid-column: 1 / -1;
+  margin: 0 0 clamp(16px, 2.5vw, 40px);
+}
+.ulink__arrow--back {
+  order: -1;
+}
+.ulink:focus-visible .ulink__arrow--back {
+  translate: -5px 0;
+}
+@media (hover: hover) {
+  .ulink:hover .ulink__arrow--back {
+    translate: -5px 0;
+  }
+}
+.nowrap {
+  white-space: nowrap;
+}
+.case__h1 {
+  grid-column: 1 / span 7;
+  margin: 0 0 0 -0.05em;
+  font-size: var(--t-xl);
+  font-weight: 300;
+  font-stretch: 125%;
+  letter-spacing: -0.035em;
+  line-height: 1;
+  color: var(--ink);
+  text-wrap: balance;
+}
+.case__tagline {
+  grid-column: 1 / span 6;
+  margin: 28px 0 0;
+  max-width: 40ch;
+  font-size: var(--t-m);
+  letter-spacing: -0.01em;
+  line-height: 1.35;
+  color: var(--ink-soft);
+}
+.case__meta {
+  grid-column: 1 / span 6;
+  display: grid;
+  gap: 14px;
+  margin: 40px 0 0;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+}
+.case__meta div {
+  display: grid;
+  grid-template-columns: 9.5em 1fr;
+  gap: 16px;
+}
+.case__meta dt {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-stretch: 87.5%;
+  font-size: 13px;
+  line-height: 22px;
+  color: var(--muted);
+}
+.case__meta dd {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 18px;
+  margin: 0;
+  font-size: 15px;
+  line-height: 22px;
+  color: var(--ink);
+}
+.case__fig {
+  grid-column: 8 / span 5;
+  grid-row: 2 / span 3;
+  margin: 8px 0 0;
+}
+.case__frame {
+  aspect-ratio: 8 / 5;
+  color: rgb(235 238 248 / 0.1); /* the background lattice's hairlines */
+}
+.case__fig--light .case__frame {
+  aspect-ratio: 8 / 2;
+}
+html:not(.gl-on) .case__frame {
+  clip-path: var(--chamfer);
+  background:
+    radial-gradient(ellipse 70% 80% at 70% 30%, rgb(139 92 246 / 0.22), transparent 70%),
+    var(--face);
+}
+.case__cap {
+  max-width: 46ch;
+  margin-top: 14px;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--ink-soft);
+}
+
+/* The sections: the heading on column 1 (it stays while its text passes), the text from the
+   column 5 line, at a reading measure. */
+.case__sec {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--gutter);
+  padding-top: clamp(80px, 9vw, 144px);
+}
+.case__h2 {
+  grid-column: 1 / span 4;
+  align-self: start;
+  position: sticky;
+  top: calc(var(--margin) + 72px);
+  margin: 0;
+  font-size: var(--t-l);
+  font-weight: 400;
+  font-stretch: 112%;
+  letter-spacing: -0.025em;
+  line-height: 1.05;
+  color: var(--ink);
+}
+.case__body {
+  grid-column: 5 / span 8;
+  max-width: 64ch;
+  font-size: var(--t-body);
+  line-height: 1.6;
+  color: var(--ink-soft);
+}
+.case__body p {
+  margin: 0;
+}
+.case__body > * + *,
+.case__detail > * + * {
+  margin-top: 1.1em;
+}
+.case__lead {
+  font-size: var(--t-m);
+  letter-spacing: -0.01em;
+  line-height: 1.4;
+  color: var(--ink);
+}
+.case__detail {
+  margin-top: 56px;
+  padding-top: 24px;
+  border-top: 1px solid var(--line);
+}
+.case__h3 {
+  margin: 0;
+  font-size: 19px;
+  font-weight: 500;
+  font-stretch: 112%;
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+  color: var(--ink);
+}
+.case__list {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 0;
+  padding: 0;
+  list-style: none;
+}
+.case__list li {
+  position: relative;
+  padding-left: 24px;
+}
+/* each point hangs from a small closed cell of the lattice */
+.case__list li::before {
+  content: "";
+  position: absolute;
+  left: 2px;
+  top: 0.55em;
+  width: 9px;
+  height: 11px;
+  background: var(--muted);
+  opacity: 0.6;
+  clip-path: polygon(50% 0, 100% 22%, 100% 78%, 50% 100%, 0 78%, 0 22%);
+}
+
+/* Evidence: each number with how it was measured. */
+.case__facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: var(--gutter);
+  margin: 0;
+  border-top: 1px solid var(--line);
+}
+.case__fact {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 22px 0 24px;
+  border-bottom: 1px solid var(--line);
+}
+.case__fact dt {
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.35;
+  color: var(--ink);
+}
+.case__fact dd {
+  margin: 0;
+}
+.case__value {
+  order: -1;
+  font-size: var(--t-l);
+  font-weight: 300;
+  font-stretch: 125%;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+  color: var(--ink);
+}
+.case__method {
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--muted);
+}
+.case__stack {
+  margin-top: 48px;
+}
+.case__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 14px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.case__tags li {
+  padding: 7px 14px 7px 16px;
+  font-size: 13px;
+  line-height: 16px;
+  color: var(--ink);
+  background: rgb(235 238 248 / 0.07);
+  clip-path: var(--chamfer);
+}
+.case__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 32px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.case__note {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  font-size: 15px;
+  color: var(--muted);
+}
+.case__cta {
+  margin-top: 36px;
+}
+
+/* Next case study: the title rides along x under the hand, its arrow travels. */
+.case__next {
+  margin-top: clamp(112px, 12vw, 192px);
+  padding: 0 var(--margin);
+}
+.case__nextlink {
+  display: block;
+  padding: 36px 0 clamp(72px, 9vw, 128px);
+  border-top: 1px solid var(--line);
+  color: var(--ink);
+}
+.case__nextlabel {
+  display: block;
+  margin-bottom: 18px;
+  font-size: 13px;
+  color: var(--muted);
+}
+.case__nextmask {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.08em;
+}
+.case__nexttitle {
+  display: inline-block;
+  margin-left: -0.05em;
+  font-size: var(--t-xl);
+  font-weight: 300;
+  font-stretch: 125%;
+  letter-spacing: -0.035em;
+  line-height: 1.05;
+  transition: translate 0.45s cubic-bezier(0.165, 0.84, 0.44, 1), color 0.3s;
+}
+.case__nextarrow {
+  display: inline-block;
+  margin-left: 0.3em;
+  font-size: 0.6em;
+  transition: translate 0.45s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+.case__nextlink:focus-visible .case__nexttitle,
+.case__nextlink:active .case__nexttitle {
+  translate: 12px 0;
+  color: var(--link);
+}
+@media (hover: hover) {
+  .case__nextlink:hover .case__nexttitle {
+    translate: 12px 0;
+    color: var(--link);
+  }
+  .case__nextlink:hover .case__nextarrow {
+    translate: 6px 0;
+  }
+}
+
+/* Tablet and phone: one column; the figure follows the meta. */
+@media (max-width: 1023px) {
+  .case__h1,
+  .case__tagline,
+  .case__meta,
+  .case__fig {
+    grid-column: 1 / -1;
+  }
+  .case__head {
+    grid-template-rows: none;
+    min-height: 0;
+    padding-bottom: 0;
+  }
+  .case__fig {
+    grid-row: auto;
+    margin-top: 40px;
+  }
+  .case__h2 {
+    grid-column: 1 / -1;
+    position: static;
+    margin-bottom: 24px;
+  }
+  .case__body {
+    grid-column: 1 / -1;
+  }
+}
+@media (max-width: 767px) {
+  .case {
+    padding-top: calc(var(--margin) + 76px);
+  }
+  .case__meta div {
+    grid-template-columns: 1fr;
+    gap: 2px;
+  }
+  .case__facts {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* The Construct OS strip, on phones and tablets: light only, so a short band, not a tall
+   empty frame. The desktop window keeps its size. */
+@media not ((hover: hover) and (pointer: fine) and (min-width: 1024px)) {
+  .work__frame--light {
+    aspect-ratio: 8 / 2;
+  }
+}

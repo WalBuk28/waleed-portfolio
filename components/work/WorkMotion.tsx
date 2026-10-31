@@ -5,6 +5,7 @@ import { ease, onScroll, prefersReducedMotion } from "@/lib/engine";
 import { usePage } from "@/lib/engine/next";
 import { setWindow } from "@/lib/screen/driver";
 import { weaveFill } from "./Weave";
+import { cellsIn, hideCells, lockIn } from "./cells";
 
 const ON = weaveFill(1);
 const OFF = weaveFill(0.14);
@@ -22,60 +23,19 @@ export function WorkMotion() {
     if (!list) return;
     const rows = [...list.querySelectorAll<HTMLElement>("[data-row]")];
     const reduce = prefersReducedMotion();
-    const cellsOf = (row: HTMLElement) => [...row.querySelectorAll<SVGUseElement>(".weave__cell")];
-    // The vault's IV is random, so its weave is too: a fresh draw each time it opens.
+    const cellsOf = (row: HTMLElement) => cellsIn(row);
     const reroll = (row: HTMLElement) => {
       if (!row.querySelector("[data-random]")) return;
       cellsOf(row).forEach((c) => c.setAttribute("fill", Math.random() < 0.5 ? ON : OFF));
     };
-    // The cells lock in, in reading order: each scales up about its centre as its light comes on
-    // (the lock ease, 0.5 s). A weave holds up to 236 cells, so one tween per row drives them all
-    // and writes a cell only when its eased level steps (8 levels): a few writes a frame, not
-    // hundreds. Each cell's centre is its own origin, so scale() needs no bounding box.
-    const LEVELS = 8;
-    const hide = (cells: SVGUseElement[]) =>
-      cells.forEach((c) => {
-        c.setAttribute("opacity", "0");
-        c.setAttribute("transform", "scale(0.55)");
-      });
+    // The cells lock in by one stepped tween per row (cells.ts).
     const running = new WeakMap<HTMLElement, gsap.core.Tween>();
     const openCells = (row: HTMLElement, delay = 0) => {
       if (reduce) return;
       const cells = cellsOf(row);
-      const n = cells.length;
-      if (!n) return;
+      if (!cells.length) return;
       running.get(row)?.kill();
-      hide(cells);
-      const step = Math.min(0.02, 0.45 / n);
-      const level = new Int8Array(n);
-      const p = { t: 0 };
-      let first = 0; // cells before this one are fully lit
-      running.set(
-        row,
-        gsap.to(p, {
-          t: delay + step * (n - 1) + 0.5,
-          duration: delay + step * (n - 1) + 0.5,
-          ease: "none",
-          onUpdate: () => {
-            for (let i = first; i < n; i++) {
-              const local = (p.t - delay - i * step) / 0.5;
-              if (local <= 0) break; // later cells start later
-              const l = Math.round((1 - Math.pow(1 - Math.min(1, local), 4)) * LEVELS); // power4.out
-              if (l === level[i]) continue;
-              level[i] = l;
-              const c = cells[i];
-              if (l === LEVELS) {
-                c.removeAttribute("opacity");
-                c.removeAttribute("transform");
-                if (i === first) first++;
-              } else {
-                c.setAttribute("opacity", (l / LEVELS).toFixed(3));
-                c.setAttribute("transform", `scale(${(0.55 + (0.45 * l) / LEVELS).toFixed(3)})`);
-              }
-            }
-          },
-        }),
-      );
+      running.set(row, lockIn(cells, delay));
     };
 
     if (!reduce) {
@@ -143,7 +103,7 @@ export function WorkMotion() {
         const frame = row.querySelector(".work__frame");
         const cells = cellsOf(row);
         if (!frame || !cells.length) return;
-        hide(cells);
+        hideCells(cells);
         ScrollTrigger.create({
           trigger: frame,
           start: "top 62%",

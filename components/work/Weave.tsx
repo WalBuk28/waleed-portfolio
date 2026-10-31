@@ -78,7 +78,8 @@ export function Weave({ weave, id }: { weave: WeaveData; id: string }) {
   const r = (v: number) => +v.toFixed(2);
   return (
     // The figure's caption says what the cells are; the drawing itself is aria-hidden.
-    <svg className="weave" viewBox={`0 0 ${W} ${H}`} aria-hidden="true" focusable="false" preserveAspectRatio="xMidYMid meet">
+    // An empty weave (light only) fills whatever strip it's given; a counted one is never cropped.
+    <svg className="weave" viewBox={`0 0 ${W} ${H}`} aria-hidden="true" focusable="false" preserveAspectRatio={cells.length ? "xMidYMid meet" : "xMidYMid slice"}>
       <defs>
         <pattern
           id={`wv-bg-${id}`}
