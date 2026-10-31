@@ -643,26 +643,20 @@ html:not(.js) .frame {
   opacity: 0;
   transition: opacity 0.4s, translate 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
+/* the top bar returns over running text: its scrim is solid behind the whole bar */
 .frame::before {
   top: 0;
-  background: linear-gradient(var(--ground) 35%, transparent);
+  background: linear-gradient(var(--ground) 68%, transparent);
 }
 .frame::after {
   bottom: 0;
   background: linear-gradient(transparent, var(--ground) 65%);
 }
-html.frame-scrolled .frame::before,
 html.frame-scrolled .frame::after {
   opacity: 0.94;
 }
-/* On a phone the top bar returns over running text: the scrim is solid behind the whole bar. */
-@media (max-width: 767px) {
-  .frame::before {
-    background: linear-gradient(var(--ground) 66%, transparent);
-  }
-  html.frame-scrolled .frame::before {
-    opacity: 0.98;
-  }
+html.frame-scrolled .frame::before {
+  opacity: 0.98;
 }
 html.frame-away .frame__tl,
 html.frame-away .frame__tr,
