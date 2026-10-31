@@ -229,10 +229,10 @@ export const caseStudies: CaseStudy[] = [
       { value: "Offline", label: "AI inference", sub: "Qwen · DeepSeek via Ollama, no cloud API" },
     ],
     architecture: {
-      title: "Decoupled, fully-local pipeline",
+      title: "Decoupled, fully local pipeline",
       nodes: [
-        { id: "osint", label: "OSINT Feeds\nThreatFox · URLhaus", kind: "in" },
-        { id: "pcap", label: "PCAP Upload\n≤ 50MB DPI", kind: "in" },
+        { id: "osint", label: "OSINT feeds\nThreatFox · URLhaus", kind: "in" },
+        { id: "pcap", label: "PCAP upload\n≤ 50 MB, deep packet inspection", kind: "in" },
         { id: "flask", label: "Flask 3.0 API\nEventlet + multiprocessing", kind: "core" },
         { id: "db", label: "SQLite (WAL)\nACID evidence store", kind: "core" },
         { id: "rag", label: "RAG · BGE-M3\nQwen · DeepSeek (Ollama)", kind: "ai" },

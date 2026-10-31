@@ -8,6 +8,8 @@ import { Palette } from "@/components/frame/Palette";
 import { Footer } from "@/components/Footer";
 import { CaseFigure } from "@/components/case/CaseFigure";
 import { CaseMotion } from "@/components/case/CaseMotion";
+import { CaseFlow } from "@/components/case/CaseFlow";
+import { AttackFigure } from "@/components/case/AttackFigure";
 import { posterTile } from "@/components/screen/poster";
 import { paletteItems } from "@/lib/palette";
 
@@ -172,6 +174,7 @@ export default async function WorkPage({ params }: { params: Promise<{ slug: str
                 ))}
               </dl>
             )}
+            {study.architecture && <CaseFlow title={study.architecture.title} nodes={study.architecture.nodes} />}
             <div className="case__stack">
               <h3 className="case__h3" data-quiet>
                 Stack and tools
@@ -183,6 +186,13 @@ export default async function WorkPage({ params }: { params: Promise<{ slug: str
               </ul>
             </div>
           </Section>
+
+          {/* Full width, outside Evidence's sticky heading: the matrix needs every column. */}
+          {study.killChain && (
+            <div className="case__wide" data-label="Evidence">
+              <AttackFigure stages={study.killChain} />
+            </div>
+          )}
 
           <Section id="result" label="Result" title="Result">
             <p className="case__lead" data-reveal="fade" data-quiet>
