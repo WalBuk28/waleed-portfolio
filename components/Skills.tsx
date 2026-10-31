@@ -18,7 +18,7 @@ export function Skills() {
     <section id="skills" data-chapter="3" className="skills" aria-labelledby="skills-title">
       <div className="skills__head">
         <h2 id="skills-title" className="h2 skills__h2" data-split data-quiet>
-          Skills, with the evidence
+          Skills, with the <span className="h2__key">evidence</span>
         </h2>
         <p className="skills__lede" data-reveal="fade" data-quiet>
           No self-ratings. Each group names the case studies where you can check the work.

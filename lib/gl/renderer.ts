@@ -79,6 +79,11 @@ export function createScreen(
     uTap: { value: [0, 0, -10, 0] },
     uQuiet: { value: new Array(64).fill(0) },
     uQuietN: { value: 0 },
+    uGlassW: { value: [1, 0, 0] },
+    uTintW: { value: [1, 0, 0] },
+    uGlowW: { value: [0, 1, 0] },
+    uShaftW: { value: [1, 0, 0] },
+    uGlow: { value: [0, 0, 1, 0] },
   };
 
   let program: Program;

@@ -7,7 +7,7 @@ import { V } from "@/lib/gl/lattice";
 const W = 100; // tile units per cell
 const r1 = (v: number) => Math.round(v * 10) / 10;
 
-export function posterTile(face = "#111816") {
+export function posterTile(face = "#111934") {
   const k = W / (2 * WALL.halfWidth);
   const h = 2 * V * W;
   const centres: [number, number][] = [

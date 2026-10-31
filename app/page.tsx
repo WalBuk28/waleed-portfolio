@@ -23,7 +23,7 @@ export const metadata: Metadata = {
  */
 export default function Home() {
   return (
-    <div className="screen-page" data-screen="home" style={{ "--poster-tile": posterTile(), "--poster-day": posterTile("#cbe5da") } as CSSProperties}>
+    <div className="screen-page" data-screen="home" style={{ "--poster-tile": posterTile(), "--poster-day": posterTile("rgba(10,15,36,0.025)") } as CSSProperties}>
       <Frame />
       <Palette items={paletteItems()} />
       <main id="main" tabIndex={-1}>

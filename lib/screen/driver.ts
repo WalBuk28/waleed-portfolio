@@ -26,8 +26,8 @@ type Box = { x: number; y: number; w: number; h: number };
 export const intro = { lock: 1e9, hero: 1, beam: 1, len: 1e5 };
 
 const INK = {
-  night: { ink: [233, 238, 235], soft: [183, 194, 189], muted: [147, 163, 156], ground: [10, 14, 13], lit: [217, 246, 234] },
-  day: { ink: [6, 17, 13], soft: [6, 17, 13], muted: [46, 74, 63], ground: [207, 233, 222], lit: [31, 107, 85] },
+  night: { ink: [235, 238, 248], soft: [185, 192, 216], muted: [160, 170, 203], ground: [10, 15, 36], lit: [46, 230, 184], link: [180, 154, 255], scarlet: [255, 74, 80] },
+  day: { ink: [10, 15, 36], soft: [10, 15, 36], muted: [61, 70, 110], ground: [226, 242, 240], lit: [10, 110, 84], link: [91, 52, 214], scarlet: [181, 18, 31] },
 } as const;
 
 const st = {
@@ -359,6 +359,11 @@ function tick(time: number, dt: number) {
   u.uSwing.value = s.swing;
   u.uRetract.value = s.retract;
   u.uDay.value = day;
+  // The glass: the cells' mix, the room's light, the second glow; the shaft is always jade.
+  u.uGlassW.value = s.glass;
+  u.uTintW.value = s.tint;
+  u.uGlowW.value = s.glowCol;
+  u.uGlow.value = [s.glow[0] * vw, s.glow[1] * vh, s.glow[2], s.glow[3]];
 
   // The window: it glides to its rect and eases open; on the first open it starts in place.
   const win = st.win;
@@ -426,5 +431,7 @@ function writeInk(day: number) {
   set("--ink-soft", mixed(INK.night.soft, INK.day.soft, t));
   set("--muted", mixed(INK.night.muted, INK.day.muted, t));
   set("--lit", mixed(INK.night.lit, INK.day.lit, t));
+  set("--link", mixed(INK.night.link, INK.day.link, t));
+  set("--scarlet-ink", mixed(INK.night.scarlet, INK.day.scarlet, t));
   set("--ground", mixed(INK.night.ground, INK.day.ground, g));
 }

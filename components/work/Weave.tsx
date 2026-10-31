@@ -9,10 +9,11 @@ const H = 250;
 const PAD = 22;
 const INSET = 0.84; // a cell's outline inside its lattice slot, so the seams show
 
-// #33997d (light) to #d9f6ea (light-hi): light is green until it's bright enough to go white.
+// #2ee6b8 (jade light) to #d2fcef (light-hi): light is jade until it's bright enough to go white.
+// One hue only: the levels are data (brighter is more severe, lit or dim), so no other glass here.
 const mix = (a: number[], b: number[], t: number) => a.map((v, i) => Math.round(v + (b[i] - v) * t));
-const LIGHT = [51, 153, 125];
-const HI = [217, 246, 234];
+const LIGHT = [46, 230, 184];
+const HI = [210, 252, 239];
 function fill(level: number) {
   if (level >= 0.6) return `rgb(${mix(LIGHT, HI, (level - 0.6) / 0.4).join(" ")})`;
   return `rgb(${LIGHT.join(" ")} / ${(0.18 + (level / 0.6) * 0.82).toFixed(2)})`;

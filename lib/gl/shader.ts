@@ -23,12 +23,21 @@ uniform float uJali, uBand, uSwing, uRetract, uDay;
 uniform vec4 uTap;
 uniform vec4 uQuiet[16];
 uniform float uQuietN;
+// Coloured glass (weights for jade, scarlet, violet): the cells' mix, the room's light, the second
+// glow and the hero cell's glass (the shaft). The chapter sets them; the driver blends them.
+uniform vec3 uGlassW, uTintW, uGlowW, uShaftW;
+uniform vec4 uGlow; // the second glow: x, y (viewport px), radius (px), strength
 
-const vec3 GROUND = vec3(0.039, 0.055, 0.051); // #0a0e0d
-const vec3 FACE = vec3(0.066, 0.094, 0.086);   // #111816
-const vec3 LIGHT = vec3(0.200, 0.600, 0.490);  // #33997d
-const vec3 HI = vec3(0.851, 0.965, 0.918);     // #d9f6ea
-const vec3 DAY = vec3(0.812, 0.914, 0.871);    // #cfe9de
+const vec3 GROUND = vec3(0.039, 0.059, 0.141); // #0a0f24 midnight navy
+const vec3 FACE = vec3(0.067, 0.098, 0.204);   // #111934
+const vec3 JADE = vec3(0.180, 0.902, 0.722);   // #2ee6b8, the main light
+const vec3 SCARLET = vec3(1.000, 0.220, 0.180); // #ff382e: #ff3b47 with less blue, so it stays red over navy
+const vec3 VIOLET = vec3(0.580, 0.400, 1.000); // #9466ff, #8b5cf6 lifted: violet glass passes less light
+const vec3 JADE_HI = vec3(0.824, 0.988, 0.937);   // #d2fcef
+const vec3 SCARLET_HI = vec3(1.000, 0.380, 0.250); // #ff6140: bright red light runs hot, never toward pink
+const vec3 VIOLET_HI = vec3(0.914, 0.878, 1.000); // #e9e0ff
+const vec3 DAY = vec3(0.863, 0.965, 0.925);    // #dcf6ec, daylight through jade glass
+const vec3 DAY_FAR = vec3(0.933, 0.918, 0.988); // #eeeafc, and far from the sun, through violet
 const float HH = 0.65, V = 1.0113249, T30 = 0.5773503, C30 = 0.8660254;
 
 // Is this pixel inside a quiet rect (padded by 12 px)? For lines drawn over the screen.
@@ -43,6 +52,19 @@ float quietPx(vec2 p) {
   return qp;
 }
 float h21(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+// Which glass a cell holds. Each cell's number comes from a 2D Kronecker sequence over the
+// lattice (with a little jitter), so any cluster of open cells holds close to the chapter's mix;
+// it's compared with the weights softly, so a change of mix recolours the panes one by one.
+float glassN(vec2 ce) {
+  return fract(0.6494360 * ce.x + 0.7548777 * floor(ce.y / V + 0.5) + 0.06 * (h21(ce + vec2(41.7, 7.3)) - 0.5));
+}
+vec3 glassW(float h) {
+  float a = smoothstep(uGlassW.x - 0.03, uGlassW.x + 0.03, h);
+  float b = smoothstep(uGlassW.x + uGlassW.y - 0.03, uGlassW.x + uGlassW.y + 0.03, h);
+  return vec3(1.0 - a, a - b, b);
+}
+vec3 glass(vec3 w) { return JADE * w.x + SCARLET * w.y + VIOLET * w.z; }
+vec3 glassHi(vec3 w) { return JADE_HI * w.x + SCARLET_HI * w.y + VIOLET_HI * w.z; }
 float cellEdge(vec2 l) { return min(0.5 - abs(l.x), (HH - abs(l.x) * T30 - abs(l.y)) * C30); }
 
 // The cell under u (lattice units): local coords, centre, distance to its outline.
@@ -107,6 +129,9 @@ void main() {
   float heroD = distance(c, uHero);
   float hero = 1.0 - smoothstep(0.35 * S, 0.6 * S, heroD);
   open = max(open, uHeroOpen * hero);
+  // the cell's glass; the hero cell holds the shaft's
+  vec3 gw = mix(glassW(glassN(ce)), uShaftW, hero);
+  vec3 tint = glass(uTintW), tintHi = glassHi(uTintW);
   // The work list's window (x, y, w, h in viewport px): cells inside open, then retract, so the
   // light comes through; cells on its border open part way, a soft lattice edge.
   float hot = 0.0;
@@ -127,12 +152,14 @@ void main() {
 
   // The jali casts: the open pattern projected and skewed at 30° as a pool of light.
   float pool = 0.0, jl = 0.0;
+  vec3 jcol = tint;
   if (uJali > 0.0) {
     pool = uJali * exp(-pow((dot(p, vec2(0.5, C30)) - uBand) / 280.0, 2.0));
     vec2 pj = vec2(p.x + (p.y + uScroll) * T30, p.y + uScroll) / (uS0 * 0.9);
     vec2 lj, cj; float ej;
     markCell(pj, lj, cj, ej);
     jl = (1.0 - piece(lj, 3.0) * smoothstep(0.004, 0.03, ej)) * pool;
+    jcol = glass(glassW(glassN(cj))); // each cast pane keeps its own glass
     open = max(open, 0.4 * pool);
   }
 
@@ -176,26 +203,34 @@ void main() {
   back += uHeroOpen * 1.2 * exp(-pow(heroD / (S * 1.3), 2.0));
   float glint = uGlint * step(0.82, rnd) * pow(max(0.0, sin(uTime * 0.7 + rnd * 61.0)), 40.0);
   back = mix(back, min(back, 0.2), quiet) + glint * 0.5 * (1.0 - quiet);
-  float through = clamp(back * (0.22 + 0.78 * open), 0.0, 1.2) * mix(0.25, 1.0, lockP);
-  vec3 lightCol = mix(LIGHT * 0.75, HI, pow(clamp(through - 0.45, 0.0, 1.0), 1.6));
-  vec3 gap = mix(FACE * 0.62, lightCol, smoothstep(0.03, 1.0, through)) + LIGHT * 0.22 * jl;
+  // Scarlet and violet glass pass more of the light than jade: dim red reads as maroon, so it's
+  // only ever seen bright.
+  float through = clamp(back * (0.22 + 0.78 * open) * dot(gw, vec3(1.0, 1.5, 1.15)), 0.0, 1.2) * mix(0.25, 1.0, lockP);
+  // Light takes the colour of the glass it passes through, and whitens where it's strongest.
+  vec3 lightCol = mix(glass(gw) * dot(gw, vec3(0.62, 1.0, 0.8)), glassHi(gw), pow(clamp(through - 0.45, 0.0, 1.0), 1.6));
+  vec3 gap = mix(FACE * 0.62, lightCol, smoothstep(0.03, 1.0, through)) + jcol * 0.22 * jl;
   // the window's room: a dim, even light behind the evidence drawn over it
-  gap = mix(gap, GROUND + LIGHT * 0.16, smoothstep(0.6, 1.0, hot));
+  gap = mix(gap, GROUND + tint * 0.12, smoothstep(0.6, 1.0, hot));
   float spill = exp(-pow(sunD / (uSunR * 1.4), 2.0)) * (1.0 - 0.7 * quiet);
-  vec3 face = FACE * (0.8 + 0.9 * spill) + LIGHT * 0.05 * spill + HI * 0.05 * jl;
+  vec3 face = FACE * (0.8 + 0.9 * spill) + tint * 0.05 * spill + tintHi * 0.05 * jl;
   vec3 col = mix(gap, face, m);
   col += lightCol * m * (1.0 - m2) * 0.55 * clamp(through, 0.0, 1.0);     // rims facing the light
-  col += LIGHT * 0.10 * exp(-pow(distance(p, uSun) / (uSunR * 2.4), 2.0)) * (1.0 - 0.9 * quiet);
+  col += tint * 0.10 * exp(-pow(distance(p, uSun) / (uSunR * 2.4), 2.0)) * (1.0 - 0.9 * quiet);
   col = mix(GROUND, col, alpha);
 
   if (uSwing > 0.001) {
     col = mix(GROUND, col, clamp(depth * 1.15 - 0.1, 0.0, 1.0));
-    vec3 room = GROUND + LIGHT * (0.05 + 0.2 * exp(-pow(distance(p, uSun) / (uSunR * 2.0), 2.0)));
+    // the room beyond, dim in the room's colour; its lamp is the second glow, low in a corner
+    vec3 room = GROUND + tint * (0.04 + 0.14 * exp(-pow(distance(p, uSun) / (uSunR * 2.0), 2.0)));
     col = mix(col, room, beyond);
     // the screen's far edge catches the light beyond it: a thin lit rim
     float rim = exp(-pow((uRes.x - uMargin - xp) * depth / 2.5, 2.0));
-    if (rim > 0.004) col += (LIGHT * 0.55 + HI * 0.25) * rim * smoothstep(0.03, 0.25, uSwing) * (1.0 - quietPx(p));
+    if (rim > 0.004) col += (glass(uGlowW) * 0.55 + glassHi(uGlowW) * 0.25) * rim * smoothstep(0.03, 0.25, uSwing) * (1.0 - quietPx(p));
   }
+
+  // the second glow: a soft pool of the chapter's other colour, away from the text. It's laid
+  // over the room rather than added to it, so a red lamp in a violet room stays red, not mauve.
+  if (uGlow.w > 0.0) col = mix(col, glass(uGlowW), uGlow.w * exp(-pow(distance(p, uGlow.xy) / uGlow.z, 2.0)));
 
   if (uBeam > 0.0) {
     // One shaft from the hero cell at the lattice's 30°, its front travelling along it.
@@ -209,12 +244,13 @@ void main() {
     shaft *= 1.0 - 0.5 * exp(-pow(s / (0.10 * w), 2.0));                 // the mullion's shadow
     shaft *= mix(1.0, 0.55, quiet);
     float dust = uDust * step(0.996, h21(floor((p - D * uTime * 9.0) / 2.0))) * shaft;
-    col += ((LIGHT * 0.40 + HI * 0.16) * shaft + HI * dust * 0.6) * uBeam;
+    col += ((glass(uShaftW) * 0.40 + glassHi(uShaftW) * 0.16) * shaft + glassHi(uShaftW) * dust * 0.6) * uBeam;
   }
 
   // Daylight: the room floods. The screen's shadow stays on the ground, faint, and shrinks
   // with it as it retracts.
-  vec3 day = DAY * (1.0 - 0.075 * m * (1.0 - uRetract)) - vec3(0.012, 0.0, 0.006) * m;
+  vec3 dayCol = mix(DAY, DAY_FAR, smoothstep(0.2, 1.0, distance(p, uSun) / max(uRes.x, uRes.y)));
+  vec3 day = dayCol * (1.0 - 0.075 * m * (1.0 - uRetract)) - vec3(0.012, 0.004, 0.0) * m;
   col = mix(col, day, uDay);
   gl_FragColor = vec4(col, 1.0);
 }`;

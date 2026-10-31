@@ -3,6 +3,8 @@
 // `local` is the reading position's progress through the section, 0 to 1.
 
 export type Chapter = 1 | 2 | 3 | 4 | 5 | 6;
+/** Weights for the three glasses: jade, scarlet, violet (they sum to 1). */
+export type Glass = [number, number, number];
 
 export type State = {
   open: number; // base openness of the screen
@@ -18,6 +20,10 @@ export type State = {
   swing: number; // radians on the vertical hinge
   retract: number; // 1: the screen is gone
   day: number; // 1: the room is flooded with daylight
+  glass: Glass; // the mix of glass in the screen's cells
+  tint: Glass; // the colour of the room's light round the sun
+  glowCol: Glass; // the second glow's colour
+  glow: [number, number, number, number]; // the second glow: x, y (viewport fractions), radius px, strength
 };
 
 export const LABELS: Record<Chapter, string> = {
@@ -35,31 +41,43 @@ const smooth = (a: number, b: number, x: number) => {
   return t * t * (3 - 2 * t);
 };
 
+const JADE: Glass = [1, 0, 0];
+const SCARLET: Glass = [0, 1, 0];
+const VIOLET: Glass = [0, 0, 1];
+
 const base: State = {
   open: 0.06, sunX: 0.8, sunY: 0.45, sunR: 80, back: 0.1, beam: 0, heroOpen: 0,
   scale: 1, jali: 0, band: 0, swing: 0, retract: 0, day: 0,
+  glass: [0.5, 0, 0.5], tint: JADE, glowCol: VIOLET, glow: [0.95, 0.25, 560, 0],
 };
 
 /** `daylight: false` keeps About at night (pages that don't compose it for daylight). */
 export function chapterState(n: Chapter, local: number, phone: boolean, daylight: boolean): State {
   const r = phone ? 0.62 : 1;
   switch (n) {
-    case 1: // First light: almost shut, the hero cell open, one shaft across the h1
+    case 1: // First light: almost shut, the hero cell open, one shaft across the h1. Jade and scarlet.
       return {
         ...base, open: 0.05, back: 0.12, beam: 1, heroOpen: 1, sunR: 210 * r,
         sunX: phone ? 0.75 : 0.772, sunY: phone ? 0.23 : 0.298,
+        glass: [0.6, 0.4, 0], tint: JADE, glowCol: SCARLET, glow: [phone ? 0.86 : 0.84, phone ? 0.12 : 0.16, 260 * r, 0.2],
       };
-    case 2: // Windows: shut; a hovered row opens its window (the driver's setWindow)
-      return { ...base, open: 0.06, sunR: 80 * r, back: 0.1 };
-    case 3: // The jali casts: a fine weave, a patterned pool sliding across at 30°
+    case 2: // Windows: shut; a hovered row opens its window (the driver's setWindow). Jade and violet.
+      return {
+        ...base, open: 0.06, sunR: 80 * r, back: 0.1,
+        glass: [0.5, 0, 0.5], tint: JADE, glowCol: VIOLET, glow: [0.98, 0.3, 560 * r, 0.14],
+      };
+    case 3: // The jali casts: a fine weave, a patterned pool sliding across at 30°. Leans violet.
       return {
         ...base, open: 0.1, sunX: 0.86, sunY: 0.62, sunR: 110 * r, back: 0.12,
         scale: 0.5, jali: 1, band: -0.25 + 1.5 * local,
+        glass: [0.25, 0, 0.75], tint: VIOLET, glowCol: VIOLET, glow: [0.9, 0.8, 620 * r, 0.15],
       };
-    case 4: // The screen turns on its hinge; the light sits beyond the far edge
+    case 4: // The screen turns on its hinge; the light sits beyond the far edge. Leans scarlet:
+      // scarlet panes, the hinge's lit edge and a low lamp in scarlet, in a dim violet room.
       return {
         ...base, open: 0.16, sunX: 0.92, sunY: 0.5, sunR: 300 * r, back: 0.2,
         swing: smooth(0, 0.85, local) * DEG55,
+        glass: [0.2, 0.7, 0.1], tint: VIOLET, glowCol: SCARLET, glow: [0.98, 0.98, 380 * r, phone ? 0.12 : 0.28],
       };
     case 5: // Daylight: the screen retracts and the room floods
       if (!daylight) {
@@ -71,17 +89,25 @@ export function chapterState(n: Chapter, local: number, phone: boolean, daylight
       return {
         ...base, open: 0.1, sunX: 0.7, sunY: 0.4, sunR: 330 * r, back: 0.16,
         retract: smooth(0.05, 0.75, local), day: 1,
+        glass: [0.5, 0.25, 0.25], tint: JADE, glowCol: SCARLET, glow: [0.5, 1.1, 600 * r, 0],
       };
-    case 6: // Lantern: night again, a large open cluster around "Email me"
-      return { ...base, open: 0.1, sunX: 0.72, sunY: 0.5, sunR: 330 * r, back: 0.16 };
+    case 6: // Lantern: night again, a large open cluster around "Email me". A violet and scarlet dusk.
+      return {
+        ...base, open: 0.1, sunX: 0.72, sunY: 0.5, sunR: 330 * r, back: 0.16,
+        glass: [0, 0.45, 0.55], tint: VIOLET, glowCol: SCARLET, glow: [phone ? 0.75 : 0.8, phone ? 0.2 : 0.42, 300 * r, 0.2],
+      };
   }
 }
 
 export function mix(a: State, b: State, w: number): State {
   if (w <= 0) return a;
-  const out = { ...a };
-  for (const k of Object.keys(a) as (keyof State)[]) out[k] = a[k] + (b[k] - a[k]) * w;
-  return out;
+  const out: Record<string, number | number[]> = { ...a };
+  for (const k of Object.keys(a) as (keyof State)[]) {
+    const x = a[k];
+    const y = b[k];
+    out[k] = Array.isArray(x) ? x.map((v, i) => v + ((y as number[])[i] - v) * w) : x + ((y as number) - x) * w;
+  }
+  return out as State;
 }
 
 export { smooth };

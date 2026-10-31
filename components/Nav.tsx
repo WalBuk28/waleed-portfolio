@@ -73,7 +73,7 @@ export function Nav({ onOpenPalette }: { onOpenPalette: () => void }) {
             </button>
             <a
               href={linkHref("#contact")}
-              className="hidden items-center gap-1.5 rounded-lg bg-emerald-accent px-4 py-1.5 text-sm font-semibold text-void transition-all hover:shadow-glow-emerald hover:brightness-110 sm:inline-flex"
+              className="hidden items-center gap-1.5 rounded-lg bg-action px-4 py-1.5 text-sm font-semibold text-white transition-all hover:shadow-glow-electric sm:inline-flex"
             >
               Hire me
               <ArrowUpRight className="h-3.5 w-3.5" />

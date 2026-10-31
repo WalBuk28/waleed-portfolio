@@ -13,7 +13,10 @@ export function Hero() {
   return (
     <section id="top" className="hero" data-chapter="1" data-hero aria-labelledby="hero-title">
       <h1 id="hero-title" className="hero__h1" data-band data-quiet>
-        Signal through the noise
+        Signal through{" "}
+        <span className="hero__key" data-key>
+          the noise
+        </span>
       </h1>
       <p className="hero__role" data-split data-intro data-quiet>
         {profile.role}

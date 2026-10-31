@@ -27,32 +27,32 @@ export function ogCard({
           flexDirection: "column",
           justifyContent: "space-between",
           padding: "72px 80px",
-          background: "#090d12",
-          color: "#e6edf3",
+          background: "#0a0f24",
+          color: "#ebeef8",
         }}
       >
-        <div style={{ display: "flex", alignItems: "center", gap: 20, fontSize: 28, color: "#9fb1c1" }}>
-          <div style={{ width: 14, height: 14, background: "#34d399" }} />
+        <div style={{ display: "flex", alignItems: "center", gap: 20, fontSize: 28, color: "#a0aacb" }}>
+          <div style={{ width: 14, height: 14, background: "#2ee6b8" }} />
           {kicker}
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
           <div style={{ fontSize: title.length > 40 ? 64 : 80, lineHeight: 1.05, letterSpacing: -1 }}>
             {title}
           </div>
-          <div style={{ fontSize: 34, lineHeight: 1.3, color: "#9fb1c1", maxWidth: 1000, textWrap: "balance" }}>{sub}</div>
+          <div style={{ fontSize: 34, lineHeight: 1.3, color: "#a0aacb", maxWidth: 1000, textWrap: "balance" }}>{sub}</div>
         </div>
         <div
           style={{
             display: "flex",
             justifyContent: "space-between",
-            borderTop: "1px solid rgba(148,163,184,0.25)",
+            borderTop: "1px solid rgba(160,170,203,0.25)",
             paddingTop: 28,
             fontSize: 26,
-            color: "#9fb1c1",
+            color: "#a0aacb",
           }}
         >
           <div>{foot}</div>
-          <div style={{ color: "#34d399" }}>walsec.com</div>
+          <div style={{ color: "#2ee6b8" }}>walsec.com</div>
         </div>
       </div>
     ),
