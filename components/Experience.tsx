@@ -83,10 +83,10 @@ export function Experience() {
           <div className="xp__stage" data-quiet="sticky">
             <div className="xp__periods">
               {chapters.map((c, i) => (
-                <p key={c.key} className="xp__period" data-period={i}>
+                <div key={c.key} className="xp__period" data-period={i}>
                   <span className="xp__big">{c.period}</span>
                   <span className="xp__kind">{c.kind}</span>
-                </p>
+                </div>
               ))}
             </div>
             <ol className="xp__index">

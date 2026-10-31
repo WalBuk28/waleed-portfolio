@@ -1565,7 +1565,10 @@ html:not(.gl-on) .work__frame {
   list-style: none;
 }
 /* each indicator: a small tile; the ones the lookup found are lit (signal) */
+/* An indicator is signal: under the hand, light floods the chip along 30° from its corner. */
 .lookup__chip {
+  position: relative;
+  isolation: isolate;
   display: inline-flex;
   align-items: center;
   min-height: 32px;
@@ -1574,12 +1577,23 @@ html:not(.gl-on) .work__frame {
   font-size: 13px;
   color: var(--ink-soft);
   clip-path: polygon(7px 0, 100% 0, 100% calc(100% - 4px), calc(100% - 7px) 100%, 0 100%, 0 4px);
-  transition: background-color 0.25s, color 0.25s;
+  transition: background-color 0.25s, color 0.3s;
+}
+.lookup__chip::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--light-hi);
+  clip-path: polygon(0 0, 0 0, -56px 100%, 0 100%);
+  transition: clip-path 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
 }
 @media (hover: hover) {
   .lookup__chip:hover {
-    background: rgb(233 238 235 / 0.14);
-    color: var(--ink);
+    color: var(--on-light);
+  }
+  .lookup__chip:hover::before {
+    clip-path: polygon(0 0, calc(100% + 56px) 0, 100% 100%, 0 100%);
   }
 }
 .lookup__chip:focus-visible {
