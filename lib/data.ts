@@ -11,14 +11,6 @@ export const profile = {
   cvName: "Muhammad Waleed",
   role: "SOC Analyst",
   handle: "WalBuk28",
-  // Rotating words for the hero headline
-  rotatingRoles: [
-    "Threat Intelligence",
-    "Network Forensics",
-    "SOC Automation",
-    "Secure Software",
-    "Applied AI Defence",
-  ],
   tagline: "I turn raw packets, malware and threat feeds into decisions a SOC can act on.",
   location: "Dubai, United Arab Emirates",
   email: "waleedbukhari2000@gmail.com",
