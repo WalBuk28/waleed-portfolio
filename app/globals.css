@@ -827,8 +827,11 @@ html.frame-away .frame::after {
   }
 }
 
-/* The phone menu (basic; stage 4 finishes it). */
+/* The phone menu: a sheet of the ground that opens from the Menu corner. Its edge is a line at
+   the lattice's 30°, swept from the top right to the bottom left by --a (Frame.tsx); the links
+   rise from behind a lattice edge. The current page carries the lit tile. */
 .menu {
+  --a: 200vmax;
   position: fixed;
   inset: 0;
   z-index: 70;
@@ -836,8 +839,18 @@ html.frame-away .frame::after {
   flex-direction: column;
   gap: 36px;
   padding: calc(var(--margin) + 72px) var(--margin) var(--margin);
-  background: var(--ground);
+  background: var(--poster-tile, none) var(--margin) 0 / 56px auto repeat, var(--ground);
   font-stretch: 112%;
+  clip-path: polygon(calc(100% - var(--a)) 0, 100% 0, 100% calc(var(--a) * 0.5774));
+}
+.menu__foot {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: auto 0 0;
+  font-size: 13px;
+  line-height: 18px;
+  color: var(--muted);
 }
 .menu[hidden] {
   display: none;
@@ -849,7 +862,9 @@ html.frame-away .frame::after {
   list-style: none;
 }
 .menu__list a {
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 16px;
   padding: 8px 0;
   font-size: var(--t-xl);
   font-weight: 300;
@@ -857,6 +872,24 @@ html.frame-away .frame::after {
   letter-spacing: -0.035em;
   line-height: 1;
   color: var(--ink);
+}
+.menu__mask {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.08em; /* descender room */
+}
+.menu__word {
+  display: block;
+}
+.menu__list a[aria-current="page"]::after {
+  content: "";
+  width: 12px;
+  height: 16px;
+  background: var(--link);
+  clip-path: polygon(50% 0, 100% 22%, 100% 78%, 50% 100%, 0 78%, 0 22%);
+}
+.menu__list a:active .menu__word {
+  color: var(--link);
 }
 .menu__cv {
   align-self: flex-start;

@@ -11,7 +11,7 @@
 import { gsap } from "@/lib/gsap";
 import { COS30, grid } from "@/lib/gl/lattice";
 import type { Screen } from "@/lib/gl/renderer";
-import { LABELS, chapterState, mix, smooth, type Chapter, type State } from "./chapters";
+import { LABELS, caseState, chapterState, mix, shutState, smooth, type Chapter, type State } from "./chapters";
 import { heroCellFor } from "./hero";
 import { pointer, startPointer } from "./pointer";
 
@@ -43,7 +43,6 @@ const st = {
   quiet: [] as Rect[],
   hero: null as [number, number] | null, // the hero cell's centre, page px
   enabled: false,
-  pinned: null as { n: Chapter; local: number } | null,
   label: "",
   day: -1,
   sun: [0, 0],
@@ -53,6 +52,13 @@ const st = {
   slow: { frames: 0, avg: 0, warm: false },
   running: false,
   chapter: null as Chapter | null,
+  // The page's screen: home reads its chapters from the scroll; a case page and the 404 hold
+  // one state of their own (data-screen="case" data-seed=<slug>, or "shut").
+  mode: "home" as "home" | "case" | "shut",
+  pageState: null as State | null,
+  labels: [] as { top: number; label: string }[], // [data-label] sections, page px
+  // 0 to 1 over 0.6 s whenever a page arrives: its screen opens from shut
+  opening: 0,
   // the work list's window: where it's going, where it is (page px), how open it is
   win: { to: null as Box | null, at: null as Box | null, open: 0 },
   // the skills hover: the jali pool's band follows the hovered group (page px), or the scroll
@@ -60,7 +66,7 @@ const st = {
   // daylight: 0 to 1 over 0.7 s when the reading line enters or leaves About (never scrubbed)
   dayP: 0,
   scanFns: new Set<() => void>(),
-  chapterFns: new Set<(n: Chapter) => void>(),
+  chapterFns: new Set<(label: string) => void>(),
 };
 
 export const screenGrid = () => st.g;
@@ -72,13 +78,15 @@ export function onScan(fn: () => void) {
   return () => st.scanFns.delete(fn);
 }
 /** Run fn whenever the reader enters another section (the nav marker follows it). */
-export function onChapter(fn: (n: Chapter) => void) {
+export function onChapter(fn: (label: string) => void) {
   st.chapterFns.add(fn);
   return () => {
     st.chapterFns.delete(fn);
   };
 }
 export const currentChapter = () => st.chapter;
+/** The name of the part of the page being read: a home chapter, or a case page's section. */
+export const currentLabel = () => st.label;
 /** Open the work list's window over a page rect, or close it (null). Fine pointers only. */
 export function setWindow(r: Box | null) {
   st.win.to = r;
@@ -87,9 +95,16 @@ export function setWindow(r: Box | null) {
 export function setPool(at: [number, number] | null) {
   st.pool.to = at;
 }
-/** Hold one chapter (case pages, stage 4): `local` is its progress. */
-export function pinChapter(n: Chapter | null, local = 0.6) {
-  st.pinned = n ? { n, local } : null;
+/**
+ * A new page is in: its screen opens from shut (0.6 s), the hover window and the jali pool
+ * let go, and the page's layout and state are read again.
+ */
+export function pageInit() {
+  st.opening = 0;
+  st.win = { to: null, at: null, open: 0 };
+  st.pool = { to: null, band: null };
+  st.label = "";
+  scan();
 }
 
 export function glAllowed() {
@@ -190,7 +205,14 @@ export function scan() {
     const dy = fixed ? 0 : sy;
     for (const r of textBlocks(el)) st.quiet.push({ x: r.left, y: r.top + dy, w: r.width, h: r.height, fixed });
   });
-  const first = st.sections.find((s) => s.n === 1);
+  const screenEl = document.querySelector<HTMLElement>("[data-screen]");
+  const mode = screenEl?.dataset.screen;
+  st.mode = mode === "case" || mode === "shut" ? mode : "home";
+  st.pageState = st.mode === "case" ? caseState(screenEl!.dataset.seed || location.pathname, st.g.phone) : st.mode === "shut" ? shutState(st.g.phone) : null;
+  st.labels = [...document.querySelectorAll<HTMLElement>("[data-label]")]
+    .map((el) => ({ top: page(el).y, label: el.dataset.label! }))
+    .sort((a, b) => a.top - b.top);
+  const first = st.mode === "home" ? st.sections.find((s) => s.n === 1) : undefined;
   st.hero = first ? heroCellFor(st.vw, st.vh, first.top) : null;
   st.label = "";
   st.scanFns.forEach((fn) => fn());
@@ -222,6 +244,13 @@ function textBlocks(el: HTMLElement): DOMRect[] {
     } else blocks.push(l);
   }
   return blocks;
+}
+
+/** The label of the last [data-label] section whose top is above the reading line. */
+function labelAt(line: number) {
+  let label = st.labels[0]?.label ?? "";
+  for (const l of st.labels) if (l.top <= line) label = l.label;
+  return label;
 }
 
 function onTap(e: PointerEvent) {
@@ -266,15 +295,14 @@ function tick(time: number, dt: number) {
   const { vw, vh, g } = st;
   const { y, velocity } = st.source();
 
-  // Where the reader is: a chapter and the progress through it.
+  // Where the reader is: a chapter and the progress through it (home), or the page's own
+  // state (a case page, the 404) and the section the reading line is in.
+  const page = st.pageState;
   let i = 0;
   let n: Chapter = 1;
   let local = 0.6;
   let next: Section | undefined;
-  if (st.pinned) {
-    n = st.pinned.n;
-    local = st.pinned.local;
-  } else if (st.sections.length) {
+  if (!page && st.sections.length) {
     const a = y + vh * 0.5;
     while (i < st.sections.length - 1 && st.sections[i + 1].top <= a) i++;
     const sec = st.sections[i];
@@ -282,24 +310,27 @@ function tick(time: number, dt: number) {
     local = Math.min(1, Math.max(0, (a - sec.top) / sec.h));
     next = st.sections[i + 1];
   }
-  const sec = st.pinned ? undefined : st.sections[i];
-  const A = chapterState(n, local, g.phone, st.daylight);
+  const sec = page ? undefined : st.sections[i];
+  const A = page ?? chapterState(n, local, g.phone, st.daylight);
   const w = next ? smooth(0.8, 1, local) : 0;
-  const s = next && w > 0 ? mix(A, chapterState(next.n, 0, g.phone, st.daylight), w) : A;
+  let s = next && w > 0 ? mix(A, chapterState(next.n, 0, g.phone, st.daylight), w) : A;
+  // A page that has just arrived opens its screen from shut.
+  st.opening = Math.min(1, st.opening + Math.min(dt, 100) / 1000 / 0.6);
+  if (st.opening < 1) s = mix(shutState(g.phone), s, smooth(0, 1, st.opening));
 
   // Daylight flips in time, not with the scroll: no resting position sits at half contrast.
-  const dayTo = st.daylight && A.day > 0.5 ? 1 : 0;
+  const dayTo = st.daylight && !page && A.day > 0.5 ? 1 : 0;
   st.dayP = Math.min(1, Math.max(0, st.dayP + (dayTo ? 1 : -1) * (dt / 1000 / 0.7)));
   const day = st.dayP * st.dayP * (3 - 2 * st.dayP);
   // The DOM follows the same variable: the ink (only while the screen floods it; without GL the
   // daylight section paints its own) and the section label (always).
   writeInk(screen ? day : 0);
-  const label = LABELS[n];
+  const label = page ? labelAt(y + vh * 0.4) : LABELS[n];
   if (label !== st.label) {
     st.label = label;
-    st.chapter = n;
+    st.chapter = page ? null : n;
     document.querySelectorAll("[data-screen-label]").forEach((el) => (el.textContent = label));
-    st.chapterFns.forEach((fn) => fn(n));
+    st.chapterFns.forEach((fn) => fn(label));
   }
   if (!screen) return;
 
@@ -318,7 +349,7 @@ function tick(time: number, dt: number) {
   if (st.touch) {
     const h = smooth(0, vh * 0.5, y);
     const read: [number, number] = [g.margin + (vw - 2 * g.margin) * tri(y / vh), vh * 0.4];
-    const target = n === 1 ? [rest[0] + (read[0] - rest[0]) * h, rest[1] + (read[1] - rest[1]) * h] : read;
+    const target = n === 1 && !page ? [rest[0] + (read[0] - rest[0]) * h, rest[1] + (read[1] - rest[1]) * h] : read;
     st.sun[0] += (target[0] - st.sun[0]) * k;
     st.sun[1] += (target[1] - st.sun[1]) * k;
     st.vel = Math.max(Math.min(1, Math.abs(velocity) / 25) * 0.55, st.vel * Math.pow(0.92, ratio));

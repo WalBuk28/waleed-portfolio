@@ -99,6 +99,54 @@ export function chapterState(n: Chapter, local: number, phone: boolean, daylight
   }
 }
 
+/**
+ * The 404 (DESIGN.md §8, "Shut"): the screen closed, a faint back light, and a sun only about a
+ * cell across, so the cell under the pointer (or a tap's ripple) is the only one that opens.
+ * Every page's screen also opens from this state when the page arrives.
+ */
+export function shutState(phone: boolean): State {
+  return {
+    ...base, open: 0, back: 0.04, sunR: phone ? 34 : 58, sunX: 0.72, sunY: 0.42,
+    glass: [0.5, 0, 0.5], tint: VIOLET, glowCol: VIOLET, glow: [0.9, 0.3, 400, 0],
+  };
+}
+
+// The glass mixes the home page's chapters use; a case page takes one of them.
+const MIXES: { glass: Glass; tint: Glass; glowCol: Glass }[] = [
+  { glass: [0.6, 0.4, 0], tint: JADE, glowCol: SCARLET },
+  { glass: [0.5, 0, 0.5], tint: JADE, glowCol: VIOLET },
+  { glass: [0.25, 0, 0.75], tint: VIOLET, glowCol: VIOLET },
+  { glass: [0.2, 0.7, 0.1], tint: VIOLET, glowCol: SCARLET },
+  { glass: [0, 0.45, 0.55], tint: VIOLET, glowCol: SCARLET },
+];
+
+/** A stable 32-bit hash of a string (FNV-1a), and the k-th number in [0, 1) drawn from it. */
+function hash(s: string) {
+  let h = 0x811c9dc5;
+  for (let i = 0; i < s.length; i++) h = Math.imul(h ^ s.charCodeAt(i), 0x01000193);
+  return h >>> 0;
+}
+const draw = (h: number, k: number) => (Math.imul(h ^ Math.imul(k + 1, 0x9e3779b1), 0x85ebca6b) >>> 0) / 4294967296;
+
+/**
+ * A case page's own screen (DESIGN.md §8), seeded from its slug so it is the same on every
+ * visit: where its sun rests (in the right-hand columns, beside the hero figure's window),
+ * how far the light reaches, and which glass it is cut from. Night, and nearly shut, so long
+ * reading stays quiet; the window behind the hero figure carries the light.
+ */
+export function caseState(seed: string, phone: boolean): State {
+  const h = hash(seed);
+  const r = phone ? 0.62 : 1;
+  const m = MIXES[h % MIXES.length];
+  return {
+    ...base, open: 0.05, back: 0.1, sunR: (150 + 90 * draw(h, 0)) * r,
+    sunX: phone ? 0.68 + 0.2 * draw(h, 1) : 0.74 + 0.18 * draw(h, 1),
+    sunY: 0.2 + 0.45 * draw(h, 2),
+    glass: m.glass, tint: m.tint, glowCol: m.glowCol,
+    glow: [0.82 + 0.16 * draw(h, 3), 0.1 + 0.75 * draw(h, 4), (320 + 220 * draw(h, 5)) * r, 0.16],
+  };
+}
+
 export function mix(a: State, b: State, w: number): State {
   if (w <= 0) return a;
   const out: Record<string, number | number[]> = { ...a };

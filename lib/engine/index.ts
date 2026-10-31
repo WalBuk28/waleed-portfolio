@@ -6,7 +6,7 @@
 // tweens and ScrollTriggers are reverted on navigation; return a cleanup for the rest.
 // Page transitions (leave and the curtain) arrive in stage 4.
 import { gsap, ScrollTrigger } from "@/lib/gsap";
-import { scan, startScreen } from "@/lib/screen/driver";
+import { pageInit, scan, startScreen } from "@/lib/screen/driver";
 import { prepareIntro, runIntro } from "@/lib/screen/intro";
 import { prefersReducedMotion } from "./env";
 import { initCursor, initMagnetic, resetCursor } from "./interactions";
@@ -50,7 +50,7 @@ function syncFlags() {
   h.toggle("motion", !prefersReducedMotion());
 }
 
-function initPage() {
+function initPage(first: boolean) {
   syncFlags();
   resetCursor();
   ctx = gsap.context(() => {
@@ -60,6 +60,7 @@ function initPage() {
   // The screen starts on the first page that declares a state (data-screen), not before.
   const wantsScreen = !!document.querySelector("[data-screen]");
   const screen = wantsScreen ? startScreen({ source: scrollState, daylight: true }) : null;
+  if (wantsScreen && !first) pageInit(); // a later page: read it, and open its screen from shut
   if (!screen) document.documentElement.classList.remove("gl-pending", "intro-pending");
   ready = true;
   pageFns.forEach(runPageFn);
@@ -76,7 +77,7 @@ export function boot() {
   ScrollTrigger.addEventListener("refresh", scan); // layout moved: re-read sections and rects
   document.fonts?.ready.then(() => ScrollTrigger.refresh());
   const first = prepareIntro();
-  const screen = initPage();
+  const screen = initPage(true);
   intro?.play(); // text reveals start at once; they never wait for GL
   if (first && screen) runIntro(screen);
 }
@@ -95,6 +96,6 @@ export function enter({ scrollTop = true } = {}) {
   if (!booted) return;
   cleanup();
   if (scrollTop && !location.hash) resetScroll();
-  initPage();
+  initPage(false);
   intro?.play();
 }
