@@ -3085,3 +3085,50 @@ html:not(.gl-on) .case__frame {
       radial-gradient(circle 60vmax at 70% 30%, #121a3a, var(--ground));
   }
 }
+
+/* The 404: the screen shut, one line set large, one way home. */
+.missing-page::before {
+  background-image: var(--poster-tile);
+}
+.missing {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--gutter);
+  align-content: center;
+  min-height: 100vh;
+  min-height: 100svh;
+  padding: calc(var(--margin) + 72px) var(--margin) calc(var(--margin) + 48px);
+}
+.missing > * {
+  grid-column: 1 / span 9;
+}
+.missing__code {
+  margin: 0 0 24px;
+  font-size: 13px;
+  color: var(--muted);
+}
+.missing__h1 {
+  margin: 0 0 0 -0.05em;
+  font-size: var(--t-mega);
+  font-weight: 300;
+  font-stretch: 125%;
+  letter-spacing: -0.04em;
+  line-height: 0.98;
+  color: var(--ink);
+  text-wrap: balance;
+}
+.missing__line {
+  margin: 32px 0 0;
+  font-size: var(--t-m);
+  line-height: 1.35;
+  color: var(--ink-soft);
+}
+.missing__cta {
+  justify-self: start;
+  margin-top: 40px;
+}
+@media (max-width: 767px) {
+  .missing > * {
+    grid-column: 1 / -1;
+  }
+}
