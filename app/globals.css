@@ -1724,3 +1724,184 @@ html:not(.gl-on) .work__frame {
     padding-right: 0;
   }
 }
+
+/* ── Experience: a sticky narrative. Chapters on columns 1 to 6; on desktop the stage on
+   columns 8 to 12 holds the current chapter's period while the screen turns behind it. ── */
+.xp {
+  position: relative;
+  padding: calc(16 * var(--u)) var(--margin) calc(20 * var(--u));
+}
+.xp__body {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--gutter);
+  margin-top: clamp(48px, 6vw, 96px);
+}
+.xp__chapters {
+  grid-column: 1 / span 6;
+}
+.xp__ch {
+  min-height: 62svh;
+  padding: 28px 0 64px;
+  border-top: 1px solid var(--line);
+}
+.xp__ch:last-child {
+  min-height: 0;
+}
+.xp__when {
+  margin: 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+.xp__h3 {
+  margin: 18px 0 0;
+  font-size: var(--t-l);
+  font-weight: 400;
+  font-stretch: 112%;
+  letter-spacing: -0.025em;
+  line-height: 1.06;
+  color: var(--ink);
+}
+.xp__where,
+.xp__result {
+  margin: 12px 0 0;
+  font-size: var(--t-body);
+  line-height: 1.5;
+  color: var(--ink-soft);
+}
+.xp__flag {
+  display: inline-block;
+  margin: 14px 0 0;
+  padding: 4px 10px 5px;
+  border: 1px solid var(--line);
+  font-size: 13px;
+  color: var(--ink);
+}
+.xp__points {
+  display: grid;
+  gap: 12px;
+  max-width: 60ch;
+  margin: 24px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.xp__points li {
+  position: relative;
+  padding-left: 22px;
+  font-size: var(--t-body);
+  line-height: 1.55;
+  color: var(--ink-soft);
+}
+/* each point hangs from a small tile on the lattice line */
+.xp__points li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.55em;
+  width: 7px;
+  height: 9px;
+  background: var(--muted);
+  clip-path: polygon(50% 0, 100% 22%, 100% 78%, 50% 100%, 0 78%, 0 22%);
+}
+.xp__certs {
+  display: grid;
+  gap: 18px;
+  margin: 24px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.xp__certs li {
+  display: grid;
+  gap: 3px;
+}
+.xp__cert {
+  font-size: var(--t-body);
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--ink);
+}
+.xp__issuer {
+  font-size: 15px;
+  color: var(--ink-soft);
+}
+.xp__detail {
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--muted);
+}
+.xp__aside {
+  grid-column: 8 / span 5;
+}
+.xp__stage {
+  position: sticky;
+  top: 26vh;
+  padding-top: 28px;
+}
+.xp__periods {
+  display: grid;
+}
+.xp__period {
+  grid-area: 1 / 1;
+  display: grid;
+  gap: 18px;
+  margin: 0;
+  visibility: hidden;
+  clip-path: inset(-0.2em -0.2em -0.2em -0.2em);
+}
+.xp__period:first-child {
+  visibility: visible;
+}
+.xp__big {
+  display: block;
+  font-size: var(--t-xl);
+  font-weight: 300;
+  font-stretch: 125%;
+  letter-spacing: -0.035em;
+  line-height: 1;
+  color: var(--ink);
+  text-wrap: balance;
+}
+.xp__kind {
+  display: block;
+  font-size: 15px;
+  font-weight: 600;
+  font-stretch: 112%;
+  color: var(--lit);
+}
+.xp__index {
+  display: flex;
+  gap: 12px;
+  margin: 40px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.xp__index polygon {
+  fill: transparent;
+  stroke: var(--muted);
+  stroke-width: 1.5;
+  transition: fill 0.35s, stroke 0.35s;
+}
+.xp__index .is-past polygon {
+  fill: var(--muted);
+}
+.xp__index .is-on polygon {
+  fill: var(--light);
+  stroke: var(--light);
+}
+@media (max-width: 1023px) {
+  .xp__chapters {
+    grid-column: 1 / -1;
+  }
+  .xp__ch {
+    min-height: 0;
+    padding-bottom: 48px;
+  }
+  .xp__aside {
+    display: none;
+  }
+}
+@media (max-width: 767px) {
+  .xp {
+    padding: calc(12 * var(--u)) var(--margin);
+  }
+}

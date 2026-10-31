@@ -31,6 +31,17 @@ const vec3 HI = vec3(0.851, 0.965, 0.918);     // #d9f6ea
 const vec3 DAY = vec3(0.812, 0.914, 0.871);    // #cfe9de
 const float HH = 0.65, V = 1.0113249, T30 = 0.5773503, C30 = 0.8660254;
 
+// Is this pixel inside a quiet rect (padded by 12 px)? For lines drawn over the screen.
+float quietPx(vec2 p) {
+  float qp = 0.0;
+  for (int i = 0; i < 16; i++) {
+    if (float(i) >= uQuietN) break;
+    vec4 r = uQuiet[i];
+    vec2 d = max(r.xy - p, p - r.xy - r.zw);
+    qp = max(qp, 1.0 - smoothstep(0.0, 12.0, max(d.x, d.y) - 12.0));
+  }
+  return qp;
+}
 float h21(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
 float cellEdge(vec2 l) { return min(0.5 - abs(l.x), (HH - abs(l.x) * T30 - abs(l.y)) * C30); }
 
@@ -183,7 +194,7 @@ void main() {
     col = mix(col, room, beyond);
     // the screen's far edge catches the light beyond it: a thin lit rim
     float rim = exp(-pow((uRes.x - uMargin - xp) * depth / 2.5, 2.0));
-    col += (LIGHT * 0.55 + HI * 0.25) * rim * smoothstep(0.03, 0.25, uSwing);
+    if (rim > 0.004) col += (LIGHT * 0.55 + HI * 0.25) * rim * smoothstep(0.03, 0.25, uSwing) * (1.0 - quietPx(p));
   }
 
   if (uBeam > 0.0) {
