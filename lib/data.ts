@@ -1,5 +1,5 @@
 // =============================================================================
-//  Portfolio content — extracted & distilled from Waleed's coursework,
+//  Portfolio content: extracted & distilled from Waleed's coursework,
 //  final-year project (WalSec A-TIOC Hub viva deck), internship CV,
 //  ConstructOS/ConTrust blueprint and technical reports.
 //  Edit any string here to update the live site. One source of truth.
@@ -48,7 +48,7 @@ export const bootSequence: { text: string; tone?: "ok" | "warn" | "info" }[] = [
   { text: "[ok] mounting forensic engine ········ PyShark / TShark", tone: "ok" },
   { text: "[ok] grounding local LLM ············· Qwen · DeepSeek · RAG", tone: "ok" },
   { text: "[ok] MITRE ATT&CK mapping ············ Enterprise + ICS", tone: "ok" },
-  { text: "operator ready — welcome to the WalSec bench", tone: "info" },
+  { text: "operator ready: welcome to the WalSec bench", tone: "info" },
 ];
 
 // ── Threat-feed ticker: every item comes from a case study (lab or scenario data) ──
@@ -59,7 +59,7 @@ export const threatFeed: { type: string; value: string; sev: "crit" | "warn" | "
   { type: "CVE", value: "CVE-2014-3566 · POODLE", sev: "warn" },
   { type: "SVC", value: "IPRIP · “INA+” service DLL", sev: "crit" },
   { type: "MITRE", value: "T1543.003 · Windows Service", sev: "warn" },
-  { type: "FEED", value: "URLhaus pull · every 30–60 min", sev: "ok" },
+  { type: "FEED", value: "URLhaus pull · every 30 to 60 min", sev: "ok" },
   { type: "CVE", value: "CVE-2016-0800 · DROWN", sev: "warn" },
   { type: "IPv4", value: "192.168.127.226 · GIT server pivot", sev: "crit" },
   { type: "MITRE", value: "T1021.001 · RDP lateral", sev: "warn" },
@@ -242,7 +242,7 @@ export const caseStudies: CaseStudy[] = [
     sections: [
       {
         heading: "Automated forensic ingestion",
-        body: "The system replaces manual TShark triage. Asynchronous deep packet inspection parses uploaded PCAPs (capped at 50 MB by checking the file size with file.seek before parsing, to protect the event loop), while APScheduler workers pull fresh indicators from ThreatFox and URLhaus every 30–60 minutes. The local store held over 9,000 ThreatFox IOCs in October 2026.",
+        body: "The system replaces manual TShark triage. Asynchronous deep packet inspection parses uploaded PCAPs (capped at 50 MB by checking the file size with file.seek before parsing, to protect the event loop), while APScheduler workers pull fresh indicators from ThreatFox and URLhaus every 30 to 60 minutes. The local store held over 9,000 ThreatFox IOCs in October 2026.",
         bullets: [
           "Normalisation pipeline strips port metadata for uniform IP vectors",
           "Database-level deduplication via composite (Type + Value) keys",
@@ -287,9 +287,9 @@ export const caseStudies: CaseStudy[] = [
     context:
       "Coursework (CSEC2003D) in an isolated lab with provided targets and samples. Two parts: a black-box penetration test of a simulated legacy banking host (“Besure Bank”, 192.168.50.130), and a malware investigation of four artefacts: three malware samples (a PDF, a service DLL and a downloader) and one vulnerable C program. The service DLL is Practical Malware Analysis Lab 3-2, a standard training sample.",
     problem:
-      "Legacy, end-of-life infrastructure quietly accumulates exploitable risk. The brief: enumerate and validate every weakness on an externally-facing host with no prior knowledge, then — separately — triage a high-confidence malware cluster, prove its persistence and capabilities, and produce actionable detection engineering.",
+      "Legacy, end-of-life infrastructure quietly accumulates exploitable risk. The brief: enumerate and validate every weakness on an externally-facing host with no prior knowledge, then, separately, triage a high-confidence malware cluster, prove its persistence and capabilities, and produce actionable detection engineering.",
     approach:
-      "For the pentest I ran a staged, throttled methodology — Nmap recon, Nessus Essentials vuln scanning, testssl.sh/OpenSSL crypto analysis, and Metasploit exploitation attempts — validating tool output manually. For the malware work I combined static analysis (PDFiD, peepdf, PDFStreamDumper, PE tooling, IDA Pro) with dynamic detonation (ProcMon, Process Explorer, ApateDNS) and debugger-led reverse engineering (GDB/REMnux).",
+      "For the pentest I ran a staged, throttled methodology (Nmap recon, Nessus Essentials vuln scanning, testssl.sh/OpenSSL crypto analysis, and Metasploit exploitation attempts), validating tool output manually. For the malware work I combined static analysis (PDFiD, peepdf, PDFStreamDumper, PE tooling, IDA Pro) with dynamic detonation (ProcMon, Process Explorer, ApateDNS) and debugger-led reverse engineering (GDB/REMnux).",
     stack: [
       "Kali Linux",
       "Nmap",
@@ -309,7 +309,7 @@ export const caseStudies: CaseStudy[] = [
     ],
     sections: [
       {
-        heading: "Penetration test — Besure Bank",
+        heading: "Penetration test: Besure Bank",
         body: "Nmap revealed an end-of-life stack: OpenSSH 3.1p1 (SSHv1 enabled), Apache 2.0.40 and PHP 4.2.2. Nessus Essentials reported 96 findings: 2 critical, 15 high, 26 medium, 8 low and 45 informational. The report references five CVEs: CVE-2014-3566 (POODLE), CVE-2016-0800 (DROWN), CVE-2003-0253 (Apache 2.0 buffer overflow), CVE-2007-1001 (PHP code injection) and CVE-2008-0599 (PHP variable handling).",
         bullets: [
           "Critical: SSLv2/SSLv3 enabled → POODLE (CVE-2014-3566) and DROWN (CVE-2016-0800)",
@@ -320,16 +320,16 @@ export const caseStudies: CaseStudy[] = [
         ],
       },
       {
-        heading: "Malware — weaponised PDF (sus-file1)",
-        body: "PDFiD flagged embedded /JS, /AA additional-actions and an /EmbeddedFile. PDFStreamDumper exposed obfuscated XFA JavaScript using slice/concat evasion, with a deceptively-named nested document — a classic phishing initial-access vector. VirusTotal consensus aligned with the Exploit.PDF-JS / pdfka family.",
+        heading: "Malware: weaponised PDF (sus-file1)",
+        body: "PDFiD flagged embedded /JS, /AA additional-actions and an /EmbeddedFile. PDFStreamDumper exposed obfuscated XFA JavaScript using slice/concat evasion, with a deceptively-named nested document: a classic phishing initial-access vector. VirusTotal consensus aligned with the Exploit.PDF-JS / pdfka family.",
       },
       {
-        heading: "Malware — persistence service DLL (sus-file3)",
+        heading: "Malware: persistence service DLL (sus-file3)",
         body: "A PE32 service DLL exporting Install/ServiceMain/UninstallService. Imports (OpenSCManagerA, CreateServiceA) and strings revealed svchost/netsvcs persistence, masquerading as “Intranet Network Awareness (INA+)” under service name IPRIP. Dynamic analysis confirmed the DLL loading inside svchost.exe. Its C2 strings point to hxxp://practicalmalwareanalysis[.]com/serve.html, a lab IOC: this is the Practical Malware Analysis Lab 3-2 sample, not a live threat.",
       },
       {
         heading: "Downloader + stack overflow (sus-file4 / sus-file6)",
-        body: "IDA disassembly of the downloader showed the canonical URLDownloadToFileA → WinExec → ExitProcess pattern, with an XOR-0xFF string-decode loop. The advanced task verified a stack-based buffer overflow in check_authentication() — a watchpoint on the auth flag flipped 0 → non-zero after an unbounded strcpy into a 16-byte buffer, proving control-flow influence in GDB.",
+        body: "IDA disassembly of the downloader showed the canonical URLDownloadToFileA → WinExec → ExitProcess pattern, with an XOR-0xFF string-decode loop. The advanced task verified a stack-based buffer overflow in check_authentication(): a watchpoint on the auth flag flipped 0 → non-zero after an unbounded strcpy into a 16-byte buffer, proving control-flow influence in GDB.",
       },
       {
         heading: "MITRE ATT&CK & detection engineering",
@@ -379,7 +379,7 @@ export const caseStudies: CaseStudy[] = [
       {
         stage: "01",
         label: "Reconnaissance",
-        detail: "Distributed scan from 3 IPs against the Web Server (192.168.121.151) — ports 22 / 80 / 443.",
+        detail: "Distributed scan from 3 IPs against the Web Server (192.168.121.151) on ports 22, 80 and 443.",
         technique: "T1595 · Active Scanning",
       },
       {
@@ -404,15 +404,15 @@ export const caseStudies: CaseStudy[] = [
     sections: [
       {
         heading: "Risk-based prioritisation (CARVER)",
-        body: "The CARVER matrix ranked the VPN Server (52) and the LIMS lab (49) as the most attractive targets — both running end-of-life Ubuntu — surfacing the systemic problem of unsupported software across critical assets.",
+        body: "The CARVER matrix ranked the VPN Server (52) and the LIMS lab (49) as the most attractive targets (both running end-of-life Ubuntu), surfacing the systemic problem of unsupported software across critical assets.",
       },
       {
         heading: "Findings & recommendations",
         body: "Three root-cause findings, plus a fix for the stolen-cookie hijack, drove a prioritised remediation plan.",
         bullets: [
-          "Insufficient network segmentation (CRITICAL) — strict IT/OT firewall rules",
-          "Weak access control — enforce MFA on all remote / RDP access",
-          "Legacy / EOL systems — emergency patch-management programme",
+          "Insufficient network segmentation (critical): strict IT/OT firewall rules",
+          "Weak access control: enforce MFA on all remote and RDP access",
+          "Legacy and EOL systems: an emergency patch-management programme",
           "Hard HMI session timeouts to neutralise stolen-cookie hijacking",
         ],
       },
@@ -451,7 +451,7 @@ export const caseStudies: CaseStudy[] = [
     context:
       "Incident Response & Cyber Threat Intelligence coursework (CSEC2002D). “Winderby Logistics Group” is a case-study organisation from the brief, not a client: a “digitally sideways” SME with a mixed IT/OT estate, a part-time analyst and an office-hours-only MSSP. The brief: measure how ready it is to handle an incident, and turn a scenario intrusion into shareable intelligence.",
     problem:
-      "Incident-response capability that grows ad hoc is invisible until it fails. WLG had no formal IR mandate, no service description and almost no repeatable process — but no way to see or prioritise that. The work had to quantify maturity against a recognised baseline and convert a messy intrusion into structured, actionable threat intelligence.",
+      "Incident-response capability that grows ad hoc is invisible until it fails. WLG had no formal IR mandate, no service description and almost no repeatable process, but no way to see or prioritise that. The work had to quantify maturity against a recognised baseline and convert a messy intrusion into structured, actionable threat intelligence.",
     approach:
       "I scored all 45 SIM3 v2 parameters (Organisation, Human, Tools, Process) on maturity of existence, documentation and enforcement, benchmarked each against the ENISA Basic target, and built a prioritised remediation roadmap. Separately I structured a warehouse-automation intrusion into STIX 2.1 objects and ran it through the NIST SP 800-61 lifecycle.",
     stack: [
@@ -473,17 +473,17 @@ export const caseStudies: CaseStudy[] = [
         body: "Each parameter was scored 0 (non-existent) to 4 (optimising) and compared to ENISA Basic, so every result reads as a gap to a recognised standard rather than an abstract number.",
         bullets: [
           "Organisation: no formal IR mandate (O-1), authority “devolves to whoever is available” (O-3), only an informal service description (O-5)",
-          "Process is the weakest domain — 16 of 17 parameters below ENISA Basic",
+          "Process is the weakest domain: 16 of 17 parameters below ENISA Basic",
           "Tools are the relative bright spot (resilient comms/internet already exist for logistics)",
         ],
       },
       {
         heading: "Root cause & prioritised roadmap",
-        body: "The organisation-layer gaps are the systemic cause: without a mandate, authority or service description, investment in people, tools and process leaks away. The roadmap sequences the lowest-cost, highest-impact fixes first — a board-approved IR charter, service/SLA definitions, then core detection and resolution playbooks.",
+        body: "The organisation-layer gaps are the systemic cause: without a mandate, authority or service description, investment in people, tools and process leaks away. The roadmap sequences the lowest-cost, highest-impact fixes first: a board-approved IR charter, service/SLA definitions, then core detection and resolution playbooks.",
       },
       {
-        heading: "Threat intelligence — STIX 2.1 + NIST 800-61",
-        body: "The brief’s warehouse-automation intrusion scenario (rogue scheduled task by a look-alike service account, C2 to Eastern-European infrastructure, USB exfiltration, telematics brute force) was mapped to STIX 2.1 objects and MITRE ATT&CK for Enterprise and ICS, then walked through the NIST SP 800-61 lifecycle — showing that preparation and detection, not heroics during containment, decide the outcome.",
+        heading: "Threat intelligence: STIX 2.1 and NIST 800-61",
+        body: "The brief’s warehouse-automation intrusion scenario (rogue scheduled task by a look-alike service account, C2 to Eastern-European infrastructure, USB exfiltration, telematics brute force) was mapped to STIX 2.1 objects and MITRE ATT&CK for Enterprise and ICS, then walked through the NIST SP 800-61 lifecycle, showing that preparation and detection, not heroics during containment, decide the outcome.",
       },
     ],
     outcome:
@@ -575,7 +575,7 @@ export const caseStudies: CaseStudy[] = [
     context:
       "Built for the Secure Scripting & Business Applications brief (CSEC2001D). Staff sign in against role-based permissions, manage freight shipments in a normalised SQLite database, and see each shipment’s declared value converted to a base currency using exchange rates pulled live over HTTPS from a remote web service.",
     problem:
-      "The brief’s real test isn’t “can you build a CRUD app” — it’s “can you build one that withstands the common business-application attacks”: SQL injection, broken access control, CSRF, session hijacking and unsafe outbound requests. The emphasis is as much on how it’s secured as on what it does.",
+      "The brief’s real test isn’t “can you build a CRUD app” but “can you build one that withstands the common business-application attacks”: SQL injection, broken access control, CSRF, session hijacking and unsafe outbound requests. The emphasis is as much on how it’s secured as on what it does.",
     approach:
       "A Flask application factory wires configuration, the database, a remote FX client, authentication, central CSRF enforcement and security headers. Every query is parameterised; passwords are PBKDF2-hashed; access control is enforced server-side with role decorators; and the outbound FX call is HTTPS-only with a timeout, defensive parsing and an offline fallback.",
     stack: [
@@ -647,7 +647,7 @@ export const caseStudies: CaseStudy[] = [
     summary:
       "A command-line password manager in modern C++17 that stores credentials in a single vault file encrypted and authenticated with AES-256-GCM, unlocked by a master password that is never written to disk, using OpenSSL’s EVP API rather than a hand-rolled cipher.",
     context:
-      "The Secure Coding module (CSEC1003D) asks for correct, object-oriented, security-minded systems programming. Rather than a toy, I built a real vault: a crypto layer over OpenSSL’s EVP API, a vault/serialisation layer, and a thin CLI — with a CMake build and a CTest suite.",
+      "The Secure Coding module (CSEC1003D) asks for correct, object-oriented, security-minded systems programming. Rather than a toy, I built a real vault: a crypto layer over OpenSSL’s EVP API, a vault/serialisation layer, and a thin CLI, with a CMake build and a CTest suite.",
     problem:
       "A password manager is only as trustworthy as its weakest cryptographic decision. The goal was to get every one right: authenticated encryption so tampering is detected, slow salted key derivation so the master password resists brute force, and a fresh random nonce on every save so the same contents never encrypt the same way twice.",
     approach:
@@ -674,7 +674,7 @@ export const caseStudies: CaseStudy[] = [
           "AES-256-GCM: a modified vault fails the auth tag instead of decrypting to junk",
           "PBKDF2-HMAC-SHA256 with a random salt: expensive brute-force, no rainbow tables",
           "Fresh random 96-bit IV per save: a repeated nonce under one key is negligibly unlikely at this volume",
-          "Master password derived to a key and never stored — only salt + iterations persist",
+          "Master password derived to a key and never stored: only the salt and iteration count persist",
         ],
       },
       {
@@ -707,11 +707,11 @@ export const caseStudies: CaseStudy[] = [
     accent: "emerald",
     icon: "KeyRound",
     summary:
-      "Industrial-cryptography work spanning a custom modified-Affine cipher, a ciphertext-only RSA common-modulus attack, and replay / impersonation attacks against Needham-Schroeder and Diffie-Hellman variants — each with a mathematical justification and concrete mitigations.",
+      "Industrial-cryptography work spanning a custom modified-Affine cipher, a ciphertext-only RSA common-modulus attack, and replay / impersonation attacks against Needham-Schroeder and Diffie-Hellman variants, each with a mathematical justification and concrete mitigations.",
     context:
-      "A combined Industrial Cryptography coursework covering both construction and cryptanalysis — designing a working cipher, then breaking real protocol weaknesses with the underlying number theory.",
+      "A combined Industrial Cryptography coursework covering both construction and cryptanalysis: designing a working cipher, then breaking real protocol weaknesses with the underlying number theory.",
     problem:
-      "Cryptographic security depends on more than strong primitives — parameter choices, key management and protocol freshness decide whether a system actually holds. The brief required demonstrating both how schemes work and exactly how they fail.",
+      "Cryptographic security depends on more than strong primitives: parameter choices, key management and protocol freshness decide whether a system actually holds. The brief required demonstrating both how schemes work and exactly how they fail.",
     approach:
       "I implemented a modified Affine cipher over a 30-character domain, then mounted a ciphertext-only common-modulus RSA attack using the Extended Euclidean Algorithm, and finally simulated replay and impersonation attacks step-by-step against symmetric key-exchange protocols.",
     stack: [
@@ -722,7 +722,7 @@ export const caseStudies: CaseStudy[] = [
       "Diffie-Hellman",
     ],
     metrics: [
-      { value: "30", label: "Symbol cipher alphabet", sub: "A–Z + four symbols, k₀ = 7" },
+      { value: "30", label: "Symbol cipher alphabet", sub: "A to Z plus four symbols, k₀ = 7" },
       { value: "4", label: "Schemes analysed", sub: "Affine · RSA · NS · DH" },
       { value: "0", label: "Private keys needed for the RSA break", sub: "if one message goes to two users sharing a modulus" },
       { value: "10", label: "Unit tests", sub: "in the public repo" },
@@ -730,7 +730,7 @@ export const caseStudies: CaseStudy[] = [
     sections: [
       {
         heading: "Modified Affine cipher",
-        body: "A 30-symbol alphabet (A–Z plus +, −, *, /) with f(x) = (7x + 4) mod 30. k₀ = 7 is coprime to 30 (gcd = 1), so the map is a bijection; the modular inverse 13 (7·13 ≡ 1 mod 30) drives decryption. The tests check that the map is collision-free across the whole alphabet. Like any affine cipher it has a tiny keyspace and falls to frequency analysis: it illustrates modular arithmetic, not a secure design.",
+        body: "A 30-symbol alphabet (A to Z plus +, −, *, /) with f(x) = (7x + 4) mod 30. k₀ = 7 is coprime to 30 (gcd = 1), so the map is a bijection; the modular inverse 13 (7·13 ≡ 1 mod 30) drives decryption. The tests check that the map is collision-free across the whole alphabet. Like any affine cipher it has a tiny keyspace and falls to frequency analysis: it illustrates modular arithmetic, not a secure design.",
       },
       {
         heading: "RSA common-modulus attack",
@@ -746,7 +746,7 @@ export const caseStudies: CaseStudy[] = [
       },
     ],
     outcome:
-      "A coursework demonstrating end-to-end cryptographic literacy — from hand-built ciphers to protocol cryptanalysis — with each weakness paired to a defensible mitigation grounded in academic sources.",
+      "A coursework demonstrating end-to-end cryptographic literacy, from hand-built ciphers to protocol cryptanalysis, with each weakness paired to a defensible mitigation grounded in academic sources.",
     tools: ["Python", "Number theory"],
     tags: ["Cryptography", "Cryptanalysis", "RSA", "Protocols"],
     repos: ["https://github.com/WalBuk28/industrial-cryptography"],
@@ -762,11 +762,11 @@ export const caseStudies: CaseStudy[] = [
     accent: "emerald",
     icon: "Code2",
     summary:
-      "Two focused Python projects that demonstrate secure-by-design engineering: a calculator that evaluates expressions without ever calling eval, and an object-oriented card game with a tamper-evident, HMAC-signed results log — each fully unit-tested.",
+      "Two focused Python projects that demonstrate secure-by-design engineering: a calculator that evaluates expressions without ever calling eval, and an object-oriented card game with a tamper-evident, HMAC-signed results log, each fully unit-tested.",
     context:
       "Good security engineers can build the code they defend. These two Secure Coding (CSEC1003D) projects apply that mindset to everyday programs: assume input is hostile, and protect integrity even where nobody thinks to.",
     problem:
-      "The naive version of each is a security hole. A quick calculator reaches for eval() — a remote-code-execution hole. A game writes a plain-text score file anyone can edit. The exercise was to build the correct version of each, and prove it with tests.",
+      "The naive version of each is a security hole. A quick calculator reaches for eval(), a remote-code-execution hole. A game writes a plain-text score file anyone can edit. The exercise was to build the correct version of each, and prove it with tests.",
     approach:
       "The calculator is a hand-written tokeniser + shunting-yard parser + fixed-operation evaluator, structurally incapable of running arbitrary code. The card game (War) uses clean OOP (Card / Deck / Player / engine) and signs every recorded result with HMAC-SHA256, so any edit to the score log is detected.",
     stack: [
@@ -785,7 +785,7 @@ export const caseStudies: CaseStudy[] = [
     sections: [
       {
         heading: "Safe expression calculator",
-        body: "The common “quick calculator” — eval(user_input) — is a remote-code-execution hole. This one classifies every character explicitly and only ever performs a closed set of maths operations, so hostile input is rejected before any computation.",
+        body: "The common “quick calculator”, eval(user_input), is a remote-code-execution hole. This one classifies every character explicitly and only ever performs a closed set of maths operations, so hostile input is rejected before any computation.",
         bullets: [
           "Three stages: tokeniser → shunting-yard parser → RPN evaluator (no eval anywhere)",
           "Rejects code injection and illegal characters at the lexer",
@@ -794,7 +794,7 @@ export const caseStudies: CaseStudy[] = [
       },
       {
         heading: "Object-oriented War, with integrity",
-        body: "A clean OOP implementation (immutable cards, seedable deck, players, rules engine) — plus a security twist: every game result is appended to an HMAC-SHA256-signed log, and verification uses a constant-time comparison, so tampering with the score file is detected.",
+        body: "A clean OOP implementation (immutable cards, seedable deck, players, rules engine), plus a security twist: every game result is appended to an HMAC-SHA256-signed log, and verification uses a constant-time comparison, so tampering with the score file is detected.",
       },
       {
         heading: "Tested and honest",
