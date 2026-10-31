@@ -655,6 +655,15 @@ html.frame-scrolled .frame::before,
 html.frame-scrolled .frame::after {
   opacity: 0.94;
 }
+/* On a phone the top bar returns over running text: the scrim is solid behind the whole bar. */
+@media (max-width: 767px) {
+  .frame::before {
+    background: linear-gradient(var(--ground) 66%, transparent);
+  }
+  html.frame-scrolled .frame::before {
+    opacity: 0.98;
+  }
+}
 html.frame-away .frame__tl,
 html.frame-away .frame__tr,
 html.frame-away .frame::before {
