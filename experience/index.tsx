@@ -9,7 +9,7 @@ const Journey = dynamic(() => import("./Journey"), { ssr: false });
 type Mode = "pending" | "3d" | "flat";
 
 /**
- * The 2D site is the default everywhere — recruiters get instant, scannable
+ * The 2D site is the default everywhere: recruiters get instant, scannable
  * content. The 3D journey is strictly opt-in: the /journey route (or a
  * ?view=3d link) requests it, and it still requires working WebGL.
  */
@@ -66,7 +66,10 @@ export function JourneyGate({
 
   return (
     <>
-      <div hidden={mode === "3d"}>{children}</div>
+      {/* While the gate decides, the fallback stays out of sight (with JS); without JS it shows. */}
+      <div hidden={mode === "3d"} className={mode === "pending" ? "jgate-pending" : undefined}>
+        {children}
+      </div>
       {mode === "3d" && <Journey />}
     </>
   );

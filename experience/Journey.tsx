@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { AnimatePresence } from "framer-motion";
 import { Scene } from "./Scene";
 import { Hud } from "./ui/Hud";
 import { BootOverlay } from "./ui/BootOverlay";
@@ -12,12 +11,13 @@ import { BootOverlay } from "./ui/BootOverlay";
  */
 export default function Journey() {
   const [booted, setBooted] = useState(false);
+  const [gone, setGone] = useState(false);
 
   return (
     <div id="journey-gl" className="fixed inset-0 z-40 bg-void" role="region" aria-label="Interactive 3D portfolio">
       <Scene />
       <Hud />
-      <AnimatePresence>{!booted && <BootOverlay onEnter={() => setBooted(true)} />}</AnimatePresence>
+      {!gone && <BootOverlay leaving={booted} onEnter={() => setBooted(true)} onGone={() => setGone(true)} />}
     </div>
   );
 }

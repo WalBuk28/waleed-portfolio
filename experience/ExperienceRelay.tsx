@@ -107,7 +107,7 @@ function Badge({ index, xp }: { index: number; xp: (typeof experience)[number] }
           <meshBasicMaterial ref={ringMat} color={color} transparent opacity={0.4} blending={THREE.AdditiveBlending} toneMapped={false} />
         </mesh>
         <TextPlane text={SHORT[index]} height={0.11} color={hot ? C.emeraldGlow : C.electricGlow} position={[0, 0.08, 0.045]} />
-        <TextPlane text={xp.kind.toUpperCase()} height={0.06} color="#9fb1c1" position={[0, -0.12, 0.045]} />
+        <TextPlane text={xp.kind.toUpperCase()} height={0.06} color="#b9c0d8" position={[0, -0.12, 0.045]} />
         <TextPlane text="ACCESS GRANTED" height={0.05} color={color} position={[0, -0.62, 0]} />
       </group>
       <GlowSprite color={color} scale={1.6} opacity={0.22} />
@@ -122,7 +122,7 @@ function Badge({ index, xp }: { index: number; xp: (typeof experience)[number] }
         <PanelHeader
           eyebrow={`${xp.kind} · ${xp.period}`}
           title={xp.company}
-          tagline={`${xp.role} — ${xp.location}`}
+          tagline={`${xp.role} · ${xp.location}`}
           accent={hot ? "emerald" : "electric"}
         />
         <ul className="space-y-1.5">

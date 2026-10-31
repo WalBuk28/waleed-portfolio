@@ -50,7 +50,7 @@ export function ServerRack() {
       const c = i % LED_COLS;
       m.setPosition(-0.28 + c * 0.075, -0.78 + u * 0.31, 0.445);
       leds.current.setMatrixAt(i, m);
-      leds.current.setColorAt(i, ledColor.set("#0a232b"));
+      leds.current.setColorAt(i, ledColor.set("#14183a"));
     }
     leds.current.instanceMatrix.needsUpdate = true;
     if (leds.current.instanceColor) leds.current.instanceColor.needsUpdate = true;
@@ -82,7 +82,7 @@ export function ServerRack() {
       ledClock.current = 0;
       for (let i = 0; i < UNITS * LED_COLS; i++) {
         const on = Math.random() < (hovered ? 0.55 : 0.3);
-        ledColor.set(on ? LED_COLORS[i % LED_COLORS.length] : "#0a232b");
+        ledColor.set(on ? LED_COLORS[i % LED_COLORS.length] : "#14183a");
         leds.current.setColorAt(i, ledColor);
       }
       leds.current.instanceColor.needsUpdate = true;

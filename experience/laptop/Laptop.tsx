@@ -45,9 +45,9 @@ export function Laptop() {
     c.height = 4;
     const ctx = c.getContext("2d")!;
     const g = ctx.createLinearGradient(0, 0, 256, 0);
-    g.addColorStop(0, "rgba(34,211,238,0)");
-    g.addColorStop(0.5, "rgba(34,211,238,0.9)");
-    g.addColorStop(1, "rgba(34,211,238,0)");
+    g.addColorStop(0, "rgba(180,154,255,0)");
+    g.addColorStop(0.5, "rgba(180,154,255,0.9)");
+    g.addColorStop(1, "rgba(180,154,255,0)");
     ctx.fillStyle = g;
     ctx.fillRect(0, 0, 256, 4);
     const tex = new THREE.CanvasTexture(c);
@@ -94,7 +94,7 @@ export function Laptop() {
       <Instances limit={72} range={72}>
         <boxGeometry args={[0.172, 0.035, 0.172]} />
         <meshStandardMaterial
-          color="#0d141b"
+          color="#10162e"
           metalness={0.4}
           roughness={0.55}
           emissive={C.cyan}
@@ -118,7 +118,7 @@ export function Laptop() {
 
       {/* trackpad */}
       <RoundedBox args={[1.1, 0.012, 0.62]} radius={0.005} position={[0, 0.165, 0.62]}>
-        <meshStandardMaterial color="#0a1016" metalness={0.6} roughness={0.35} />
+        <meshStandardMaterial color="#0b1028" metalness={0.6} roughness={0.35} />
       </RoundedBox>
 
       {/* hinge */}
@@ -139,7 +139,7 @@ export function Laptop() {
           <planeGeometry args={[2.82, 1.76]} />
           <meshBasicMaterial ref={screenMat} map={texture} transparent opacity={0} toneMapped={false} />
         </mesh>
-        <pointLight ref={screenLight} position={[0, 1.0, 1.1]} color="#2dd4bf" intensity={0} distance={5.5} decay={2} />
+        <pointLight ref={screenLight} position={[0, 1.0, 1.1]} color="#2ee6b8" intensity={0} distance={5.5} decay={2} />
 
         {/* rear emblem */}
         <mesh position={[0, 1.15, -0.052]} rotation={[0, Math.PI, 0]}>

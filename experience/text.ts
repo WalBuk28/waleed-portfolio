@@ -23,7 +23,7 @@ export function textTexture(
   text: string,
   {
     size = 46,
-    color = "#a5f3fc",
+    color = "#d4c6ff",
     weight = 600,
     glow = 10,
     glowColor,

@@ -60,7 +60,7 @@ export function Scene() {
       dpr={journey.coarse ? [1, 1.5] : [1, 1.75]}
       camera={{ fov: 55, near: 0.1, far: 60, position: [4.6, 3.3, 7.8] }}
       onCreated={({ gl, scene }) => {
-        gl.setClearColor("#04070b");
+        gl.setClearColor("#070b1c");
         gl.toneMapping = THREE.ACESFilmicToneMapping;
         scene.matrixWorldAutoUpdate = true;
       }}

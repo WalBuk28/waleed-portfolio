@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { Presence } from "./Presence";
 import { EV, emit, journey } from "../state";
 import { ensureAudio } from "../audio/engine";
 import { profile } from "../content";
@@ -91,18 +91,9 @@ export function Hud() {
 
       {/* section readout */}
       <div className="absolute bottom-6 left-5">
-        <AnimatePresence initial={false}>
-          <motion.p
-            key={section.id}
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8, position: "absolute" }}
-            transition={{ duration: 0.25 }}
-            className="font-mono text-2xs uppercase tracking-wider2 text-ink-secondary"
-          >
-            <span className="text-emerald-accent">▸</span> {section.label}
-          </motion.p>
-        </AnimatePresence>
+        <p key={section.id} className="jfade font-mono text-2xs uppercase tracking-wider2 text-ink-secondary">
+          <span className="text-emerald-accent">▸</span> {section.label}
+        </p>
       </div>
 
       {/* depth gauge */}
@@ -119,31 +110,19 @@ export function Hud() {
       </div>
 
       {/* scroll hint */}
-      <AnimatePresence>
-        {!scrolled && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1, transition: { delay: 3.4, duration: 0.8 } }}
-            exit={{ opacity: 0, transition: { duration: 0.4 } }}
-            className="absolute bottom-6 left-1/2 -translate-x-1/2 text-center"
-          >
-            <p className="font-mono text-2xs uppercase tracking-wider2 text-ink-muted">
-              Scroll to descend the stream
-            </p>
-            <motion.p
-              animate={{ y: [0, 6, 0] }}
-              transition={{ repeat: Infinity, duration: 1.6, ease: "easeInOut" }}
-              className="mt-1 text-emerald-accent"
-              aria-hidden
-            >
+      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 text-center">
+        <Presence show={!scrolled} exitMs={400}>
+          <div className="jfade--late">
+            <p className="font-mono text-2xs uppercase tracking-wider2 text-ink-muted">Scroll to descend the stream</p>
+            <p className="jbob mt-1 text-emerald-accent" aria-hidden>
               ▼
-            </motion.p>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            </p>
+          </div>
+        </Presence>
+      </div>
 
       <span className="sr-only">
-        {profile.fullName} — {profile.role}. Interactive 3D portfolio; use the 2D button for the
+        {profile.fullName}, {profile.role}. Interactive 3D portfolio; use the 2D button for the
         accessible version.
       </span>
     </div>

@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { motion } from "framer-motion";
 import { bootSequence, profile } from "../content";
 import { EV, emit, journey } from "../state";
 import { ensureAudio } from "../audio/engine";
@@ -18,7 +17,7 @@ const TONE: Record<string, string> = {
  * WebAudio). Auto-enters silently after a few seconds. While this overlay
  * holds the screen, the canvas behind it is already compiling shaders.
  */
-export function BootOverlay({ onEnter }: { onEnter: () => void }) {
+export function BootOverlay({ leaving, onEnter, onGone }: { leaving: boolean; onEnter: () => void; onGone: () => void }) {
   const [lines, setLines] = useState(0);
   const [ready, setReady] = useState(false);
   const done = useRef(false);
@@ -44,6 +43,13 @@ export function BootOverlay({ onEnter }: { onEnter: () => void }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ready]);
 
+  // The airlock fades out (0.7 s) once entered, then leaves the page.
+  useEffect(() => {
+    if (!leaving) return;
+    const t = setTimeout(onGone, 700);
+    return () => clearTimeout(t);
+  }, [leaving, onGone]);
+
   const enter = (sound: boolean) => {
     if (done.current) return;
     done.current = true;
@@ -59,10 +65,7 @@ export function BootOverlay({ onEnter }: { onEnter: () => void }) {
   };
 
   return (
-    <motion.div
-      exit={{ opacity: 0, transition: { duration: 0.7, ease: "easeOut" } }}
-      className="fixed inset-0 z-[60] flex items-center justify-center bg-void"
-    >
+    <div className={`jboot fixed inset-0 z-[60] flex items-center justify-center bg-void${leaving ? " is-leaving" : ""}`}>
       <div className="w-full max-w-xl px-6">
         <p className="eyebrow mb-4">
           <span className="inline-block h-1.5 w-1.5 animate-pulse-dot rounded-full bg-emerald-accent" />
@@ -70,24 +73,14 @@ export function BootOverlay({ onEnter }: { onEnter: () => void }) {
         </p>
         <div className="min-h-[180px] font-mono text-xs leading-6 sm:text-sm">
           {bootSequence.slice(0, lines).map((l, i) => (
-            <motion.p
-              key={i}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className={TONE[l.tone ?? "info"]}
-            >
+            <p key={i} className={`jfade ${TONE[l.tone ?? "info"]}`}>
               {l.text}
-            </motion.p>
+            </p>
           ))}
           {!ready && <span className="inline-block h-4 w-2.5 animate-blink bg-emerald-glow align-middle" />}
         </div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={ready ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.4 }}
-          className="mt-6 flex flex-wrap items-center gap-3"
-        >
+        <div className={`jboot__go mt-6 flex flex-wrap items-center gap-3${ready ? " is-ready" : ""}`}>
           <button onClick={() => enter(true)} className="btn-primary" autoFocus>
             ENTER + SOUND ▸
           </button>
@@ -100,8 +93,8 @@ export function BootOverlay({ onEnter }: { onEnter: () => void }) {
           >
             ▢ 2D version
           </button>
-        </motion.div>
+        </div>
       </div>
-    </motion.div>
+    </div>
   );
 }

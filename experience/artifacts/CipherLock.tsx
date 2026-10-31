@@ -118,10 +118,10 @@ export function CipherLock() {
           <mesh key={i} ref={(m) => void (shardRefs.current[i] = m!)} position={s.home}>
             <boxGeometry args={s.size} />
             <meshStandardMaterial
-              color="#241017"
+              color="#1f0f22"
               metalness={0.8}
               roughness={0.4}
-              emissive="#4c1120"
+              emissive="#4a0d18"
               emissiveIntensity={0.4}
             />
           </mesh>
@@ -153,7 +153,7 @@ export function CipherLock() {
           <icosahedronGeometry args={[0.2, 1]} />
           <meshStandardMaterial
             ref={coreMat}
-            color="#2b0a12"
+            color="#260a14"
             emissive={C.crit}
             emissiveIntensity={0.35}
             roughness={0.3}
@@ -185,7 +185,7 @@ export function CipherLock() {
       <GlowSprite color={C.critMark} scale={2.6} opacity={0.16} />
       <pointLight ref={coreLight} color={C.crit} intensity={3.6} distance={6} decay={2} position={[0, 0.2, 0.9]} />
       <pointLight color={C.electricDeep} intensity={2} distance={5} decay={2} position={[-1.4, 0.8, 1]} />
-      <TextPlane text="96 FINDINGS · 4 ARTEFACTS" height={0.085} color="#fda4af" position={[0, -1.05, 0.2]} />
+      <TextPlane text="96 FINDINGS · 4 ARTEFACTS" height={0.085} color="#ff6140" position={[0, -1.05, 0.2]} />
 
       <Panel position={[-1.5, 0.5, 0]} visible={show} width={330} align="right">
         <PanelHeader

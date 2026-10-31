@@ -7,7 +7,7 @@ import { radialTexture, textTexture } from "./text";
 /** Neon wireframe outline of a box — the signature look of the scene. */
 export function NeonBox({
   args,
-  color = "#22d3ee",
+  color = "#b49aff",
   opacity = 0.9,
   position,
   threshold = 30,
@@ -66,7 +66,7 @@ export const TextPlane = forwardRef<
     glow?: number;
   }
 >(function TextPlane(
-  { text, height = 0.12, color = "#a5f3fc", additive = true, opacity = 1, position, rotation, weight = 600, glow = 10 },
+  { text, height = 0.12, color = "#d4c6ff", additive = true, opacity = 1, position, rotation, weight = 600, glow = 10 },
   ref
 ) {
   const { tex, aspect } = useMemo(() => textTexture(text, { color, weight, glow }), [text, color, weight, glow]);

@@ -35,7 +35,7 @@ export function HoloCode() {
       holoCode.map((text, i) => {
         const hot = i % 2 === 0;
         const { tex, aspect } = textTexture(text, {
-          color: hot ? "#7dd3fc" : "#5eead4",
+          color: hot ? "#b49aff" : "#a8f7e0",
           size: 42,
           glow: 8,
         });

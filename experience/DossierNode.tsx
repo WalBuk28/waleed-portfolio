@@ -90,7 +90,7 @@ export function DossierNode() {
               position={[Math.cos(a) * 1.15, Math.sin(a * 2) * 0.28, Math.sin(a) * 1.15]}
             >
               <TextPlane text={s.head} height={0.16} color={i % 2 ? C.electricGlow : C.emeraldGlow} position={[0, 0.07, 0]} />
-              <TextPlane text={s.label} height={0.05} color="#9fb1c1" position={[0, -0.08, 0]} />
+              <TextPlane text={s.label} height={0.05} color="#b9c0d8" position={[0, -0.08, 0]} />
             </group>
           );
         })}
@@ -113,7 +113,7 @@ export function DossierNode() {
             <li key={c.name} className="flex items-baseline gap-2 text-2xs text-ink-secondary">
               <span className="text-electric-accent">◈</span>
               <span>
-                <span className="text-ink">{c.name}</span> — {c.issuer}
+                <span className="text-ink">{c.name}</span> · {c.issuer}
                 {c.date && ` · ${c.date}`}
               </span>
             </li>

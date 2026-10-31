@@ -111,7 +111,7 @@ export function ForensicsWeb() {
             <TextPlane
               text={n.label}
               height={0.075}
-              color={n.hot ? "#fda4af" : C.electricGlow}
+              color={n.hot ? "#ff6140" : C.electricGlow}
               position={[0, -0.24, 0]}
             />
           </group>
@@ -158,7 +158,7 @@ export function ForensicsWeb() {
             <li key={k.stage} className="flex items-baseline gap-2 text-2xs leading-snug">
               <span className="font-mono text-electric-accent">{k.stage}</span>
               <span className="text-ink-secondary">
-                <span className="font-semibold text-ink">{k.label}</span> — {k.technique}
+                <span className="font-semibold text-ink">{k.label}</span> · {k.technique}
               </span>
             </li>
           ))}

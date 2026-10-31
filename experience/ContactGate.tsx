@@ -85,7 +85,7 @@ export function ContactGate() {
         <GlowSprite ref={iris} color={C.emeraldGlow} scale={2.4} opacity={0.5} position={[0, 0, 0.08]} />
         <mesh position={[0, 0, -0.03]} raycast={() => null}>
           <circleGeometry args={[0.55, 48]} />
-          <meshBasicMaterial color="#031015" toneMapped={false} />
+          <meshBasicMaterial color="#060a1c" toneMapped={false} />
         </mesh>
       </group>
 
@@ -101,7 +101,7 @@ export function ContactGate() {
           </p>
           <h3 className="font-display text-xl font-bold text-ink">Establish uplink</h3>
           <p className="mx-auto mt-1.5 max-w-[34ch] text-xs leading-relaxed text-ink-secondary">
-            {profile.availability} — {profile.location}.
+            {profile.availability}. {profile.location}.
           </p>
 
           <div className="mt-4 flex flex-wrap items-center justify-center gap-2">

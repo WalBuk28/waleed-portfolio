@@ -1,26 +1,42 @@
+import type { CSSProperties } from "react";
 import type { Metadata } from "next";
+import Link from "next/link";
 import { JourneyGate } from "@/experience";
-import { FlatSite } from "@/components/FlatSite";
-import { Providers } from "@/components/Providers";
+import { Frame } from "@/components/frame/Frame";
+import { posterTile } from "@/components/screen/poster";
 
 export const metadata: Metadata = {
-  title: "3D Journey",
-  description:
-    "A cinematic 3D descent through the WalSec portfolio — boot the terminal, ride the data stream, decrypt the case files.",
+  title: "3D version",
+  description: "The opt-in 3D version of the WalSec portfolio: boot the terminal, ride the data stream and open the case files.",
   robots: { index: false, follow: true },
 };
 
 /**
- * The opt-in cinematic mode. Same server-rendered content underneath; the
- * gate boots the WebGL journey on top (and falls back to the 2D site if
- * WebGL is unavailable).
+ * The opt-in 3D version (React Three Fiber, its own renderer and native scroll). The gate mounts
+ * it once WebGL is confirmed; underneath, server-rendered, is what shows without WebGL or
+ * JavaScript: a short page that says so and leads back to the site.
  */
 export default function JourneyPage() {
   return (
-    <Providers>
-      <JourneyGate defaultMode="3d">
-        <FlatSite />
-      </JourneyGate>
-    </Providers>
+    <JourneyGate defaultMode="3d">
+      <div className="screen-page missing-page" style={{ "--poster-tile": posterTile() } as CSSProperties}>
+        <Frame page="missing" label="3D version" />
+        <main id="main" tabIndex={-1} className="missing">
+          <p className="missing__code mono">3D version</p>
+          <h1 className="missing__h1">The 3D version needs WebGL.</h1>
+          <p className="missing__line">
+            It runs on JavaScript and WebGL, and this browser isn’t running them. Everything it shows is on the home
+            page.
+          </p>
+          <Link className="btn btn--primary missing__cta" href="/" data-magnetic data-cursor="Open">
+            <span className="btn__shape" aria-hidden="true" />
+            Back to the home page
+            <span className="btn__arrow" aria-hidden="true">
+              →
+            </span>
+          </Link>
+        </main>
+      </div>
+    </JourneyGate>
   );
 }
