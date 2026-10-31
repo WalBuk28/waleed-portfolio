@@ -398,22 +398,33 @@ function tick(time: number, dt: number) {
 
 // The global ink follows the ground (only the daylight chapter flips it). The ground fades over
 // the whole flip; the text inks cross in its middle fifth, so text keeps its contrast against
-// the ground on both sides of the crossing and the unreadable moment lasts about 50 ms.
+// the ground on both sides of the crossing; it dips below 4.5:1 for under 70 ms of the 0.7 s.
+// A custom property on <html> restyles the whole page, so each one is written only when its
+// value changes, and the ground (which only the frame's scrims read) moves in twelfths.
+const written: Record<string, string> = {};
 function writeInk(day: number) {
   const d = Math.round(day * 50) / 50;
   if (d === st.day) return;
   st.day = d;
   const style = document.documentElement.style;
-  const t = smooth(0.4, 0.6, d);
-  const mixed = (a: readonly number[], b: readonly number[], k: number) => `rgb(${a.map((v, j) => Math.round(v + (b[j] - v) * k)).join(" ")})`;
-  const lerp = (a: readonly number[], b: readonly number[]) => mixed(a, b, t);
   if (d === 0) {
-    for (const name of ["--ink", "--ink-soft", "--muted", "--ground", "--lit"]) style.removeProperty(name);
+    for (const name of Object.keys(written)) {
+      style.removeProperty(name);
+      delete written[name];
+    }
     return;
   }
-  style.setProperty("--ink", lerp(INK.night.ink, INK.day.ink));
-  style.setProperty("--ink-soft", lerp(INK.night.soft, INK.day.soft));
-  style.setProperty("--muted", lerp(INK.night.muted, INK.day.muted));
-  style.setProperty("--ground", mixed(INK.night.ground, INK.day.ground, d));
-  style.setProperty("--lit", lerp(INK.night.lit, INK.day.lit));
+  const t = smooth(0.4, 0.6, d);
+  const g = Math.round(d * 12) / 12;
+  const mixed = (a: readonly number[], b: readonly number[], k: number) => `rgb(${a.map((v, j) => Math.round(v + (b[j] - v) * k)).join(" ")})`;
+  const set = (name: string, value: string) => {
+    if (written[name] === value) return;
+    written[name] = value;
+    style.setProperty(name, value);
+  };
+  set("--ink", mixed(INK.night.ink, INK.day.ink, t));
+  set("--ink-soft", mixed(INK.night.soft, INK.day.soft, t));
+  set("--muted", mixed(INK.night.muted, INK.day.muted, t));
+  set("--lit", mixed(INK.night.lit, INK.day.lit, t));
+  set("--ground", mixed(INK.night.ground, INK.day.ground, g));
 }
