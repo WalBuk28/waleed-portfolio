@@ -43,6 +43,8 @@ export function CameraRig() {
   useFrame((state, dt) => {
     if (!hidden.current) {
       scroll.el.classList.add("no-scrollbar");
+      // The scroller is a keyboard stop (arrow keys and Space move the camera): name it.
+      scroll.el.setAttribute("aria-label", "The 3D scene: scroll, or use the arrow keys, to move through it");
       hidden.current = true;
     }
 

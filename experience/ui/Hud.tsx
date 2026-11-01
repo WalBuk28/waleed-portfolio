@@ -48,7 +48,7 @@ export function Hud() {
   // warp the virtual scroller to the uplink gate — the damped camera turns
   // the jump into a fast cinematic flythrough
   const warpToContact = () => {
-    const el = document.querySelector<HTMLElement>("#journey-gl .no-scrollbar");
+    const el = document.querySelector<HTMLElement>(".journey-root .no-scrollbar");
     if (el) el.scrollTop = el.scrollHeight - el.clientHeight;
     journey.audio?.blip("open");
   };
@@ -60,34 +60,26 @@ export function Hud() {
         <span className="text-emerald-accent">▲</span> WALSEC<span className="text-ink-muted">://JOURNEY</span>
       </div>
 
-      {/* controls */}
-      <div className="pointer-events-auto absolute right-5 top-5 flex items-center gap-2">
-        <button
-          onClick={warpToContact}
-          className="rounded-lg border border-edge bg-surface/60 px-3 py-1.5 font-mono text-2xs uppercase tracking-wider2 text-ink-secondary backdrop-blur-sm transition-colors hover:border-emerald-accent/50 hover:text-emerald-glow"
-          title="Warp to the uplink gate"
-        >
-          ▸ Contact
+      {/* controls: the site's ghost buttons, which flood with the tint under the hand */}
+      <nav aria-label="3D controls" className="pointer-events-auto absolute right-5 top-5 flex items-center gap-2">
+        <button type="button" onClick={warpToContact} className="btn btn--ghost btn--hud" title="Fly to the contact gate">
+          <span className="btn__shape" aria-hidden="true" />
+          Contact
+        </button>
+        <button type="button" onClick={toggleSound} aria-pressed={sound} className="btn btn--ghost btn--hud">
+          <span className="btn__shape" aria-hidden="true" />
+          {sound ? "Sound on" : "Sound off"}
         </button>
         <button
-          onClick={toggleSound}
-          aria-pressed={sound}
-          className={`rounded-lg border px-3 py-1.5 font-mono text-2xs uppercase tracking-wider2 backdrop-blur-sm transition-colors ${
-            sound
-              ? "border-emerald-accent/60 bg-emerald-deep/30 text-emerald-glow"
-              : "border-edge bg-surface/60 text-ink-muted hover:text-ink"
-          }`}
-        >
-          {sound ? "◉ SND ON" : "○ SND OFF"}
-        </button>
-        <button
+          type="button"
           onClick={() => emit(EV.flat)}
-          className="rounded-lg border border-edge bg-surface/60 px-3 py-1.5 font-mono text-2xs uppercase tracking-wider2 text-ink-muted backdrop-blur-sm transition-colors hover:text-ink"
-          title="Switch to the accessible 2D version"
+          className="btn btn--ghost btn--hud"
+          title="Switch to the 2D site"
         >
-          ▢ 2D
+          <span className="btn__shape" aria-hidden="true" />
+          2D
         </button>
-      </div>
+      </nav>
 
       {/* section readout */}
       <div className="absolute bottom-6 left-5">

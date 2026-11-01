@@ -64,34 +64,44 @@ export function BootOverlay({ leaving, onEnter, onGone }: { leaving: boolean; on
     onEnter();
   };
 
+  // Every line is in the box from the start, unwritten lines kept invisible, so the box never
+  // grows while the sequence types (it grew by 120 px on a phone: CLS 0.12).
   return (
     <div className={`jboot fixed inset-0 z-[60] flex items-center justify-center bg-void${leaving ? " is-leaving" : ""}`}>
-      <div className="w-full max-w-xl px-6">
+      <div className="w-full max-w-3xl px-6">
         <p className="eyebrow mb-4">
           <span className="inline-block h-1.5 w-1.5 animate-pulse-dot rounded-full bg-emerald-accent" />
           WALSEC OS · {profile.name.toUpperCase()} · SECURE BOOT
         </p>
-        <div className="min-h-[180px] font-mono text-xs leading-6 sm:text-sm">
-          {bootSequence.slice(0, lines).map((l, i) => (
-            <p key={i} className={`jfade ${TONE[l.tone ?? "info"]}`}>
+        <div className="font-mono text-xs leading-6 sm:text-sm">
+          {bootSequence.map((l, i) => (
+            <p
+              key={i}
+              className={i < lines ? `jfade ${TONE[l.tone ?? "info"]}` : "invisible"}
+              aria-hidden={i < lines ? undefined : true}
+            >
               {l.text}
+              {!ready && i === Math.max(0, lines - 1) && (
+                <span className="ml-1 inline-block h-4 w-2.5 animate-blink bg-emerald-glow align-middle" aria-hidden="true" />
+              )}
             </p>
           ))}
-          {!ready && <span className="inline-block h-4 w-2.5 animate-blink bg-emerald-glow align-middle" />}
         </div>
 
         <div className={`jboot__go mt-6 flex flex-wrap items-center gap-3${ready ? " is-ready" : ""}`}>
-          <button onClick={() => enter(true)} className="btn-primary" autoFocus>
-            ENTER + SOUND ▸
+          <button type="button" onClick={() => enter(true)} className="btn btn--primary btn--hud">
+            <span className="btn__shape" aria-hidden="true" />
+            Enter with sound
+            <span className="btn__arrow" aria-hidden="true">
+              →
+            </span>
           </button>
-          <button onClick={() => enter(false)} className="btn-ghost">
-            ENTER SILENT
+          <button type="button" onClick={() => enter(false)} className="btn btn--ghost btn--hud">
+            <span className="btn__shape" aria-hidden="true" />
+            Enter silently
           </button>
-          <button
-            onClick={() => emit(EV.flat)}
-            className="ml-auto font-mono text-2xs uppercase tracking-wider2 text-ink-muted transition-colors hover:text-ink"
-          >
-            ▢ 2D version
+          <button type="button" onClick={() => emit(EV.flat)} className="ulink ml-auto">
+            2D version
           </button>
         </div>
       </div>

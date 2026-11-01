@@ -20,6 +20,14 @@ import { ExperienceRelay } from "./ExperienceRelay";
 import { DossierNode } from "./DossierNode";
 import { ContactGate } from "./ContactGate";
 
+// R3F 9 (up to 9.8.2, the latest) still creates a THREE.Clock, which three r183+ marks as
+// deprecated with a console warning on every visit. Nothing on our side uses Clock: drop that one
+// message and pass every other log, warning and error through unchanged.
+THREE.setConsoleFunction((type: string, message: string, ...params: unknown[]) => {
+  if (type === "warn" && message.startsWith("THREE.Clock:")) return;
+  (console[type as "log" | "warn" | "error"] ?? console.log)(message, ...params);
+});
+
 /**
  * three's Raycaster ignores `visible` entirely — without this filter the
  * range-culled artifacts would keep stealing hovers and clicks from
