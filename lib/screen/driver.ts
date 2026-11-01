@@ -439,10 +439,12 @@ function tick(time: number, dt: number) {
 }
 
 // The global ink follows the ground (only the daylight chapter flips it). The ground fades over
-// the whole flip; the text inks cross in its middle fifth, so text keeps its contrast against
-// the ground on both sides of the crossing; it dips below 4.5:1 for under 70 ms of the 0.7 s.
-// A custom property on <html> restyles the whole page, so each one is written only when its
-// value changes. The ground isn't written there at all: while the screen is up, the canvas is
+// the whole flip; the text inks cross in one frame at its midpoint, so text keeps its contrast
+// against the ground on both sides of the crossing. A custom property on <html> restyles the
+// whole page (3,400 elements, 33 to 50 ms a frame on the throttled phone), so the inks are
+// written once each way: crossing over the middle fifth in 1/50 steps cost 2 to 5 slow frames
+// per flip, one crossing costs 1 to 3 (stage 5, Intel iGPU, 4x CPU). Each is still written only
+// when its value changes. The ground isn't written there at all: while the screen is up, the canvas is
 // the ground, and only the elements marked data-ground (the frame's scrims, the menu, the
 // follower's chip) read the variable, so it moves on them alone, in twelfths.
 const written: Record<string, string> = {};
@@ -460,7 +462,7 @@ function writeInk(day: number) {
     }
     return;
   }
-  const t = smooth(0.4, 0.6, d);
+  const t = d < 0.5 ? 0 : 1;
   const g = Math.round(d * 12) / 12;
   const mixed = (a: readonly number[], b: readonly number[], k: number) => `rgb(${a.map((v, j) => Math.round(v + (b[j] - v) * k)).join(" ")})`;
   const set = (name: string, value: string) => {
