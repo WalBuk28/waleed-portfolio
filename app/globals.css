@@ -1827,7 +1827,9 @@ html:not(.gl-on) .work__frame {
    columns 8 to 12 holds the current chapter's period while the screen turns behind it. ── */
 .xp {
   position: relative;
-  padding: calc(16 * var(--u)) var(--margin) calc(20 * var(--u));
+  /* a short foot: About's own centring supplies the pause before daylight (a 20u foot left
+     ~470 px of bare daylight under the certifications) */
+  padding: calc(16 * var(--u)) var(--margin) calc(6 * var(--u));
 }
 .xp__body {
   display: grid;
@@ -2016,7 +2018,7 @@ html:not(.gl-on) .work__frame {
   column-gap: var(--gutter);
   align-content: center;
   min-height: 100svh;
-  padding: calc(20 * var(--u)) var(--margin);
+  padding: calc(12 * var(--u)) var(--margin) calc(20 * var(--u));
 }
 .about__h2 {
   grid-column: 1 / -1;
