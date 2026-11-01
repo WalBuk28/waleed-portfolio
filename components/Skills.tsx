@@ -29,7 +29,12 @@ export function Skills() {
           <div key={i} className="skills__col">
             {col.map((g) => (
               <article key={g.title} className="skills__group" data-group data-quiet="box">
-                <WalSecMark className="skills__tile" color="currentColor" lockIn />
+                {/* one tile per case study that shows this group's skills: the count is the data */}
+                <span className="skills__cells" aria-hidden="true">
+                  {g.evidence.map((slug) => (
+                    <WalSecMark key={slug} className="skills__tile" color="currentColor" lockIn />
+                  ))}
+                </span>
                 <h3 className="skills__h3">{g.title}</h3>
                 <ul className="skills__tools">
                   {g.skills.map((s) => (

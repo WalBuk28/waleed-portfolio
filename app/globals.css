@@ -1744,12 +1744,17 @@ html:not(.gl-on) .work__frame {
   position: relative;
   color: var(--ink);
 }
+/* the group's tiles: one per case study that evidences it, locked in side by side */
+.skills__cells {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 18px;
+}
 .skills__tile {
   --lk: 4;
   display: block;
-  width: 30px;
+  width: 22px;
   height: auto;
-  margin-bottom: 18px;
   color: var(--ink-soft);
   overflow: visible;
   transition: color 0.35s;
