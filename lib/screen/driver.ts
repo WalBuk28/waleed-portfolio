@@ -30,6 +30,9 @@ const INK = {
   day: { ink: [10, 15, 36], soft: [10, 15, 36], muted: [61, 70, 110], ground: [226, 242, 240], lit: [10, 110, 84], link: [91, 52, 214], scarlet: [181, 18, 31] },
 } as const;
 
+/** Seconds without a move before the light leaves a still pointer and goes back to rest. */
+const STILL_S = 2.5;
+
 const st = {
   screen: null as Screen | null,
   starting: null as Promise<Screen | null> | null,
@@ -47,6 +50,7 @@ const st = {
   day: -1,
   sun: [0, 0],
   sunSet: false,
+  catchUp: false, // the light is on its way back from rest to the hand
   vel: 0,
   tap: { x: 0, y: 0, t: -10 },
   slow: { frames: 0, avg: 0, warm: false },
@@ -356,16 +360,29 @@ function tick(time: number, dt: number) {
     st.sun[0] += (target[0] - st.sun[0]) * k;
     st.sun[1] += (target[1] - st.sun[1]) * k;
     st.vel = Math.max(Math.min(1, Math.abs(velocity) / 25) * 0.55, st.vel * Math.pow(0.92, ratio));
-  } else if (pointer.active) {
-    st.sun[0] = pointer.x; // the follower and the light are the same point
-    st.sun[1] = pointer.y;
+  } else if (pointer.active && time - pointer.movedAt < STILL_S) {
+    if (st.catchUp) {
+      // back from rest: the light glides to the hand, then rides it again
+      const c = 1 - Math.pow(1 - 0.22, ratio);
+      st.sun[0] += (pointer.x - st.sun[0]) * c;
+      st.sun[1] += (pointer.y - st.sun[1]) * c;
+      st.catchUp = Math.hypot(pointer.x - st.sun[0], pointer.y - st.sun[1]) > 1;
+    } else {
+      st.sun[0] = pointer.x; // the follower and the light are the same point
+      st.sun[1] = pointer.y;
+    }
   } else {
+    // No movement (DESIGN.md §8): the light goes back to the chapter's resting place and
+    // breathes there, whether the pointer has left the page or is lying still on it.
     const d = 12 * Math.sin(time * 0.35); // idle: the resting sun drifts ±12 px along 30°
-    st.sun[0] += (rest[0] + DRIFT[0] * d - st.sun[0]) * k;
-    st.sun[1] += (rest[1] + DRIFT[1] * d - st.sun[1]) * k;
-    pointer.x = st.sun[0]; // park the pointer on the sun: the next move starts from the light
-    pointer.y = st.sun[1];
-    pointer.anchored = true;
+    st.sun[0] += (rest[0] + DRIFT[0] * d - st.sun[0]) * k * 0.35;
+    st.sun[1] += (rest[1] + DRIFT[1] * d - st.sun[1]) * k * 0.35;
+    if (pointer.active) st.catchUp = true;
+    else {
+      pointer.x = st.sun[0]; // park the pointer on the sun: the next move starts from the light
+      pointer.y = st.sun[1];
+      pointer.anchored = true;
+    }
   }
 
   const u = screen.uniforms;

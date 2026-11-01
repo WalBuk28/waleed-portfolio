@@ -13,6 +13,8 @@ export const pointer = {
   active: false,
   /** The driver is parking the pointer on the sun while it's away. */
   anchored: false,
+  /** gsap.ticker.time of the last move (seconds). */
+  movedAt: 0,
 };
 
 const LAG = 0.16; // share of the distance covered per 60 Hz frame
@@ -32,6 +34,7 @@ export function startPointer() {
         pointer.y = e.clientY;
       }
       pointer.active = true;
+      pointer.movedAt = gsap.ticker.time;
     },
     { passive: true },
   );
