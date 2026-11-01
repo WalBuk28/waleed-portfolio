@@ -2017,9 +2017,10 @@ html:not(.gl-on) .work__frame {
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
   column-gap: var(--gutter);
-  align-content: center;
-  min-height: 100svh;
-  padding: calc(12 * var(--u)) var(--margin) calc(20 * var(--u));
+  /* sized to its statement, not the screen: a full-height About centred its lines and left
+     ~300 px of bare daylight above them */
+  align-content: start;
+  padding: calc(12 * var(--u)) var(--margin) calc(18 * var(--u));
 }
 .about__h2 {
   grid-column: 1 / -1;
