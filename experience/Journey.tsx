@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Scene } from "./Scene";
 import { Hud } from "./ui/Hud";
 import { BootOverlay } from "./ui/BootOverlay";
+import { PAGES } from "./journey";
 
 /**
  * The full 3D takeover: persistent canvas + DOM HUD + boot airlock.
@@ -29,16 +30,23 @@ export default function Journey({ onLive }: { onLive: () => void }) {
   }, []);
 
   return (
-    <main
-      ref={root}
-      id="main"
-      tabIndex={-1}
-      className="journey-root fixed inset-0 z-40 bg-void outline-none"
-      aria-label="Interactive 3D portfolio"
-    >
-      <Scene />
-      <Hud />
-      {!gone && <BootOverlay leaving={booted} onEnter={() => setBooted(true)} onGone={onGone} />}
-    </main>
+    <>
+      <main
+        ref={root}
+        id="main"
+        tabIndex={-1}
+        className="journey-root fixed inset-0 z-40 bg-void outline-none"
+        aria-labelledby="journey-title"
+      >
+        <h1 id="journey-title" className="sr-only">
+          The 3D version
+        </h1>
+        <Scene />
+        <Hud />
+        {!gone && <BootOverlay leaving={booted} onEnter={() => setBooted(true)} onGone={onGone} />}
+      </main>
+      {/* The page's own scroll drives the camera (Scene: WindowScroll): a track PAGES screens tall. */}
+      <div aria-hidden="true" style={{ height: `${PAGES * 100}lvh` }} />
+    </>
   );
 }

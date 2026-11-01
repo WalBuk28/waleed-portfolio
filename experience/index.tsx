@@ -74,23 +74,22 @@ export function JourneyGate({ children }: { children: ReactNode }) {
  */
 export function JourneyStatus({ className }: { className?: string }) {
   const { mode } = useContext(GateCtx);
+  const rest = " Everything in it is also on the home page.";
   if (mode === "flat")
     return (
       <p className={className}>
-        It needs WebGL, and this browser isn’t running it. Everything it shows is on the home page.
+        It needs WebGL, and this browser isn’t running it.{rest}
       </p>
     );
   return (
     <p className={className}>
-      <span className="jline jline--nojs">
-        It runs on JavaScript and WebGL, and this browser isn’t running JavaScript. Everything it shows is on the home
-        page.
-      </span>
-      <span className="jline jline--load">Loading the scene. Everything in it is also on the home page.</span>
+      <span className="jline jline--nojs">It runs on JavaScript and WebGL, and this browser isn’t running JavaScript.</span>
+      <span className="jline jline--load">Loading the scene.</span>
       <span className="jline jline--ask">
         Your device asks for reduced motion, and this version moves the camera the whole way through, so it waits
-        for you. Everything in it is also on the home page.
+        for you.
       </span>
+      {rest}
     </p>
   );
 }

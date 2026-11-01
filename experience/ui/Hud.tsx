@@ -48,8 +48,7 @@ export function Hud() {
   // warp the virtual scroller to the uplink gate — the damped camera turns
   // the jump into a fast cinematic flythrough
   const warpToContact = () => {
-    const el = document.querySelector<HTMLElement>(".journey-root .no-scrollbar");
-    if (el) el.scrollTop = el.scrollHeight - el.clientHeight;
+    window.scrollTo({ top: document.documentElement.scrollHeight, behavior: "instant" });
     journey.audio?.blip("open");
   };
 
@@ -93,7 +92,7 @@ export function Hud() {
         <span className="font-mono text-2xs tabular-nums text-ink-muted">
           {String(Math.round(progress * 100)).padStart(3, "0")}%
         </span>
-        <div className="h-1 w-28 overflow-hidden rounded-full bg-surface">
+        <div className="hidden h-1 w-28 overflow-hidden rounded-full bg-surface sm:block">
           <div
             className="h-full rounded-full bg-gradient-to-r from-emerald-accent to-electric-accent"
             style={{ width: `${progress * 100}%` }}
@@ -102,7 +101,7 @@ export function Hud() {
       </div>
 
       {/* scroll hint */}
-      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 text-center">
+      <div className="absolute bottom-16 left-1/2 -translate-x-1/2 text-center sm:bottom-6">
         <Presence show={!scrolled} exitMs={400}>
           <div className="jfade--late">
             <p className="font-mono text-2xs uppercase tracking-wider2 text-ink-muted">Scroll to descend the stream</p>

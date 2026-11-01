@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import * as THREE from "three";
-import { Canvas, useThree } from "@react-three/fiber";
-import { PerformanceMonitor, Preload, ScrollControls } from "@react-three/drei";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import { PerformanceMonitor, Preload, ScrollControls, useScroll } from "@react-three/drei";
 import { PAGES } from "./journey";
 import { journey } from "./state";
 import { CameraRig } from "./CameraRig";
@@ -27,6 +27,29 @@ THREE.setConsoleFunction((type: string, message: string, ...params: unknown[]) =
   if (type === "warn" && message.startsWith("THREE.Clock:")) return;
   (console[type as "log" | "warn" | "error"] ?? console.log)(message, ...params);
 });
+
+/**
+ * The journey scrolls the page itself, not drei's inner scroller (held at overflow: hidden, so it
+ * still takes the pointer for the 3D hovers): Journey adds a track PAGES screens tall, and this
+ * feeds the window's progress into ScrollControls' target, which it damps into `offset` as
+ * before. Native page scroll means touch momentum, the keyboard (Space, Page Down, arrows) and
+ * anything else that scrolls a page all move the camera. `scroll` is drei's own target ref: on
+ * the state at runtime, though its type leaves it out.
+ */
+function WindowScroll() {
+  const state = useScroll() as unknown as { scroll: { current: number } };
+  const max = useRef(1);
+  useEffect(() => {
+    const measure = () => (max.current = Math.max(1, document.documentElement.scrollHeight - window.innerHeight));
+    measure();
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, []);
+  useFrame(() => {
+    state.scroll.current = Math.min(1, Math.max(0, window.scrollY / max.current));
+  });
+  return null;
+}
 
 /**
  * three's Raycaster ignores `visible` entirely — without this filter the
@@ -77,7 +100,8 @@ export function Scene() {
         onDecline={() => (journey.quality = 0)}
         onIncline={() => (journey.quality = 1)}
       >
-        <ScrollControls pages={PAGES} damping={0.32} style={{ scrollbarWidth: "none" }}>
+        <ScrollControls pages={PAGES} damping={0.32} style={{ scrollbarWidth: "none", overflowY: "hidden" }}>
+          <WindowScroll />
           <RaycastVisibilityFilter />
           <CameraRig />
           <Ambient />

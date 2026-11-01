@@ -43,6 +43,14 @@ export function BootOverlay({ leaving, onEnter, onGone }: { leaving: boolean; on
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ready]);
 
+  // Scrolling the page is a way in too: the camera is already moving with it.
+  useEffect(() => {
+    const go = () => enter(false);
+    window.addEventListener("scroll", go, { once: true, passive: true });
+    return () => window.removeEventListener("scroll", go);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // The airlock fades out (0.7 s) once entered, then leaves the page.
   useEffect(() => {
     if (!leaving) return;
