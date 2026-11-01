@@ -9,9 +9,9 @@
 //  paint, and only where WebGL, motion and data allow it.
 // =============================================================================
 import { gsap } from "@/lib/gsap";
-import { COS30, grid } from "@/lib/gl/lattice";
+import { COS30, grid, type Grid } from "@/lib/gl/lattice";
 import type { Screen } from "@/lib/gl/renderer";
-import { LABELS, caseState, chapterState, mix, shutState, smooth, type Chapter, type State } from "./chapters";
+import { LABELS, SWING_LIMIT, caseState, chapterState, mix, setSwingMax, shutState, smooth, type Chapter, type State } from "./chapters";
 import { heroCellFor } from "./hero";
 import { pointer, startPointer } from "./pointer";
 
@@ -159,10 +159,33 @@ function fail() {
   return null;
 }
 
+/**
+ * Experience's screen turns on a hinge at the margin line. It is four viewports wide (shader.ts),
+ * and it turns at most until its far edge would come on screen: about 35° at 1440, the full 55°
+ * on phones. An edge sweeping in crossed whichever text it passed (stage 5's critics read it as
+ * a seam). Same projection as the shader: f = 1500, from the margin line to 4 x the width.
+ */
+function hingeMax(vw: number, g: Grid) {
+  const W = 4 * vw - g.margin;
+  const f = 1500;
+  const edge = (a: number) => g.margin + (W * Math.cos(a)) / (1 + (W * Math.sin(a)) / f);
+  const target = vw + 8;
+  let lo = 0;
+  let hi = SWING_LIMIT;
+  if (edge(hi) >= target) return hi;
+  for (let i = 0; i < 24; i++) {
+    const m = (lo + hi) / 2;
+    if (edge(m) > target) lo = m;
+    else hi = m;
+  }
+  return lo;
+}
+
 function measure(rescan: boolean) {
   st.vw = window.innerWidth;
   st.vh = window.innerHeight;
   st.g = grid(st.vw);
+  setSwingMax(hingeMax(st.vw, st.g));
   st.screen?.resize(st.vw, st.vh);
   if (rescan) scan();
 }

@@ -104,7 +104,9 @@ void main() {
     xp = xs / max(ca - xs * sa / f, 1e-3);
     depth = f / (f + xp * sa);
     q = vec2(uMargin + xp, uRes.y * 0.5 + (p.y - uRes.y * 0.5) / depth);
-    beyond = smoothstep(uRes.x - 4.0, uRes.x + 4.0, uMargin + xp);
+    // The screen is four viewports wide: its far edge stays off screen at every angle the
+    // driver allows (hingeMax), so it recedes into depth without a seam across the text.
+    beyond = smoothstep(uRes.x * 4.0 - 4.0, uRes.x * 4.0 + 4.0, uMargin + xp);
   }
 
   float S = uS;
@@ -224,7 +226,7 @@ void main() {
     vec3 room = GROUND + tint * (0.04 + 0.14 * exp(-pow(distance(p, uSun) / (uSunR * 2.0), 2.0)));
     col = mix(col, room, beyond);
     // the screen's far edge catches the light beyond it: a thin lit rim
-    float rim = exp(-pow((uRes.x - uMargin - xp) * depth / 2.5, 2.0));
+    float rim = exp(-pow((uRes.x * 4.0 - uMargin - xp) * depth / 2.5, 2.0));
     if (rim > 0.004) col += (glass(uGlowW) * 0.55 + glassHi(uGlowW) * 0.25) * rim * smoothstep(0.03, 0.25, uSwing) * (1.0 - quietPx(p));
   }
 

@@ -36,6 +36,16 @@ export const LABELS: Record<Chapter, string> = {
 };
 
 const DEG55 = (55 * Math.PI) / 180;
+
+/**
+ * How far the hinge turns on this viewport (the driver sets it on resize): at most 55°, and never
+ * so far that the screen's far edge crosses text. See `hingeMax` in driver.ts.
+ */
+let swingMax = DEG55;
+export function setSwingMax(a: number) {
+  swingMax = Math.min(DEG55, Math.max(0, a));
+}
+export const SWING_LIMIT = DEG55;
 const smooth = (a: number, b: number, x: number) => {
   const t = Math.min(1, Math.max(0, (x - a) / (b - a)));
   return t * t * (3 - 2 * t);
@@ -76,7 +86,7 @@ export function chapterState(n: Chapter, local: number, phone: boolean, daylight
       // scarlet panes, the hinge's lit edge and a low lamp in scarlet, in a dim violet room.
       return {
         ...base, open: 0.16, sunX: 0.92, sunY: 0.5, sunR: 300 * r, back: 0.2,
-        swing: smooth(0, 0.85, local) * DEG55,
+        swing: smooth(0, 0.85, local) * swingMax,
         glass: [0.2, 0.7, 0.1], tint: VIOLET, glowCol: SCARLET, glow: [0.98, 0.98, 380 * r, phone ? 0.12 : 0.28],
       };
     case 5: // Daylight: the screen retracts and the room floods
