@@ -2312,6 +2312,13 @@ html:not(.js) .btn--copy {
   max-width: 58ch;
   margin: 6px 0 0;
 }
+.foot__colophon {
+  max-width: 46ch;
+  margin: 16px 0 0;
+  font-size: var(--t-body);
+  line-height: 1.5;
+  color: var(--ink-soft);
+}
 .foot__nav {
   grid-column: 8 / span 5;
 }

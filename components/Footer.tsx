@@ -12,6 +12,11 @@ export function Footer() {
         <p className="foot__name">
           © {year} {profile.fullName}
         </p>
+        {/* Waleed approved this line (1 Nov 2026, docs/FACTS.md). */}
+        <p className="foot__colophon">
+          This screen is cut from the WalSec mark. Like a mashrabiya in Dubai or a jali in Lahore, it
+          keeps eyes out and lets light in.
+        </p>
         <p className="foot__credits">
           Set in Archivo and Martian Mono (SIL Open Font License). Motion by GSAP and Lenis, the
           screen in WebGL with OGL, built on Next.js.
