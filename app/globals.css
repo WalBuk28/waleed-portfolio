@@ -756,13 +756,10 @@ html.frame-away .frame::after {
   clip-path: polygon(calc(100% - var(--a)) 0, 100% 0, 100% calc(var(--a) * 0.5774));
 }
 .menu__foot {
-  display: flex;
-  align-items: center;
-  gap: 10px;
   margin: auto 0 0;
+}
+.menu__foot .ulink {
   font-size: 13px;
-  line-height: 18px;
-  color: var(--muted);
 }
 .menu[hidden] {
   display: none;
@@ -2557,13 +2554,6 @@ html:not(.gl-on) .case__frame {
   margin: 0;
   padding: 0;
   list-style: none;
-}
-.case__note {
-  display: flex;
-  align-items: center;
-  min-height: 44px;
-  font-size: 15px;
-  color: var(--muted);
 }
 .case__cta {
   margin-top: 36px;

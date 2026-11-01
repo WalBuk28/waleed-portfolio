@@ -232,7 +232,6 @@ export default async function WorkPage({ params }: { params: Promise<{ slug: str
                   </a>
                 </li>
               )}
-              {!study.repos?.length && study.repoNote && <li className="case__note">{study.repoNote}</li>}
               <li>
                 <Link className="ulink" href="/#work">
                   All work

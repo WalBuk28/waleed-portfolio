@@ -227,10 +227,9 @@ export function Frame({ page = "home", label }: { page?: FramePage; label?: stri
           Download CV
         </a>
         <p className="menu__foot">
-          <svg className="frame__tile" viewBox="-14 -18 28 36" aria-hidden="true">
-            <polygon points="0,-17 13,-9.5 13,9.5 0,17 -13,9.5 -13,-9.5" />
-          </svg>
-          {profile.availability}
+          <a className="ulink mono" href={`mailto:${profile.email}`}>
+            {profile.email}
+          </a>
         </p>
         <button type="button" className="menu__close" onClick={() => close()}>
           Close

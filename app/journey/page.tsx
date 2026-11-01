@@ -8,6 +8,7 @@ import { posterTile } from "@/components/screen/poster";
 export const metadata: Metadata = {
   title: "3D version",
   description: "The opt-in 3D version of the WalSec portfolio: boot the terminal, ride the data stream and open the case files.",
+  alternates: { canonical: "/journey" },
   robots: { index: false, follow: true },
 };
 
