@@ -235,6 +235,9 @@ export default async function WorkPage({ params }: { params: Promise<{ slug: str
               <li>
                 <Link className="ulink" href="/#work">
                   All work
+                  <span className="ulink__arrow ulink__arrow--back" aria-hidden="true">
+                    ←
+                  </span>
                 </Link>
               </li>
             </ul>
