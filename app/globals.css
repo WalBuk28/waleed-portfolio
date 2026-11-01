@@ -615,12 +615,14 @@ html:not(.js) .frame {
   top: 0;
   background: linear-gradient(var(--ground) 68%, transparent);
 }
+/* the bottom corners sit on a solid band: running text passes under it, never through it */
 .frame::after {
   bottom: 0;
-  background: linear-gradient(transparent, var(--ground) 65%);
+  height: calc(var(--margin) + 60px);
+  background: linear-gradient(transparent, var(--ground) 42%);
 }
 html.frame-scrolled .frame::after {
-  opacity: 0.94;
+  opacity: 1;
 }
 html.frame-scrolled .frame::before {
   opacity: 0.98;
