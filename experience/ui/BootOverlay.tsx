@@ -11,6 +11,20 @@ const TONE: Record<string, string> = {
   info: "text-electric-glow",
 };
 
+/** A boot line's run of leader dots, set apart so narrow screens can drop it. */
+const lead = (t: string) => {
+  const m = t.match(/^(.*?)( ?·{3,} ?)(.*)$/);
+  return m ? (
+    <>
+      {m[1]}
+      <span className="jlead">{m[2]}</span>
+      {m[3] && <span> {m[3].trim()}</span>}
+    </>
+  ) : (
+    t
+  );
+};
+
 /**
  * The airlock. Types the walsec boot sequence, then hands the user two ways
  * in — ENTER or ENTER+SOUND (the user gesture that legally unlocks
@@ -21,6 +35,7 @@ export function BootOverlay({ leaving, onEnter, onGone }: { leaving: boolean; on
   const [lines, setLines] = useState(0);
   const [ready, setReady] = useState(false);
   const done = useRef(false);
+  const chosen = useRef(false); // a keyboard user has been in the airlock: it waits for them
 
   useEffect(() => {
     const line = setInterval(() => {
@@ -32,7 +47,7 @@ export function BootOverlay({ leaving, onEnter, onGone }: { leaving: boolean; on
         }
         return n + 1;
       });
-    }, 230);
+    }, 170);
     return () => clearInterval(line);
   }, []);
 
@@ -40,8 +55,8 @@ export function BootOverlay({ leaving, onEnter, onGone }: { leaving: boolean; on
     if (!ready) return;
     // Enters by itself unless a keyboard user is in the airlock, choosing.
     const auto = setTimeout(() => {
-      if (!document.activeElement?.closest(".jboot")) enter(false);
-    }, 2600);
+      if (!chosen.current && !document.activeElement?.closest(".jboot")) enter(false);
+    }, 1600);
     return () => clearTimeout(auto);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ready]);
@@ -78,7 +93,10 @@ export function BootOverlay({ leaving, onEnter, onGone }: { leaving: boolean; on
   // Every line is in the box from the start, unwritten lines kept invisible, so the box never
   // grows while the sequence types (it grew by 120 px on a phone: CLS 0.12).
   return (
-    <div className={`jboot fixed inset-0 z-[60] flex items-center justify-center bg-void${leaving ? " is-leaving" : ""}`}>
+    <div
+      className={`jboot fixed inset-0 z-[60] flex items-center justify-center bg-void${leaving ? " is-leaving" : ""}`}
+      onFocus={() => (chosen.current = true)}
+    >
       <div className="w-full max-w-3xl px-6">
         <p className="eyebrow mb-4">
           <span className="inline-block h-1.5 w-1.5 animate-pulse-dot rounded-full bg-emerald-accent" />
@@ -91,7 +109,7 @@ export function BootOverlay({ leaving, onEnter, onGone }: { leaving: boolean; on
               className={i < lines ? `jfade ${TONE[l.tone ?? "info"]}` : "invisible"}
               aria-hidden={i < lines ? undefined : true}
             >
-              {l.text}
+              {lead(l.text)}
               {!ready && i === Math.max(0, lines - 1) && (
                 <span className="ml-1 inline-block h-4 w-2.5 animate-blink bg-emerald-glow align-middle" aria-hidden="true" />
               )}

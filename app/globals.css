@@ -379,6 +379,13 @@
       opacity 0.4s,
       translate 0.4s;
   }
+  /* the boot log's leader dots go on narrow screens, where they pushed the values onto a line
+     of their own */
+  @media (max-width: 599px) {
+    .jlead {
+      display: none;
+    }
+  }
   .jboot__go.is-ready {
     visibility: visible;
     opacity: 1;

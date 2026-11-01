@@ -138,7 +138,7 @@ export function ContactGate() {
             </ul>
           </div>
 
-          <div className="mt-4 flex items-center justify-between border-t border-edge pt-3">
+          <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-edge pt-3">
             <button
               onClick={() => emit(EV.flat)}
               className="font-mono text-2xs uppercase tracking-wider2 text-ink-muted transition-colors hover:text-ink"
