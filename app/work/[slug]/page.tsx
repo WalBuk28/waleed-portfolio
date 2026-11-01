@@ -30,7 +30,7 @@ export async function generateMetadata({
   const path = `/work/${study.slug}`;
   return {
     title: study.title,
-    description: study.summary,
+    description: study.description,
     // The page's own tags, not the site-wide security keywords.
     keywords: [...study.tags, profile.name, profile.cvName],
     alternates: { canonical: path },
@@ -39,12 +39,12 @@ export async function generateMetadata({
       url: path,
       siteName: "WalSec",
       title: study.title,
-      description: study.summary,
+      description: study.description,
     },
     twitter: {
       card: "summary_large_image",
       title: study.title,
-      description: study.summary,
+      description: study.description,
     },
   };
 }

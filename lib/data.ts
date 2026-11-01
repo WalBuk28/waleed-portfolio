@@ -160,6 +160,7 @@ export type CaseStudy = {
   icon: string;
   featured?: boolean;
   summary: string;
+  description: string; // meta, OG and Twitter: at most 160 characters
   context: string;
   problem: string;
   approach: string;
@@ -187,6 +188,8 @@ export const caseStudies: CaseStudy[] = [
     slug: "walsec-atioc-hub",
     title: "WalSec A-TIOC Hub",
     tagline: "A privacy-first SIEM-Lite that fuses network forensics with local LLMs",
+    description:
+      "An air-gapped SIEM-Lite for small organisations: deep packet inspection and live threat intel, grounded in a local LLM so no telemetry leaves the building.",
     category: "Final-year project (CTEC3451D) · SOC platform",
     year: "2025/26",
     accent: "emerald",
@@ -269,6 +272,8 @@ export const caseStudies: CaseStudy[] = [
     slug: "pentest-malware",
     title: "Penetration testing and malware investigations",
     tagline: "Black-box pentest + multi-sample malware reverse engineering",
+    description:
+      "A black-box pentest of a legacy lab host (96 Nessus findings) and reverse engineering of three malware samples, mapped to MITRE ATT&CK with detections.",
     category: "Coursework (CSEC2003D) · Offensive security",
     year: "2025/26",
     accent: "electric",
@@ -340,6 +345,8 @@ export const caseStudies: CaseStudy[] = [
     slug: "network-forensics",
     title: "Network forensics and ICS security",
     tagline: "Reconstructing a multi-stage SCADA attack from packets",
+    description:
+      "A four-stage attack reconstructed from packet captures, from a public web server into a water-treatment OT network, mapped to ATT&CK Enterprise and ICS.",
     category: "Coursework (CSEC3002) · Digital forensics · OT/ICS",
     year: "2025",
     accent: "emerald",
@@ -434,6 +441,8 @@ export const caseStudies: CaseStudy[] = [
     slug: "incident-response-maturity",
     title: "Incident response maturity and threat intel",
     tagline: "A SIM3 maturity assessment and STIX threat-intel structuring for a logistics SME",
+    description:
+      "A SIM3 v2 incident-response maturity assessment of a case-study logistics company, benchmarked against ENISA Basic, with the intrusion structured in STIX 2.1.",
     category: "Coursework (CSEC2002D) · Incident response · Threat intelligence",
     year: "2025/26",
     accent: "electric",
@@ -490,6 +499,8 @@ export const caseStudies: CaseStudy[] = [
     slug: "ai-phishing-detection",
     title: "AI-driven phishing detection",
     tagline: "Phishing detection on 235,795 URLs, with a leakage fix, a SOC cost model and a poisoning test",
+    description:
+      "Six models classifying phishing on 235,795 URLs (PhiUSIIL): two leaky features removed, a threshold from a SOC cost model, and a label-poisoning test.",
     category: "Coursework (CSEC3004) · Machine learning",
     year: "2025",
     accent: "electric",
@@ -558,6 +569,8 @@ export const caseStudies: CaseStudy[] = [
     slug: "secure-scripting",
     title: "FreightDesk, a secure business application",
     tagline: "A hardened Flask logistics portal with live FX, RBAC and a full security self-assessment",
+    description:
+      "FreightDesk: a Flask logistics app built security-first, with parameterised SQL, RBAC, CSRF tokens, hardened headers, live FX and 17 automated tests.",
     category: "Coursework (CSEC2001D) · Secure web app",
     year: "2025/26",
     accent: "emerald",
@@ -632,6 +645,8 @@ export const caseStudies: CaseStudy[] = [
     slug: "secure-password-manager",
     title: "Secure password manager in C++",
     tagline: "An AES-256-GCM credential vault in modern C++ built on real OpenSSL crypto",
+    description:
+      "A command-line password manager in C++17: one vault file sealed with AES-256-GCM via OpenSSL’s EVP API, unlocked by a master password never written to disk.",
     category: "Coursework (CSEC1003D) · Secure C++",
     year: "2025/26",
     accent: "electric",
@@ -694,6 +709,8 @@ export const caseStudies: CaseStudy[] = [
     slug: "cryptography",
     title: "Cryptography and encryption",
     tagline: "Cipher design, RSA cryptanalysis and protocol attack simulation",
+    description:
+      "A modified affine cipher, a ciphertext-only RSA common-modulus attack, and replay and impersonation attacks on Needham-Schroeder and Diffie-Hellman.",
     category: "Coursework · Applied cryptography",
     year: "2025",
     accent: "emerald",
@@ -749,6 +766,8 @@ export const caseStudies: CaseStudy[] = [
     slug: "software-development",
     title: "Secure coding fundamentals",
     tagline: "Two small Python builds that show security thinking, not just working code",
+    description:
+      "Two Python builds with security designed in: a calculator that never calls eval, and a card game whose results log is HMAC-signed. Both unit-tested.",
     category: "Coursework (CSEC1003D) · Secure coding",
     year: "2025/26",
     accent: "emerald",
@@ -804,6 +823,8 @@ export const caseStudies: CaseStudy[] = [
     slug: "contrust-os",
     title: "Construct OS",
     tagline: "Truck and cargo tracking for a friend's transport business",
+    description:
+      "A web app I built for a friend’s transport business: it tracks the trucks and what is inside them, and relays that to management in a simple way.",
     category: "Personal build · Web app",
     accent: "electric",
     icon: "Truck",

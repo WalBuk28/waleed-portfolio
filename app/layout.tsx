@@ -24,7 +24,8 @@ const martian = Martian_Mono({
 
 const url = "https://walsec.com";
 const title = `${profile.name} (${profile.cvName}), ${profile.role} in Dubai`;
-const description = `${profile.fullName} (${profile.cvName}): SOC Analyst in Dubai. BSc (Hons) Cyber Security, First Class Honours. Case studies in threat intelligence, network forensics and SOC automation, with the evidence and repos behind them.`;
+// At most 160 characters. The full name is in the keywords, authors and JSON-LD.
+const description = `${profile.name} (${profile.cvName}), SOC Analyst in Dubai. BSc Cyber Security, First Class Honours. Ten case studies, with the evidence and repos behind them.`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(url),
