@@ -1207,7 +1207,8 @@ html.frame-away .frame::after {
 /* ── Work: an index list; the hovered row opens its window in the lattice ── */
 .work {
   position: relative;
-  padding: clamp(120px, 15vw, calc(28 * var(--u))) var(--margin) clamp(96px, 10vw, calc(20 * var(--u)));
+  /* a short foot: the lookup closes Work, and Skills' own head supplies the pause */
+  padding: clamp(120px, 15vw, calc(28 * var(--u))) var(--margin) clamp(48px, 5vw, calc(8 * var(--u)));
 }
 .work__head {
   display: grid;
