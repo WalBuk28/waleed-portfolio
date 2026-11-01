@@ -957,6 +957,14 @@ html.frame-away .frame::after {
   flex-direction: column;
   gap: 6px;
 }
+/* the numbers rise from behind their baseline (HeroMotion): clipped below, free above */
+.hero__fact [data-count] {
+  display: inline-block;
+}
+.hero__fact:has([data-count]) {
+  display: inline-block;
+  clip-path: inset(-0.5em -0.2em 0 -0.2em);
+}
 .hero__fact {
   font-size: 19px;
   font-weight: 500;
