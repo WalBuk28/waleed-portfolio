@@ -21,13 +21,18 @@ export default function Journey({ onLive }: { onLive: () => void }) {
   }, [onLive]);
 
   // When the airlock leaves with focus inside it (a keyboard user pressed Enter), focus moves to
-  // the scene, never back to <body>. Untouched, focus stays where it was: the next Tab starts at
-  // the skip link.
+  // the first of the scene's controls, never back to <body>; it waits for the HUD to stop being
+  // inert. Untouched, focus stays where it was: the next Tab starts at the skip link.
+  const refocus = useRef(false);
   const onGone = useCallback(() => {
-    const lost = !!document.activeElement?.closest(".jboot");
+    refocus.current = !!document.activeElement?.closest(".jboot");
     setGone(true);
-    if (lost) root.current?.focus({ preventScroll: true });
   }, []);
+  useEffect(() => {
+    if (!gone || !refocus.current) return;
+    refocus.current = false;
+    root.current?.querySelector<HTMLElement>('nav[aria-label="3D controls"] button')?.focus({ preventScroll: true });
+  }, [gone]);
 
   return (
     <>

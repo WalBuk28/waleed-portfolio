@@ -38,7 +38,10 @@ export function BootOverlay({ leaving, onEnter, onGone }: { leaving: boolean; on
 
   useEffect(() => {
     if (!ready) return;
-    const auto = setTimeout(() => enter(false), 2600);
+    // Enters by itself unless a keyboard user is in the airlock, choosing.
+    const auto = setTimeout(() => {
+      if (!document.activeElement?.closest(".jboot")) enter(false);
+    }, 2600);
     return () => clearTimeout(auto);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ready]);
