@@ -1028,10 +1028,10 @@ export const indicators: Indicator[] = [
   { value: "T1110.001", type: "ATT&CK", slug: "network-forensics", note: "Password Guessing: the failed brute force." },
   { value: "T1021.001", type: "ATT&CK", slug: "network-forensics", note: "Remote Desktop Protocol: the pivot into the operations workstation." },
   { value: "T1552.001", type: "ATT&CK", slug: "network-forensics", note: "Credentials In Files: the stolen session cookie." },
-  { value: "T0866", type: "ATT&CK for ICS", slug: "network-forensics", note: "Exploitation of Remote Services: the malicious POST to the HMI web service." },
-  { value: "T0832", type: "ATT&CK for ICS", slug: "network-forensics", note: "Manipulation of View: the defaced HMI." },
-  { value: "T0862", type: "ATT&CK for ICS", slug: "network-forensics", note: "The ID the submitted report gave by mistake (Supply Chain Compromise); the page corrects it to T0866." },
-  { value: "T0880", type: "ATT&CK for ICS", slug: "network-forensics", note: "The ID the submitted report gave by mistake (Loss of Safety); the page corrects it to T0832." },
+  // The submitted report gave these two as T0862 and T0880 by mistake: a lookup of the old ID finds
+  // the corrected one, and the old IDs aren't listed as indicators of their own.
+  { value: "T0866", type: "ATT&CK for ICS", slug: "network-forensics", note: "Exploitation of Remote Services: the malicious POST to the HMI web service. The submitted report gave it as T0862 (Supply Chain Compromise) by mistake.", aliases: ["T0862"] },
+  { value: "T0832", type: "ATT&CK for ICS", slug: "network-forensics", note: "Manipulation of View: the defaced HMI. The submitted report gave it as T0880 (Loss of Safety) by mistake.", aliases: ["T0880"] },
   // ai-phishing-detection
   { value: "T1566.002", type: "ATT&CK", slug: "ai-phishing-detection", note: "Phishing, named as the initial-access vector the detector addresses." },
 ];
