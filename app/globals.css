@@ -452,22 +452,23 @@ html.gl-on .screen-page::before {
   position: relative;
   z-index: 1;
 }
-/* Each chapter's static light, where its sun rests (poster only). */
+/* Each chapter's static light, where its sun rests (poster only). Every glow ends inside its
+   own section (vertical radii in % of the section), so no section edge cuts one into a band. */
 /* Work: jade and violet. Skills: leans violet. Experience: leans scarlet. */
 html:not(.gl-on) .screen-page [data-chapter="2"] {
   background:
-    radial-gradient(circle 260px at 80% 45%, rgb(46 230 184 / 0.1), transparent),
-    radial-gradient(circle 560px at 98% 12%, rgb(139 92 246 / 0.16), transparent);
+    radial-gradient(ellipse 260px 12% at 80% 45%, rgb(46 230 184 / 0.1), transparent),
+    radial-gradient(ellipse 560px 14% at 98% 16%, rgb(139 92 246 / 0.16), transparent);
 }
 html:not(.gl-on) .screen-page [data-chapter="3"] {
   background:
-    radial-gradient(ellipse 60% 40% at 70% 60%, rgb(139 92 246 / 0.16), transparent),
-    radial-gradient(circle 620px at 90% 80%, rgb(139 92 246 / 0.15), transparent);
+    radial-gradient(ellipse 60% 38% at 70% 58%, rgb(139 92 246 / 0.16), transparent),
+    radial-gradient(ellipse 620px 30% at 90% 66%, rgb(139 92 246 / 0.15), transparent);
 }
 html:not(.gl-on) .screen-page [data-chapter="4"] {
   background:
-    radial-gradient(circle 380px at 98% 98%, rgb(255 61 51 / 0.24), rgb(255 61 51 / 0.06) 60%, transparent),
-    radial-gradient(circle 560px at 2% 4%, rgb(139 92 246 / 0.12), transparent);
+    radial-gradient(ellipse 380px 22% at 98% 76%, rgb(255 61 51 / 0.24), rgb(255 61 51 / 0.06) 60%, transparent),
+    radial-gradient(ellipse 560px 20% at 2% 22%, rgb(139 92 246 / 0.12), transparent);
 }
 /* Daylight paints itself without GL: the light ground, the screen's faint shadow on it, and
    the daylight ink set on the section (the driver only flips the global ink over the canvas). */
