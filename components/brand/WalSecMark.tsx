@@ -30,14 +30,14 @@ export function WalSecMark({
         <polygon
           key={id}
           points={pointsAttr(PIECES[id])}
+          // Each piece's lattice normal (the lock-in vector): the lock-in animation and the
+          // frame's open-on-hover both read it.
           style={
-            lockIn
-              ? ({
-                  "--lx": `${LOCK_IN[id][0]}px`,
-                  "--ly": `${LOCK_IN[id][1]}px`,
-                  "--ld": `${LOCK_IN[id][2]}ms`,
-                } as CSSProperties)
-              : undefined
+            {
+              "--lx": `${LOCK_IN[id][0]}px`,
+              "--ly": `${LOCK_IN[id][1]}px`,
+              ...(lockIn ? { "--ld": `${LOCK_IN[id][2]}ms` } : {}),
+            } as CSSProperties
           }
         />
       ))}

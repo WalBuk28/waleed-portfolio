@@ -41,7 +41,9 @@ export function WorkMotion() {
     if (!reduce) {
       const go = { trigger: list, start: "top 85%", once: true };
       gsap.from(list.querySelectorAll(".work__rule"), { scaleX: 0, transformOrigin: "0% 50%", duration: 1.1, ease: ease.out, stagger: 0.06, scrollTrigger: go });
-      gsap.from(list.querySelectorAll(".work__name"), { yPercent: 115, duration: 1.1, ease: ease.out, stagger: 0.06, delay: 0.1, scrollTrigger: go });
+      // clearProps: GSAP leaves `translate: none` inline, which would cancel the open row's 12 px
+      // step (a CSS `translate`) for good.
+      gsap.from(list.querySelectorAll(".work__name"), { yPercent: 115, duration: 1.1, ease: ease.out, stagger: 0.06, delay: 0.1, scrollTrigger: go, clearProps: "transform,translate" });
     }
 
     const off: (() => void)[] = [];

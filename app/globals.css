@@ -654,6 +654,28 @@ html.frame-away .frame::after {
 .frame__mark {
   width: 20px;
   height: auto;
+  overflow: visible;
+}
+/* the mark opens along its own lattice normals under the hand (the lock-in, run backwards) */
+.frame__mark polygon {
+  transition: translate 0.45s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+.frame__brand {
+  transition: color 0.3s;
+}
+.frame__brand:focus-visible .frame__mark polygon {
+  translate: var(--lx) var(--ly);
+}
+.frame__brand:active .frame__mark polygon {
+  translate: calc(var(--lx) * 0.4) calc(var(--ly) * 0.4);
+}
+@media (hover: hover) {
+  .frame__brand:hover {
+    color: var(--link);
+  }
+  .frame__brand:hover .frame__mark polygon {
+    translate: var(--lx) var(--ly);
+  }
 }
 .frame__tr {
   top: var(--margin);
