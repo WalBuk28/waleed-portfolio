@@ -313,10 +313,11 @@
     top: 50%;
     transform: translate(-50%, -50%);
   }
+  /* tall panels scroll inside, then hand the wheel or the thumb back to the page, which
+     drives the camera ("contain" trapped the wheel at the skills vortex) */
   .jpanel-center {
     max-height: 76vh;
     overflow-y: auto;
-    overscroll-behavior: contain;
   }
   .jsheet {
     position: absolute;
@@ -326,7 +327,6 @@
     max-width: none;
     max-height: 46vh;
     overflow-y: auto;
-    overscroll-behavior: contain;
     -webkit-overflow-scrolling: touch;
   }
 
@@ -398,11 +398,26 @@
   }
 
   /* Primary CTA button */
+  /* the 3D version's contact gate: the site's chamfered shapes, flooding with the tint */
   .btn-primary {
-    @apply inline-flex items-center justify-center gap-2 rounded-xl bg-action px-5 py-2.5 text-sm font-semibold text-white transition-all duration-200 hover:shadow-glow-electric active:scale-[0.98];
+    @apply inline-flex items-center justify-center gap-2 bg-action px-5 py-2.5 text-sm font-semibold text-white transition-all duration-200 active:scale-[0.98];
+    clip-path: var(--chamfer);
   }
   .btn-ghost {
-    @apply inline-flex items-center justify-center gap-2 rounded-xl border border-edge bg-surface/60 px-5 py-2.5 text-sm font-semibold text-ink transition-all duration-200 hover:border-emerald-accent/50 hover:bg-raised active:scale-[0.98];
+    @apply inline-flex items-center justify-center gap-2 bg-surface/80 px-5 py-2.5 text-sm font-semibold text-ink transition-all duration-200 active:scale-[0.98];
+    clip-path: var(--chamfer);
+  }
+  .btn-primary:focus-visible,
+  .btn-ghost:focus-visible {
+    background: var(--link);
+    color: var(--on-light);
+  }
+  @media (hover: hover) {
+    .btn-primary:hover,
+    .btn-ghost:hover {
+      background: var(--link);
+      color: var(--on-light);
+    }
   }
 
 }

@@ -42,7 +42,7 @@ export default function Journey({ onLive }: { onLive: () => void }) {
           The 3D version
         </h1>
         <Scene />
-        <Hud />
+        <Hud locked={!gone} />
         {!gone && <BootOverlay leaving={booted} onEnter={() => setBooted(true)} onGone={onGone} />}
       </main>
       {/* The page's own scroll drives the camera (Scene: WindowScroll): a track PAGES screens tall. */}

@@ -12,7 +12,7 @@ import { SECTIONS, sectionAt } from "../journey";
  * live section readout and journey progress. Listens to the render loop via
  * custom events — zero React re-renders inside the 3D tree.
  */
-export function Hud() {
+export function Hud({ locked = false }: { locked?: boolean }) {
   const [progress, setProgress] = useState(0);
   const [section, setSection] = useState(SECTIONS[0]);
   const [sound, setSound] = useState(false);
@@ -53,7 +53,8 @@ export function Hud() {
   };
 
   return (
-    <div className="pointer-events-none fixed inset-0 z-50 select-none">
+    // inert while the airlock covers it: no focus can land on controls nobody can see
+    <div className="pointer-events-none fixed inset-0 z-50 select-none" inert={locked}>
       {/* wordmark (hidden on narrow screens — the controls need the room) */}
       <div className="absolute left-5 top-5 hidden font-mono text-2xs uppercase tracking-wider2 text-ink-secondary sm:block">
         <span className="text-emerald-accent">▲</span> WALSEC<span className="text-ink-muted">://JOURNEY</span>
