@@ -411,7 +411,10 @@ function tick(time: number, dt: number) {
   }
   win.open = Math.min(1, Math.max(0, win.open + (win.to ? 1 : -1) * (dt / 1000 / 0.45)));
   const wo = win.open * win.open * (3 - 2 * win.open);
-  u.uHotOpen.value = win.at ? wo : 0;
+  // Idle: on a case page the window behind the hero figure breathes (its light eases between
+  // 88% and full, every nine seconds or so), so the page is alive while it is being read.
+  const breathe = st.mode === "case" ? 0.94 + 0.06 * Math.sin(time * 0.7) : 1;
+  u.uHotOpen.value = win.at ? wo * breathe : 0;
   if (win.at) u.uHot.value = [win.at.x, win.at.y - y, win.at.w, win.at.h];
   u.uTap.value = [st.tap.x, st.tap.y - y, st.tap.t, time - st.tap.t < 2 ? 1 : 0];
 
