@@ -344,6 +344,12 @@ function tick(time: number, dt: number) {
   const A = page ?? chapterState(n, local, g.phone, st.daylight);
   const w = next ? smooth(0.8, 1, local) : 0;
   let s = next && w > 0 ? mix(A, chapterState(next.n, 0, g.phone, st.daylight), w) : A;
+  // A case page's resting light keeps the right margin quiet while the case is read: full in the
+  // hero, then 40% of its reach once the reader is a screen in.
+  if (st.mode === "case" && page) {
+    const keep = 1 - 0.6 * smooth(vh * 0.35, vh * 1.1, y);
+    if (keep < 1) s = { ...s, sunR: s.sunR * keep, glow: [s.glow[0], s.glow[1], s.glow[2], s.glow[3] * keep] };
+  }
   // A page that has just arrived opens its screen from shut.
   st.opening = Math.min(1, st.opening + Math.min(dt, 100) / 1000 / 0.6);
   if (st.opening < 1) s = mix(shutState(g.phone), s, smooth(0, 1, st.opening));
