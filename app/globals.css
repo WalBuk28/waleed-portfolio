@@ -83,6 +83,9 @@
     @apply text-ink antialiased;
     background: var(--ground);
     overflow-x: clip;
+    /* Archivo's word space is narrow, and every negative tracking below narrows it again; each
+       tracked style opens its spaces by the tracking plus this 0.03em. */
+    word-spacing: 0.03em;
   }
   ::selection {
     background: var(--action);
@@ -782,6 +785,7 @@ html.frame-away .frame::after {
   font-family: var(--font-display);
   font-stretch: 125%;
   letter-spacing: -0.035em;
+  word-spacing: 0.065em;
   line-height: 1;
   color: var(--ink);
 }
@@ -834,6 +838,7 @@ html.frame-away .frame::after {
   font-family: var(--font-display);
   font-stretch: 125%;
   letter-spacing: -0.04em;
+  word-spacing: 0.07em;
   line-height: 0.98;
   color: var(--ink-soft);
   text-wrap: balance;
@@ -930,6 +935,7 @@ html.frame-away .frame::after {
   font-weight: 500;
   font-stretch: 112%;
   letter-spacing: -0.01em;
+  word-spacing: 0.04em;
   line-height: 1.2;
   color: var(--ink);
   font-variant-numeric: tabular-nums;
@@ -1111,6 +1117,7 @@ html.frame-away .frame::after {
   font-family: var(--font-display);
   font-stretch: 125%;
   letter-spacing: -0.035em;
+  word-spacing: 0.065em;
   line-height: 1;
   color: var(--ink);
 }
@@ -1171,6 +1178,7 @@ html.frame-away .frame::after {
   font-family: var(--font-display);
   font-stretch: 125%;
   letter-spacing: -0.035em;
+  word-spacing: 0.065em;
   line-height: 1;
   color: var(--ink);
 }
@@ -1233,6 +1241,7 @@ html.frame-away .frame::after {
   font-weight: 400;
   font-stretch: 112%;
   letter-spacing: -0.025em;
+  word-spacing: 0.055em;
   line-height: 1.06;
 }
 .work__link {
@@ -1485,6 +1494,7 @@ html:not(.gl-on) .work__frame {
   font-weight: 400;
   font-stretch: 112%;
   letter-spacing: -0.025em;
+  word-spacing: 0.055em;
   line-height: 1.06;
   color: var(--ink);
 }
@@ -1707,6 +1717,7 @@ html:not(.gl-on) .work__frame {
   font-weight: 500;
   font-stretch: 112%;
   letter-spacing: -0.01em;
+  word-spacing: 0.04em;
   line-height: 1.2;
 }
 .skills__tools {
@@ -1811,6 +1822,7 @@ html:not(.gl-on) .work__frame {
   font-weight: 400;
   font-stretch: 112%;
   letter-spacing: -0.025em;
+  word-spacing: 0.055em;
   line-height: 1.06;
   color: var(--ink);
 }
@@ -1910,6 +1922,7 @@ html:not(.gl-on) .work__frame {
   font-family: var(--font-display);
   font-stretch: 125%;
   letter-spacing: -0.035em;
+  word-spacing: 0.065em;
   line-height: 1;
   color: var(--ink);
   text-wrap: balance;
@@ -1978,6 +1991,7 @@ html:not(.gl-on) .work__frame {
   font-family: var(--font-display);
   font-stretch: 125%;
   letter-spacing: -0.01em;
+  word-spacing: 0.04em;
   line-height: 1.2;
   color: var(--ink);
 }
@@ -1989,6 +2003,7 @@ html:not(.gl-on) .work__frame {
   font-weight: 400;
   font-stretch: 112%;
   letter-spacing: -0.02em;
+  word-spacing: 0.05em;
   line-height: 1.22;
   color: var(--ink);
   text-wrap: pretty;
@@ -2034,6 +2049,7 @@ html:not(.gl-on) .work__frame {
   font-size: var(--t-m);
   line-height: 1.35;
   letter-spacing: -0.01em;
+  word-spacing: 0.04em;
   color: var(--ink-soft);
 }
 .contact__h2 {
@@ -2044,6 +2060,7 @@ html:not(.gl-on) .work__frame {
   font-family: var(--font-display);
   font-stretch: 125%;
   letter-spacing: -0.04em;
+  word-spacing: 0.07em;
   line-height: 1;
 }
 /* The one primary action: green rule at rest; under the hand the light floods it along 30°
@@ -2365,6 +2382,7 @@ html:not(.js) .btn--copy {
   font-family: var(--font-display);
   font-stretch: 125%;
   letter-spacing: -0.035em;
+  word-spacing: 0.065em;
   line-height: 1;
   color: var(--ink);
   text-wrap: balance;
@@ -2375,6 +2393,7 @@ html:not(.js) .btn--copy {
   max-width: 40ch;
   font-size: var(--t-m);
   letter-spacing: -0.01em;
+  word-spacing: 0.04em;
   line-height: 1.35;
   color: var(--ink-soft);
 }
@@ -2451,6 +2470,7 @@ html:not(.gl-on) .case__frame {
   font-weight: 400;
   font-stretch: 112%;
   letter-spacing: -0.025em;
+  word-spacing: 0.055em;
   line-height: 1.05;
   color: var(--ink);
 }
@@ -2471,6 +2491,7 @@ html:not(.gl-on) .case__frame {
 .case__lead {
   font-size: var(--t-m);
   letter-spacing: -0.01em;
+  word-spacing: 0.04em;
   line-height: 1.4;
   color: var(--ink);
 }
@@ -2485,6 +2506,7 @@ html:not(.gl-on) .case__frame {
   font-weight: 500;
   font-stretch: 112%;
   letter-spacing: -0.01em;
+  word-spacing: 0.04em;
   line-height: 1.3;
   color: var(--ink);
 }
@@ -2544,6 +2566,7 @@ html:not(.gl-on) .case__frame {
   font-stretch: 125%;
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.03em;
+  word-spacing: 0.06em;
   line-height: 1.05;
   color: var(--ink);
 }
@@ -2613,6 +2636,7 @@ html:not(.gl-on) .case__frame {
   font-family: var(--font-display);
   font-stretch: 125%;
   letter-spacing: -0.035em;
+  word-spacing: 0.065em;
   line-height: 1.05;
   transition: translate 0.45s cubic-bezier(0.165, 0.84, 0.44, 1), color 0.3s;
 }
@@ -3050,6 +3074,7 @@ html:not(.gl-on) .case__frame {
   font-family: var(--font-display);
   font-stretch: 125%;
   letter-spacing: -0.04em;
+  word-spacing: 0.07em;
   line-height: 0.98;
   color: var(--ink);
   text-wrap: balance;
