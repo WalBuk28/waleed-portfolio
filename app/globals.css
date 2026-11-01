@@ -2746,6 +2746,15 @@ html:not(.gl-on) .case__frame {
   }
 }
 
+/* Phones and tablets carry each weave inline: a navy plate under it, so the lit screen
+   behind can't land a bright cell among the data's cells. (Construct OS stays light only.) */
+@media not ((hover: hover) and (pointer: fine) and (min-width: 1024px)) {
+  html.gl-on .work__frame:not(.work__frame--light) {
+    clip-path: var(--chamfer);
+    background: rgb(10 15 36 / 0.86);
+  }
+}
+
 /* The Construct OS strip, on phones and tablets: light only, so a short band, not a tall
    empty frame. The desktop window keeps its size. */
 @media not ((hover: hover) and (pointer: fine) and (min-width: 1024px)) {
