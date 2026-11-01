@@ -7,7 +7,20 @@
    Coloured glass: jade is the light and the signal (focus, status, found), violet is the one
    action, scarlet is light, glow and small labels only (never a button, never an error).
    Links and text hovers take the violet tint. */
+/* While Archivo loads, display type (Archivo at width 125) is set in a fallback just as wide:
+   Arial at 125% (measured: Archivo 125 at weight 300 runs 1.258 times Arial's width), so a
+   title wraps to the same lines before and after the swap and nothing below it shifts. */
+@font-face {
+  font-family: "Archivo Wide Fallback";
+  src: local("Arial"), local("Helvetica"), local("Liberation Sans"), local("Arimo");
+  size-adjust: 125%;
+  ascent-override: 88.96%;
+  descent-override: 21.28%;
+  line-gap-override: 0%;
+}
+
 :root {
+  --font-display: Archivo, "Archivo Wide Fallback", system-ui, sans-serif;
   --ground: #0a0f24;
   --face: #111934;
   --ink: #ebeef8;
@@ -767,6 +780,7 @@ html.frame-away .frame::after {
   padding: 8px 0;
   font-size: var(--t-xl);
   font-weight: 300;
+  font-family: var(--font-display);
   font-stretch: 125%;
   letter-spacing: -0.035em;
   line-height: 1;
@@ -818,6 +832,7 @@ html.frame-away .frame::after {
   margin: 0 0 0 -0.05em;
   font-size: var(--t-mega);
   font-weight: 300;
+  font-family: var(--font-display);
   font-stretch: 125%;
   letter-spacing: -0.04em;
   line-height: 0.98;
@@ -871,6 +886,7 @@ html.frame-away .frame::after {
   margin: 28px 0 0;
   font-size: 15px;
   font-weight: 600;
+  font-family: var(--font-display);
   font-stretch: 125%;
   letter-spacing: 0.14em;
   text-transform: uppercase; /* the only uppercase on the site */
@@ -1093,6 +1109,7 @@ html.frame-away .frame::after {
   margin: 0 0 0 -0.05em;
   font-size: var(--t-xl);
   font-weight: 300;
+  font-family: var(--font-display);
   font-stretch: 125%;
   letter-spacing: -0.035em;
   line-height: 1;
@@ -1152,6 +1169,7 @@ html.frame-away .frame::after {
   margin-left: -0.05em;
   font-size: var(--t-xl);
   font-weight: 300;
+  font-family: var(--font-display);
   font-stretch: 125%;
   letter-spacing: -0.035em;
   line-height: 1;
@@ -1890,6 +1908,7 @@ html:not(.gl-on) .work__frame {
   display: block;
   font-size: var(--t-xl);
   font-weight: 300;
+  font-family: var(--font-display);
   font-stretch: 125%;
   letter-spacing: -0.035em;
   line-height: 1;
@@ -1957,6 +1976,7 @@ html:not(.gl-on) .work__frame {
   margin: 0;
   font-size: var(--t-m);
   font-weight: 400;
+  font-family: var(--font-display);
   font-stretch: 125%;
   letter-spacing: -0.01em;
   line-height: 1.2;
@@ -2022,6 +2042,7 @@ html:not(.gl-on) .work__frame {
   margin: clamp(20px, 2.5vw, 36px) 0 0;
   font-size: min(var(--t-mega), 12vw);
   font-weight: 300;
+  font-family: var(--font-display);
   font-stretch: 125%;
   letter-spacing: -0.04em;
   line-height: 1;
@@ -2320,6 +2341,7 @@ html:not(.js) .btn--copy {
   margin: 0 0 0 -0.05em;
   font-size: var(--t-xl);
   font-weight: 300;
+  font-family: var(--font-display);
   font-stretch: 125%;
   letter-spacing: -0.035em;
   line-height: 1;
@@ -2497,6 +2519,7 @@ html:not(.gl-on) .case__frame {
   order: -1;
   font-size: var(--t-l);
   font-weight: 300;
+  font-family: var(--font-display);
   font-stretch: 125%;
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.03em;
@@ -2573,6 +2596,7 @@ html:not(.gl-on) .case__frame {
   margin-left: -0.05em;
   font-size: var(--t-xl);
   font-weight: 300;
+  font-family: var(--font-display);
   font-stretch: 125%;
   letter-spacing: -0.035em;
   line-height: 1.05;
@@ -3009,6 +3033,7 @@ html:not(.gl-on) .case__frame {
   margin: 0 0 0 -0.05em;
   font-size: var(--t-mega);
   font-weight: 300;
+  font-family: var(--font-display);
   font-stretch: 125%;
   letter-spacing: -0.04em;
   line-height: 0.98;
