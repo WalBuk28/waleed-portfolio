@@ -132,10 +132,10 @@ export default async function WorkPage({ params }: { params: Promise<{ slug: str
 
           <Section id="problem" label="Problem" title="Problem">
             <p className="case__lead" data-reveal="fade">
-              {study.context}
+              {study.problem}
             </p>
             <p data-reveal="fade">
-              {study.problem}
+              {study.context}
             </p>
           </Section>
 

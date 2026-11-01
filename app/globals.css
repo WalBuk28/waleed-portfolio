@@ -2483,7 +2483,7 @@ html:not(.gl-on) .case__frame {
   line-height: 1.6;
   color: var(--ink-soft);
 }
-.case__body p {
+.case__body :where(p) {
   margin: 0;
 }
 .case__body > * + *,
