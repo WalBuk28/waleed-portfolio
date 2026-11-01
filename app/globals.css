@@ -632,7 +632,8 @@ html:not(.js) .frame {
 /* the top bar returns over running text: its scrim is solid behind the whole bar */
 .frame::before {
   top: 0;
-  background: linear-gradient(var(--ground) 68%, transparent);
+  height: calc(var(--margin) + 100px);
+  background: linear-gradient(var(--ground) 62%, transparent);
 }
 /* the bottom corners sit on a solid band: running text passes under it, never through it */
 .frame::after {
