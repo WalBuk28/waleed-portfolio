@@ -963,9 +963,38 @@ html.frame-away .frame::after {
   color: var(--muted);
   text-wrap: pretty;
 }
-.hero__cta {
-  grid-column: 8 / span 5;
+.hero__ctas {
+  grid-column: 6 / span 7;
   justify-self: end;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 12px;
+}
+/* The outline: the ground inside a hairline of the muted ink, chamfered with it. It sits beside
+   the hero's solid violet without competing; under the hand it takes the same violet flood. */
+.btn--line {
+  --btn-bg: rgb(160 170 203 / 0.62);
+  --btn-flood: var(--link);
+  --run: 96px;
+  padding: 21px 26px;
+  color: var(--ink);
+}
+.btn--line .btn__shape::before {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  clip-path: var(--chamfer);
+  background: var(--ground);
+}
+.btn--line:focus-visible,
+.btn--line:active {
+  color: var(--on-light);
+}
+@media (hover: hover) {
+  .btn--line:hover {
+    color: var(--on-light);
+  }
 }
 .hero__facts {
   display: grid;
@@ -1027,8 +1056,16 @@ html.frame-away .frame::after {
   .hero__lede {
     max-width: 30ch;
   }
+  .hero__ctas {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
   .hero__cta {
     width: 100%;
+  }
+  .btn--line {
+    padding-block: 16px;
   }
   .hero__facts {
     grid-template-columns: repeat(2, minmax(0, 1fr));
