@@ -172,6 +172,7 @@ export type CaseStudy = {
   tags: string[];
   repos?: string[];
   repoNote?: string; // shown when there is no public repo
+  evidenceNote?: string; // opens the Evidence section: what can't be shown, and how to see it
   demo?: string;
   updated?: string; // ISO date of the last content change (sitemap); defaults to siteUpdated
   // optional visualisations
@@ -196,6 +197,8 @@ export const caseStudies: CaseStudy[] = [
     icon: "ShieldCheck",
     featured: true,
     repoNote: "Private repository · demo on request",
+    // Waleed, 2 Nov 2026: the platform's screens stay private, so the page shows no captures.
+    evidenceNote: "The platform is private; a live demo is available on request.",
     summary:
       "An air-gapped SIEM-Lite for small organisations: it automates deep packet inspection, pulls live threat intelligence, and grounds a local LLM in that evidence, so no telemetry leaves the building.",
     context:

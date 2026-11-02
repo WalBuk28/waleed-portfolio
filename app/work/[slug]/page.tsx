@@ -163,6 +163,11 @@ export default async function WorkPage({ params }: { params: Promise<{ slug: str
           </Section>
 
           <Section id="evidence" label="Evidence" title="Evidence">
+            {study.evidenceNote && (
+              <p className="case__lead" data-reveal="fade">
+                {study.evidenceNote}
+              </p>
+            )}
             {study.metrics.length > 0 && (
               <dl className="case__facts">
                 {study.metrics.map((m) => (

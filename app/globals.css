@@ -2640,6 +2640,10 @@ html:not(.gl-on) .case__frame {
 }
 
 /* Evidence: each number with how it was measured. */
+/* a lead line before the facts (A-TIOC's "The platform is private…") keeps clear of their rule */
+.case__lead + .case__facts {
+  margin-top: 40px;
+}
 .case__facts {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
