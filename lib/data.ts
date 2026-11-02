@@ -51,7 +51,7 @@ export const threatFeed: { type: string; value: string; sev: "crit" | "warn" | "
   { type: "CVE", value: "CVE-2014-3566 · POODLE", sev: "warn" },
   { type: "SVC", value: "IPRIP · “INA+” service DLL", sev: "crit" },
   { type: "MITRE", value: "T1543.003 · Windows Service", sev: "warn" },
-  { type: "FEED", value: "URLhaus pull · every 30 to 60 min", sev: "ok" },
+  { type: "FEED", value: "URLhaus pull · scheduled", sev: "ok" },
   { type: "CVE", value: "CVE-2016-0800 · DROWN", sev: "warn" },
   { type: "IPv4", value: "192.168.127.226 · GIT server pivot", sev: "crit" },
   { type: "MITRE", value: "T1021.001 · RDP lateral", sev: "warn" },
@@ -197,6 +197,7 @@ export const caseStudies: CaseStudy[] = [
     icon: "ShieldCheck",
     featured: true,
     repoNote: "Private repository · demo on request",
+    updated: "2026-11-02",
     // Waleed, 2 Nov 2026: the platform's screens stay private, so the page shows no captures.
     evidenceNote: "The platform is private; a live demo is available on request.",
     summary:
@@ -204,7 +205,7 @@ export const caseStudies: CaseStudy[] = [
     context:
       "WalSec A-TIOC Hub was my BSc final-year development project (CTEC3451D). It was faculty-commended and formally recommended for publication. It is a self-hosted “SIEM-Lite” that joins automated network forensics to locally hosted language models, so a small Security Operations Centre can triage threats with AI that never leaves its own perimeter.",
     problem:
-      "Analysts face thousands of alerts a day, most of them noise. Enterprise SIEMs cost more than small organisations can pay, and sending packet captures to a cloud AI service (OpenAI, for example) can expose personal data and break GDPR and data-sovereignty rules. The challenge: grounded, automated threat analysis that runs entirely on-premise.",
+      "Analysts face more alerts than they can read, most of them noise. Enterprise SIEMs cost more than small organisations can pay, and sending packet captures to a cloud AI service (OpenAI, for example) can expose personal data and break GDPR and data-sovereignty rules. The challenge: grounded, automated threat analysis that runs entirely on-premise.",
     approach:
       "I built a decoupled architecture: a React 18 + Vite single-page app over a Flask 3.0 API on Eventlet, with CPU-heavy PyShark dissection moved into Python multiprocessing pools. A RAG pipeline (BGE-M3 embeddings, local Qwen and DeepSeek models served by Ollama) grounds every answer in evidence from a SQLite store in WAL mode, and the AI analyst maps that evidence to MITRE ATT&CK techniques through prompts backed by technique and mapping tables in the same database.",
     stack: [
@@ -222,7 +223,7 @@ export const caseStudies: CaseStudy[] = [
     ],
     metrics: [
       { value: "9,000+", label: "IOCs ingested", sub: "from the ThreatFox API · stored count, Oct 2026" },
-      { value: "50 MB", label: "PCAP upload cap", sub: "enforced in code with file.seek, tested" },
+      { value: "Commended", label: "Faculty review", sub: "final-year project, formally recommended for publication" },
       { value: "Refused", label: "Out-of-evidence query", sub: "test TC-AI-02: non-existent domain → “Not Found”" },
       { value: "Offline", label: "AI inference", sub: "Qwen · DeepSeek via Ollama, no cloud API" },
     ],
@@ -230,7 +231,7 @@ export const caseStudies: CaseStudy[] = [
       title: "Decoupled, fully local pipeline",
       nodes: [
         { id: "osint", label: "OSINT feeds\nThreatFox · URLhaus", kind: "in" },
-        { id: "pcap", label: "PCAP upload\n≤ 50 MB, deep packet inspection", kind: "in" },
+        { id: "pcap", label: "PCAP upload\ndeep packet inspection", kind: "in" },
         { id: "flask", label: "Flask 3.0 API\nEventlet + multiprocessing", kind: "core" },
         { id: "db", label: "SQLite (WAL)\nACID evidence store", kind: "core" },
         { id: "rag", label: "RAG · BGE-M3\nQwen · DeepSeek (Ollama)", kind: "ai" },
@@ -240,7 +241,7 @@ export const caseStudies: CaseStudy[] = [
     sections: [
       {
         heading: "Automated forensic ingestion",
-        body: "The system replaces manual TShark triage. Asynchronous deep packet inspection parses uploaded PCAPs (capped at 50 MB by checking the file size with file.seek before parsing, to protect the event loop), while APScheduler workers pull fresh indicators from ThreatFox and URLhaus every 30 to 60 minutes. The local store held over 9,000 ThreatFox IOCs in October 2026.",
+        body: "The system replaces manual TShark triage. Asynchronous deep packet inspection parses uploaded PCAPs (their size is checked with file.seek against a cap before parsing, to protect the event loop), while APScheduler workers pull fresh indicators from ThreatFox and URLhaus on a schedule. The local store held over 9,000 ThreatFox IOCs in October 2026.",
         bullets: [
           "Normalisation pipeline strips port metadata for uniform IP vectors",
           "Database-level deduplication via composite (Type + Value) keys",
@@ -253,11 +254,11 @@ export const caseStudies: CaseStudy[] = [
       },
       {
         heading: "Dynamic threat scoring",
-        body: "Each indicator gets a score out of 100 so analysts see the most critical first: Score = min(100, Base + Recency + MalwareBoost + TagsBoost). Recency adds 20 points for indicators up to a day old, falling to 5 at 30 days; a known malware family adds 15.",
+        body: "Each indicator gets a score so analysts see the most critical first: a base score plus boosts for recency, a known malware family and its tags. The recency boost is largest for a fresh indicator and shrinks as it ages.",
       },
       {
         heading: "Engineered for robustness",
-        body: "Under Eventlet's cooperative multitasking, heavy PyShark work blocked the scheduler: APScheduler logged the ThreatFox ingestion job missing its slot by 14 minutes 30 seconds. I moved the dissection engine into separate multiprocessing pools so the event loop keeps running. Exception handling keeps ingestion alive when an external feed is unreachable (the logs record a URLhaus outage that the app survived).",
+        body: "Under Eventlet's cooperative multitasking, heavy PyShark work blocked the scheduler: APScheduler logged the ThreatFox ingestion job missing its scheduled slot. I moved the dissection engine into separate multiprocessing pools so the event loop keeps running. Exception handling keeps ingestion alive when an external feed is unreachable (the logs record a URLhaus outage that the app survived).",
       },
       {
         heading: "Limitations",

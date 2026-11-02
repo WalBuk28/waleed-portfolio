@@ -53,21 +53,20 @@ export const terminalScript: { text: string; tone: "ok" | "warn" | "crit" | "inf
   { text: "[alrt] RDP 192.168.127.226 → 192.168.170.111 (ops ws)", tone: "crit" },
   { text: "[scan] nessus · 96 findings · 2 critical · lab host", tone: "warn" },
   { text: "[feed] threatfox pull complete", tone: "info" },
-  { text: "[hunt] score = min(100, base + recency + malware + tags)", tone: "dim" },
+  { text: "[hunt] score: base + recency, malware and tag boosts", tone: "dim" },
 ];
 
 // ── Holographic code lines that float off the screen ────────────────────────
 export const holoCode = [
   "cap = pyshark.FileCapture('evidence.pcap', display_filter='http')",
   "for pkt in cap: iocs.extend(extract_iocs(pkt))",
-  "score = min(100, base + recency + malware_boost + tags_boost)",
   "ctx = rag.retrieve(query, embedder='bge-m3')",
   "resp = ollama.chat(model, ground(ctx, evidence_only=True))",
   "if not ctx: return 'Insufficient local evidence'",
   "alert(rule='T1543.003', svc='IPRIP', path=user_writable)",
   "X = df.drop(columns=['URLSimilarityIndex', 'LineOfCode'])  # leaky",
   "xgb.fit(X_train, y_train)",
-  "f.seek(0, 2); size = f.tell()  # 50 MB cap",
+  "f.seek(0, 2); size = f.tell()  # size cap, checked before parsing",
   "socket.emit('telemetry', mitre_map(findings))",
   "nmap -sV 192.168.50.130",
 ];
