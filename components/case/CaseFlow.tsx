@@ -1,18 +1,12 @@
 import type { FlowNode } from "@/lib/data";
-import { weaveFill } from "@/components/work/Weave";
-
-const STAGES: { kind: NonNullable<FlowNode["kind"]>; name: string; level: number }[] = [
-  { kind: "in", name: "In", level: 0.45 },
-  { kind: "core", name: "Core", level: 0.62 },
-  { kind: "ai", name: "Local AI", level: 0.82 },
-  { kind: "out", name: "Out", level: 1 },
-];
+import { FLOW_STAGES as STAGES, weaveFill } from "@/components/work/Weave";
 
 /**
  * The A-TIOC pipeline on the lattice (DESIGN.md §14, R4): its parts as cells of the screen, in
  * the order data moves through them, lit a little brighter as they near the analyst's screen.
  * The stages' top edges step at the lattice's 30°, so together they draw the mark's roofline.
- * Real text; the cells are decoration. From the case study's architecture, nothing added.
+ * Real text; the cells are decoration. From the case study's architecture, nothing added; the
+ * case's cover draws the same parts (Weave: FlowWeave).
  */
 export function CaseFlow({ title, nodes }: { title: string; nodes: FlowNode[] }) {
   return (

@@ -921,12 +921,14 @@ export const sim3: { name: string; params: Sim3Param[] }[] = [
 // list). `rows` holds each cell's light, 0 (shut) to 1 (brightest). Every count is on the case
 // page; the caption says what one cell is. `layout: "path"` steps the cells along the lattice
 // at about 30°; `random` redraws the pattern each time it opens (the vault's IV is random).
+// `flow` draws a case's pipeline figure instead (A-TIOC: its screens stay private, so its cover
+// is the architecture its case page shows, part by part).
 export type Weave = {
   rows: number[][];
   caption: string;
   layout?: "grid" | "path";
   random?: boolean;
-  placeholder?: boolean;
+  flow?: FlowNode[];
 };
 
 /** Runs of cells at one light level each, wrapped into rows of `cols`. */
@@ -948,9 +950,9 @@ const affine = Array.from({ length: 30 }, (_, x) => 0.18 + (0.82 * ((7 * x + 4) 
 
 export const weaves: Record<string, Weave> = {
   "walsec-atioc-hub": {
-    rows: [0.36, 0.46, 0.56, 0.68, 0.82, 1].map((l) => Array<number>(8).fill(l)),
-    caption: "Placeholder until captures of the platform arrive: its six parts, one row each, from the threat feeds and PCAP upload in to the analyst’s screen.",
-    placeholder: true,
+    rows: [],
+    flow: caseStudies.find((c) => c.slug === "walsec-atioc-hub")?.architecture?.nodes,
+    caption: "The platform’s pipeline: one lit cell per part, brighter as data moves from the threat feeds and PCAP uploads to the analyst’s screen.",
   },
   "pentest-malware": {
     rows: runs(12, [[2, 1], [15, 0.8], [26, 0.58], [8, 0.4], [45, 0.24]]),

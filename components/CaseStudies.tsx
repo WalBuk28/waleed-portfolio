@@ -47,7 +47,7 @@ export function CaseStudies() {
               </div>
               {weave && (
                 <figure className="work__fig" data-random={weave.random ? "" : undefined}>
-                  <div className={weave.rows.length ? "work__frame" : "work__frame work__frame--light"}>
+                  <div className={weave.rows.length || weave.flow ? "work__frame" : "work__frame work__frame--light"}>
                     <Weave weave={weave} id={c.slug} />
                   </div>
                   <figcaption className="work__cap" data-quiet="shown">

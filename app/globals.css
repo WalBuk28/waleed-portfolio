@@ -1409,6 +1409,36 @@ html:not(.gl-on) .work__frame {
   width: 100%;
   height: 100%;
 }
+/* The pipeline cover's names (FlowWeave): sized in the drawing's own units, on a halo of the
+   ground so they read over any light that comes through the window. In a frame too narrow to
+   read them (the tablet work list) the cells stand alone and the caption names the parts. */
+.work__frame,
+.case__frame {
+  container-type: inline-size;
+}
+.weave__labels text {
+  text-anchor: middle;
+  word-spacing: 0.14em; /* Archivo's space closes up at the phone's size: keep the words apart */
+  paint-order: stroke;
+  stroke: #0a0f24;
+  stroke-width: 4px;
+  stroke-linejoin: round;
+}
+.weave__name {
+  font-size: 13.5px;
+  font-weight: 500;
+  fill: #ebeef8;
+}
+.weave__stage {
+  font-family: var(--font-mono), monospace;
+  font-size: 11px;
+  fill: #2ee6b8;
+}
+@container (max-width: 299px) {
+  .weave__labels {
+    display: none;
+  }
+}
 .work__cap {
   max-width: 46ch;
   margin-top: 12px;
