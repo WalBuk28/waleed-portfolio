@@ -75,6 +75,10 @@ export function EvidenceLookup({ indicators, titles }: { indicators: Indicator[]
           <button type="submit" className="btn btn--ghost">
             <span className="btn__shape" aria-hidden="true" />
             Look up
+            {/* the system's motion verb: the arrow travels under the hand, as on every action */}
+            <span className="btn__arrow" aria-hidden="true">
+              →
+            </span>
           </button>
         </form>
       </div>
