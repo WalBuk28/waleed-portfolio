@@ -10,7 +10,6 @@ export const journey = {
   intro: 0, // eased 0..1 intro-sweep progress (written by CameraRig)
   offset: 0, // damped scroll offset mirror (0..1)
   delta: 0, // damped |scroll velocity| mirror
-  quality: 1, // 1 = full post fx, 0 = degraded (PerformanceMonitor)
   coarse: false, // touch device — no pointer parallax, fewer particles
   reduced: false, // prefers-reduced-motion
   audio: null as AudioEngine | null,

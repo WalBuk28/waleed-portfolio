@@ -9,6 +9,7 @@ import { C } from "./palette";
 import { ANCHORS, SECTIONS, facing } from "./journey";
 import { vortexNodes } from "./content";
 import { journey } from "./state";
+import { thin } from "./quality";
 import { GlowSprite, TextPlane } from "./bits";
 import { Panel } from "./ui/Panel";
 import { dotTexture } from "./text";
@@ -65,6 +66,8 @@ export function SkillsVortex() {
       if (!inRange) setSelected(null);
     }
     if (!visible) return;
+    thin(swirl.a);
+    thin(swirl.b);
 
     const t = state.clock.elapsedTime;
     ring.current.rotation.z = t * 0.07;

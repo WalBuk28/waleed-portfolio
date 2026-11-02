@@ -8,6 +8,7 @@ import { C } from "./palette";
 import { camAt } from "./journey";
 import { dotTexture } from "./text";
 import { journey } from "./state";
+import { thin } from "./quality";
 
 /**
  * The void: linear fog that swallows what's ahead (each zone *reveals*
@@ -39,6 +40,7 @@ export function Ambient() {
   // section lines never streak across the void from below
   useFrame(() => {
     grid.current.visible = journey.offset < 0.1;
+    thin(dust);
   });
 
   return (

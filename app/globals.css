@@ -3236,6 +3236,12 @@ html.js:not(.motion) .jstart {
   cursor: progress;
 }
 /* The site's buttons, set small for the 3D version's airlock and controls. */
+/* /journey without its post effects (phones, or the quality ladder's last levels): the canvas
+   fades into the void at its edges, standing in for the composer's vignette at no GPU cost. */
+.journey-root.fx-off canvas {
+  -webkit-mask-image: radial-gradient(ellipse 78% 74% at 50% 50%, #000 52%, rgb(0 0 0 / 0.22) 100%);
+  mask-image: radial-gradient(ellipse 78% 74% at 50% 50%, #000 52%, rgb(0 0 0 / 0.22) 100%);
+}
 .btn.btn--hud {
   min-height: 40px;
   padding: 0 14px;

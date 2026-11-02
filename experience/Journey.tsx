@@ -1,10 +1,12 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { Scene } from "./Scene";
 import { Hud } from "./ui/Hud";
 import { BootOverlay } from "./ui/BootOverlay";
 import { PAGES } from "./journey";
+import { journey } from "./state";
+import { quality } from "./quality";
 
 /**
  * The full 3D takeover: persistent canvas + DOM HUD + boot airlock.
@@ -12,6 +14,10 @@ import { PAGES } from "./journey";
  * page's <main> once mounted (the gate lets the card go), so the layout's skip link lands here.
  */
 export default function Journey({ onLive }: { onLive: () => void }) {
+  // the quality ladder for this device, set once before the scene mounts (quality.ts)
+  useState(() => quality.init(journey.coarse, window.devicePixelRatio || 1));
+  // with the post effects off (phones, or a slow device), a CSS vignette stands in for theirs
+  const fx = useSyncExternalStore(quality.subscribe, () => quality.get().fx, () => "off" as const);
   const [booted, setBooted] = useState(false);
   const [gone, setGone] = useState(false);
   const root = useRef<HTMLElement>(null);
@@ -40,7 +46,7 @@ export default function Journey({ onLive }: { onLive: () => void }) {
         ref={root}
         id="main"
         tabIndex={-1}
-        className="journey-root fixed inset-0 z-40 bg-void outline-none"
+        className={`journey-root fixed inset-0 z-40 bg-void outline-none${fx === "off" ? " fx-off" : ""}`}
         aria-labelledby="journey-title"
       >
         <h1 id="journey-title" className="sr-only">

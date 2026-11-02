@@ -1,11 +1,10 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { memo, useEffect, useRef } from "react";
 import * as THREE from "three";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { PerformanceMonitor, Preload, ScrollControls, useScroll } from "@react-three/drei";
+import { Preload, ScrollControls, useScroll } from "@react-three/drei";
 import { PAGES } from "./journey";
-import { journey } from "./state";
 import { CameraRig } from "./CameraRig";
 import { Effects } from "./Effects";
 import { Ambient } from "./Ambient";
@@ -19,7 +18,9 @@ import { SkillsVortex } from "./SkillsVortex";
 import { ExperienceRelay } from "./ExperienceRelay";
 import { DossierNode } from "./DossierNode";
 import { ContactGate } from "./ContactGate";
+import { Driver } from "./Driver";
 import { LightPool } from "./lights";
+import { quality } from "./quality";
 
 // R3F 9 (up to 9.8.2, the latest) still creates a THREE.Clock, which three r183+ marks as
 // deprecated with a console warning on every visit. Nothing on our side uses Clock: drop that one
@@ -79,17 +80,24 @@ function RaycastVisibilityFilter() {
  * ONE persistent <Canvas> for the entire site. <ScrollControls> virtualises
  * 15 pages of native scroll into a 0..1 offset; CameraRig maps it onto the
  * flight spline. Everything else hangs off that same coordinate.
+ *
+ * Frames come from Driver (frameloop="never"): paused when hidden or off screen, capped near
+ * 60 fps, 30 fps while nothing moves, and the quality ladder (quality.ts) for slow devices. The
+ * exhibits' point lights are pooled (lights.tsx), so <Preload> compiles every material once.
  */
-export function Scene() {
+// Memoised: Journey re-renders when the effects level changes, and a re-rendered <Canvas>
+// re-applies its dpr prop, so the prop must be the ladder's current one (Driver sets it).
+export const Scene = memo(function Scene() {
   return (
     <Canvas
+      frameloop="never"
       gl={{
         antialias: false,
         alpha: false,
         powerPreference: "high-performance",
         stencil: false,
       }}
-      dpr={journey.coarse ? [1, 1.5] : [1, 1.75]}
+      dpr={quality.get().dpr}
       camera={{ fov: 55, near: 0.1, far: 60, position: [4.6, 3.3, 7.8] }}
       onCreated={({ gl, scene }) => {
         gl.setClearColor("#070b1c");
@@ -97,43 +105,39 @@ export function Scene() {
         scene.matrixWorldAutoUpdate = true;
       }}
     >
-      <PerformanceMonitor
-        onDecline={() => (journey.quality = 0)}
-        onIncline={() => (journey.quality = 1)}
-      >
-        <ScrollControls pages={PAGES} damping={0.32} style={{ scrollbarWidth: "none", overflowY: "hidden" }}>
-          <WindowScroll />
-          <RaycastVisibilityFilter />
-          <CameraRig />
-          <Ambient />
-          <DataStream />
+      <ScrollControls pages={PAGES} damping={0.32} style={{ scrollbarWidth: "none", overflowY: "hidden" }}>
+        <WindowScroll />
+        <RaycastVisibilityFilter />
+        <CameraRig />
+        <Ambient />
+        <DataStream />
 
-          {/* 01 · the hacker's terminal */}
-          <Laptop />
-          <HoloCode />
+        {/* 01 · the hacker's terminal */}
+        <Laptop />
+        <HoloCode />
 
-          {/* 03–05 · project artifacts along the stream */}
-          <ServerRack />
-          <CipherLock />
-          <ForensicsWeb />
+        {/* 03–05 · project artifacts along the stream */}
+        <ServerRack />
+        <CipherLock />
+        <ForensicsWeb />
 
-          {/* 06 · skills vortex (camera flies through) */}
-          <SkillsVortex />
+        {/* 06 · skills vortex (camera flies through) */}
+        <SkillsVortex />
 
-          {/* 07–08 · field ops + operator dossier */}
-          <ExperienceRelay />
-          <DossierNode />
+        {/* 07–08 · field ops + operator dossier */}
+        <ExperienceRelay />
+        <DossierNode />
 
-          {/* 09 · terminus */}
-          <ContactGate />
+        {/* 09 · terminus */}
+        <ContactGate />
 
-          {/* after every exhibit: it reads their visibility for this frame */}
-          <LightPool />
-        </ScrollControls>
+        {/* after every exhibit: it reads their visibility for this frame */}
+        <LightPool />
+      </ScrollControls>
 
-        <Effects />
-        <Preload all />
-      </PerformanceMonitor>
+      <Effects />
+      <Preload all />
+      <Driver />
     </Canvas>
   );
-}
+});
