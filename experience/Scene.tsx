@@ -19,6 +19,7 @@ import { SkillsVortex } from "./SkillsVortex";
 import { ExperienceRelay } from "./ExperienceRelay";
 import { DossierNode } from "./DossierNode";
 import { ContactGate } from "./ContactGate";
+import { LightPool } from "./lights";
 
 // R3F 9 (up to 9.8.2, the latest) still creates a THREE.Clock, which three r183+ marks as
 // deprecated with a console warning on every visit. Nothing on our side uses Clock: drop that one
@@ -125,6 +126,9 @@ export function Scene() {
 
           {/* 09 · terminus */}
           <ContactGate />
+
+          {/* after every exhibit: it reads their visibility for this frame */}
+          <LightPool />
         </ScrollControls>
 
         <Effects />

@@ -6,6 +6,7 @@ import { useFrame } from "@react-three/fiber";
 import { useCursor, useScroll } from "@react-three/drei";
 import { easing } from "maath";
 import { C } from "./palette";
+import { PoolLight } from "./lights";
 import { ANCHORS, facing } from "./journey";
 import { experience } from "./content";
 import { journey } from "./state";
@@ -111,7 +112,7 @@ function Badge({ index, xp }: { index: number; xp: (typeof experience)[number] }
         <TextPlane text="ACCESS GRANTED" height={0.05} color={color} position={[0, -0.62, 0]} />
       </group>
       <GlowSprite color={color} scale={1.6} opacity={0.22} />
-      <pointLight color={color} intensity={2} distance={4} decay={2} position={[0, 0, 0.8]} />
+      <PoolLight color={color} intensity={2} distance={4} position={[0, 0, 0.8]} />
 
       <Panel
         position={[side * -0.95, 0.2, 0]}

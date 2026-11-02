@@ -6,6 +6,7 @@ import { useFrame } from "@react-three/fiber";
 import { useCursor, useScroll } from "@react-three/drei";
 import { easing } from "maath";
 import { C } from "./palette";
+import { PoolLight } from "./lights";
 import { ANCHORS, SECTIONS, facing } from "./journey";
 import { certifications, education, profile } from "./content";
 import { journey } from "./state";
@@ -96,7 +97,7 @@ export function DossierNode() {
         })}
       </group>
 
-      <pointLight color={C.emerald} intensity={3} distance={5} decay={2} position={[0, 0.4, 1]} />
+      <PoolLight color={C.emerald} intensity={3} distance={5} position={[0, 0.4, 1]} />
       <TextPlane text="OPERATOR // WALBUK28" height={0.08} color={C.emeraldGlow} position={[0, -1.05, 0]} />
 
       <Panel position={[-1.35, 0.3, 0]} visible={show} width={380} align="right">

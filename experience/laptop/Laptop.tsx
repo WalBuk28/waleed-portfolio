@@ -6,6 +6,7 @@ import { useFrame } from "@react-three/fiber";
 import { Instance, Instances, RoundedBox, useScroll } from "@react-three/drei";
 import { easing } from "maath";
 import { C } from "../palette";
+import { PoolLight, type PoolLightHandle } from "../lights";
 import { journey } from "../state";
 import { NeonBox, GlowSprite } from "../bits";
 import { radialTexture } from "../text";
@@ -25,7 +26,7 @@ export function Laptop() {
   const root = useRef<THREE.Group>(null!);
   const lid = useRef<THREE.Group>(null!);
   const screenMat = useRef<THREE.MeshBasicMaterial>(null!);
-  const screenLight = useRef<THREE.PointLight>(null!);
+  const screenLight = useRef<PoolLightHandle>(null!);
   const portGlow = useRef<THREE.Sprite>(null!);
   const sweep = useRef<THREE.Mesh>(null!);
   const { texture, update } = useTerminalTexture();
@@ -146,7 +147,7 @@ export function Laptop() {
           <planeGeometry args={[2.82, 1.76]} />
           <meshBasicMaterial ref={screenMat} transparent opacity={0} toneMapped={false} onBeforeCompile={decodeSrgbMap} />
         </mesh>
-        <pointLight ref={screenLight} position={[0, 1.0, 1.1]} color="#2ee6b8" intensity={0} distance={5.5} decay={2} />
+        <PoolLight ref={screenLight} position={[0, 1.0, 1.1]} color="#2ee6b8" intensity={0} distance={5.5} />
 
         {/* rear emblem */}
         <mesh position={[0, 1.15, -0.052]} rotation={[0, Math.PI, 0]}>

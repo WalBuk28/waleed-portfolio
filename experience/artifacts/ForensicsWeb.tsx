@@ -5,6 +5,7 @@ import * as THREE from "three";
 import { useFrame } from "@react-three/fiber";
 import { useCursor, useScroll } from "@react-three/drei";
 import { C } from "../palette";
+import { PoolLight } from "../lights";
 import { ANCHORS, SECTIONS, facing } from "../journey";
 import { ART, attackPath, forensicsEdges, forensicsNodes, killChain } from "../content";
 import { journey } from "../state";
@@ -143,7 +144,7 @@ export function ForensicsWeb() {
         <meshBasicMaterial color={C.electric} transparent opacity={0.35} blending={THREE.AdditiveBlending} toneMapped={false} />
       </mesh>
       <GlowSprite color={C.electric} scale={3} opacity={0.13} />
-      <pointLight color={C.electric} intensity={4} distance={7} decay={2} position={[0, 0.5, 1.2]} />
+      <PoolLight color={C.electric} intensity={4} distance={7} position={[0, 0.5, 1.2]} />
       <TextPlane text="IT → PIVOT → OT → ICS" height={0.085} color={C.electricGlow} position={[0, -1.35, 0.1]} />
 
       <Panel position={[0, -1.65, 0]} visible={show} width={360} align="center">

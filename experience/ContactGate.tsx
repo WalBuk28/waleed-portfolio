@@ -6,6 +6,7 @@ import { useFrame } from "@react-three/fiber";
 import { useCursor, useScroll } from "@react-three/drei";
 import { easing } from "maath";
 import { C } from "./palette";
+import { PoolLight } from "./lights";
 import { GATE_POS, SECTIONS, UP, camAt } from "./journey";
 import { allCases, profile } from "./content";
 import { EV, emit, journey } from "./state";
@@ -90,7 +91,7 @@ export function ContactGate() {
       </group>
 
       <TextPlane text="UPLINK READY" height={0.14} color={C.emeraldGlow} position={[0, 1.98, 0]} />
-      <pointLight color={C.emerald} intensity={6} distance={9} decay={2} position={[0, 0, 1.5]} />
+      <PoolLight color={C.emerald} intensity={6} distance={9} position={[0, 0, 1.5]} />
 
       {/* contact + index panel */}
       <Panel position={[0, 1.45, 0]} visible={show} width={430} align="center" z={[38, 0]}>

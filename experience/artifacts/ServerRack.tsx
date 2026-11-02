@@ -6,6 +6,7 @@ import { useFrame, useThree } from "@react-three/fiber";
 import { RoundedBox, useCursor, useScroll } from "@react-three/drei";
 import { easing } from "maath";
 import { C } from "../palette";
+import { PoolLight } from "../lights";
 import { ANCHORS, SECTIONS, facing } from "../journey";
 import { ART } from "../content";
 import { journey } from "../state";
@@ -183,7 +184,7 @@ export function ServerRack() {
       </group>
       <TextPlane text="AIR-GAPPED · LOCAL MODELS" height={0.09} color={C.emeraldGlow} position={[0, -1.32, 0.3]} />
 
-      <pointLight color={C.emerald} intensity={5} distance={7} decay={2} position={[0, 0.4, 1.2]} />
+      <PoolLight color={C.emerald} intensity={5} distance={7} position={[0, 0.4, 1.2]} />
 
       {/* synced DOM panel */}
       <Panel position={[1.55, 0.55, 0]} visible={show} width={330}>
