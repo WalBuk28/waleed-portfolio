@@ -41,7 +41,10 @@ export function useTerminalTexture() {
     state.current.canvas = canvas;
     state.current.ctx = canvas.getContext("2d");
     const tex = new THREE.CanvasTexture(canvas);
-    tex.colorSpace = THREE.SRGBColorSpace;
+    // Plain RGBA, decoded from sRGB in the screen's shader (decodeSrgbMap). Uploaded as an sRGB
+    // texture, every redraw took Chrome's slow path on the Intel iGPU (ANGLE on Mesa): 22 ms of
+    // GPU time, one frame in five over budget while the hero was on screen (stage 5 profile).
+    tex.colorSpace = THREE.NoColorSpace;
     tex.anisotropy = 4;
     tex.generateMipmaps = false;
     tex.minFilter = THREE.LinearFilter;
@@ -80,6 +83,19 @@ export function useTerminalTexture() {
   };
 
   return { texture, update };
+}
+
+/**
+ * For the material that shows the terminal: the texture is uploaded as plain RGBA, so decode it
+ * from sRGB here (three does the same for video textures, for the same reason).
+ */
+export function decodeSrgbMap(shader: { fragmentShader: string }) {
+  shader.fragmentShader = shader.fragmentShader.replace(
+    "#include <map_fragment>",
+    /* glsl */ `#ifdef USE_MAP
+      diffuseColor *= sRGBTransferEOTF( texture2D( map, vMapUv ) );
+    #endif`
+  );
 }
 
 function draw(s: { canvas: HTMLCanvasElement | null; ctx: CanvasRenderingContext2D | null; lines: { text: string; tone: string }[]; scriptIdx: number; chars: number; time?: number }, time: number) {

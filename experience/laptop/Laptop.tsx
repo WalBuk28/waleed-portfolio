@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef } from "react";
+import { useLayoutEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
 import { useFrame } from "@react-three/fiber";
 import { Instance, Instances, RoundedBox, useScroll } from "@react-three/drei";
@@ -9,7 +9,7 @@ import { C } from "../palette";
 import { journey } from "../state";
 import { NeonBox, GlowSprite } from "../bits";
 import { radialTexture } from "../text";
-import { useTerminalTexture } from "./useTerminalTexture";
+import { decodeSrgbMap, useTerminalTexture } from "./useTerminalTexture";
 
 const LID_CLOSED = 1.45;
 const LID_OPEN = -0.34;
@@ -54,6 +54,13 @@ export function Laptop() {
     tex.wrapS = THREE.RepeatWrapping;
     return tex;
   }, []);
+
+  // The terminal goes on here, not as a `map` prop: R3F marks a colour map passed as a prop as
+  // sRGB, which brings back the slow upload (useTerminalTexture). Before <Preload> compiles.
+  useLayoutEffect(() => {
+    screenMat.current.map = texture;
+    screenMat.current.needsUpdate = true;
+  }, [texture]);
 
   useFrame((state, dt) => {
     const t = state.clock.elapsedTime;
@@ -137,7 +144,7 @@ export function Laptop() {
         {/* the live SOC terminal */}
         <mesh position={[0, 1.05, 0.051]}>
           <planeGeometry args={[2.82, 1.76]} />
-          <meshBasicMaterial ref={screenMat} map={texture} transparent opacity={0} toneMapped={false} />
+          <meshBasicMaterial ref={screenMat} transparent opacity={0} toneMapped={false} onBeforeCompile={decodeSrgbMap} />
         </mesh>
         <pointLight ref={screenLight} position={[0, 1.0, 1.1]} color="#2ee6b8" intensity={0} distance={5.5} decay={2} />
 
