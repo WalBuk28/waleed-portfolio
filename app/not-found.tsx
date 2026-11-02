@@ -1,29 +1,43 @@
+import type { CSSProperties } from "react";
+import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
-import { Background } from "@/components/Background";
+import { Frame } from "@/components/frame/Frame";
+import { Palette } from "@/components/frame/Palette";
+import { posterTile } from "@/components/screen/poster";
+import { paletteItems } from "@/lib/palette";
 
+export const metadata: Metadata = {
+  title: "Page not found",
+  robots: { index: false, follow: true },
+};
+
+/**
+ * The 404 (DESIGN.md §8 and §11): the screen shut. No light comes through anywhere except the
+ * one cell under the pointer (or a tap's ripple on a phone); one action leads home.
+ */
 export default function NotFound() {
   return (
-    <>
-      <Background />
-      <main className="grid min-h-screen place-items-center px-6 text-center">
-        <div>
-          <p className="font-mono text-sm text-threat-crit">
-            [404] segment not found
-          </p>
-          <h1 className="mt-4 font-display text-6xl font-bold sm:text-8xl">
-            <span className="grad-text">Access denied</span>
-          </h1>
-          <p className="mx-auto mt-4 max-w-md text-ink-secondary">
-            This route isn’t in the routing table. Let’s get you back to safe
-            ground.
-          </p>
-          <Link href="/" className="btn-primary mt-8">
-            <ArrowLeft className="h-4 w-4" />
-            Return home
-          </Link>
-        </div>
+    <div className="screen-page missing-page" data-screen="shut" style={{ "--poster-tile": posterTile() } as CSSProperties}>
+      <Frame page="missing" label="Not found" />
+      <Palette items={paletteItems()} />
+      <main id="main" tabIndex={-1} className="missing" data-label="Not found">
+        <p className="missing__code mono" data-quiet>
+          404 · page not found
+        </p>
+        <h1 className="missing__h1" data-quiet>
+          Nothing comes through here.
+        </h1>
+        <p className="missing__line" data-reveal="fade" data-intro data-quiet>
+          This address isn’t a page on the site.
+        </p>
+        <Link className="btn btn--primary missing__cta" href="/" data-magnetic data-cursor="Open">
+          <span className="btn__shape" aria-hidden="true" />
+          Back to the home page
+          <span className="btn__arrow" aria-hidden="true">
+            →
+          </span>
+        </Link>
       </main>
-    </>
+    </div>
   );
 }

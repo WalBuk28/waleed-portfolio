@@ -2,10 +2,57 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Tokens (DESIGN.md §4 to §6). The ink set (--ink, --ink-soft, --muted, --ground, --lit) is
+   written only by the screen's driver, from the same progress that drives the shader.
+   Coloured glass: jade is the light and the signal (focus, status, found), violet is the one
+   action, scarlet is light, glow and small labels only (never a button, never an error).
+   Links and text hovers take the violet tint. */
+/* While Archivo loads, display type (Archivo at width 125) is set in a fallback just as wide:
+   Arial at 125% (measured: Archivo 125 at weight 300 runs 1.258 times Arial's width), so a
+   title wraps to the same lines before and after the swap and nothing below it shifts. */
+@font-face {
+  font-family: "Archivo Wide Fallback";
+  src: local("Arial"), local("Helvetica"), local("Liberation Sans"), local("Arimo");
+  size-adjust: 125%;
+  ascent-override: 88.96%;
+  descent-override: 21.28%;
+  line-gap-override: 0%;
+}
+
 :root {
-  --font-sans: "Inter", system-ui, sans-serif;
-  --font-display: "Sora", system-ui, sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  --font-display: Archivo, "Archivo Wide Fallback", system-ui, sans-serif;
+  --ground: #0a0f24;
+  --face: #111934;
+  --ink: #ebeef8;
+  --ink-soft: #b9c0d8;
+  --muted: #a0aacb;
+  --lit: #2ee6b8; /* signal text and the focus ring; deep jade in daylight */
+  --line: rgba(235, 238, 248, 0.12);
+  --light: #2ee6b8; /* jade: light, signal, focus, status */
+  --light-hi: #d2fcef;
+  --on-light: #0a0f24; /* text on jade and the violet tint */
+  --violet: #8b5cf6; /* glass and rules, never behind text */
+  --action: #7d49f5; /* the action fill: white text 5.1:1 */
+  --on-action: #ffffff;
+  --link: #b49aff; /* links and text hovers: 8.1:1 on the ground; deep violet in daylight */
+  --scarlet-ink: #ff4a50; /* scarlet as ink (small labels, marks): 5.7:1 on the ground; deep scarlet in daylight */
+
+  --t-mega: clamp(3.25rem, 1rem + 7.2vw, 7.75rem);
+  --t-xl: clamp(2.5rem, 1.2rem + 4vw, 4.75rem);
+  --t-l: clamp(1.6rem, 1.1rem + 1.6vw, 2.4rem);
+  --t-m: clamp(1.2rem, 1.05rem + 0.6vw, 1.6rem);
+  --t-body: clamp(1rem, 0.96rem + 0.2vw, 1.125rem);
+
+  --margin: clamp(20px, 2.5vw, 40px);
+  --gutter: 24px;
+  /* the lattice's 30° chamfer: 14 px wide, 8 px high */
+  --chamfer: polygon(14px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 14px) 100%, 0 100%, 0 8px);
+}
+@media (max-width: 767px) {
+  :root {
+    --margin: 20px;
+    --gutter: 16px;
+  }
 }
 
 @layer base {
@@ -13,11 +60,15 @@
     @apply border-edge;
   }
   html {
-    scroll-behavior: smooth;
     -webkit-text-size-adjust: 100%;
   }
+  /* Lenis scrolls smoothly where it runs (anchors included); native smooth anchors elsewhere. */
+  html:not(.lenis) {
+    scroll-behavior: smooth;
+  }
   @media (prefers-reduced-motion: reduce) {
-    html {
+    html,
+    html:not(.lenis) {
       scroll-behavior: auto;
     }
     *,
@@ -29,13 +80,16 @@
     }
   }
   body {
-    @apply bg-base text-ink antialiased;
-    font-feature-settings: "ss01", "cv01", "cv11";
-    overflow-x: hidden;
+    @apply text-ink antialiased;
+    background: var(--ground);
+    overflow-x: clip;
+    /* Archivo's word space is narrow, and every negative tracking below narrows it again; each
+       tracked style opens its spaces by the tracking plus this 0.03em. */
+    word-spacing: 0.03em;
   }
   ::selection {
-    background: rgba(52, 211, 153, 0.25);
-    color: #eafff6;
+    background: var(--action);
+    color: var(--on-action);
   }
   h1,
   h2,
@@ -45,134 +99,136 @@
   }
   /* Focus ring — keyboard only, accessible */
   :focus-visible {
-    outline: 2px solid theme("colors.emerald.accent");
-    outline-offset: 2px;
-    border-radius: 3px;
+    outline: 2px solid var(--lit);
+    outline-offset: 3px;
   }
   ::-webkit-scrollbar {
     width: 10px;
     height: 10px;
   }
   ::-webkit-scrollbar-track {
-    background: #06090d;
+    background: #070b1c;
   }
   ::-webkit-scrollbar-thumb {
-    background: #1c2630;
+    background: #1d2547;
     border-radius: 8px;
-    border: 2px solid #06090d;
+    border: 2px solid #070b1c;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: #27343f;
+    background: #2a3460;
   }
 }
 
 @layer components {
-  /* Scroll-reveal (see components/ui/Reveal.tsx).
-     Default = visible so SSR / no-JS / crawlers always see content. The client
-     adds .reveal-init before paint to hide, then .reveal-in to animate back. */
-  [data-reveal] {
-    opacity: 1;
-  }
-  [data-reveal].reveal-init {
-    opacity: 0;
-    transform: translateY(var(--reveal-y, 18px));
-    will-change: opacity, transform;
-  }
-  [data-reveal].reveal-in {
-    opacity: 1;
-    transform: none;
-    transition:
-      opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
-      transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-    transition-delay: var(--reveal-delay, 0ms);
-  }
-  @media (prefers-reduced-motion: reduce) {
-    [data-reveal].reveal-init {
-      opacity: 1;
-      transform: none;
-    }
-  }
 
-  /* Radar polygon draw-in — pure CSS so it plays with or without JS and never
-     leaves the shape hidden (resting state is fully visible). */
-  .radar-poly {
-    animation: radarIn 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+  /* ── The screen (lib/screen, lib/gl): one WebGL canvas, fixed under the content.
+     Shown only on pages that declare a screen state, once GL is running. */
+  #gl {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    visibility: hidden;
   }
-  @keyframes radarIn {
-    from {
-      opacity: 0;
-      transform: scale(0.7);
-    }
-    to {
-      opacity: 1;
-      transform: scale(1);
-    }
+  html.gl-on.screen-on #gl {
+    visibility: visible;
   }
-  @media (prefers-reduced-motion: reduce) {
-    .radar-poly {
-      animation: none;
-    }
-  }
-
-  /* ── Homepage brand backdrop (components/brand/WallBackdrop.tsx) ──
-     The WalSec mark, fixed behind the content. The stage is sized in svh so
-     mobile URL bars never resize it; every piece is its own composited layer
-     (transforms only), positioned in % of the stage. Deep brand-green panels
-     with brand-green hairlines (--wall-stroke brightens while the system is
-     active; phones stay a notch calmer where text overlaps more). */
-  .wall-stage {
-    --wall-fill: rgb(48 150 122 / 0.19);
-    --wall-stroke: 0.52;
+  .gl-canvas {
     position: absolute;
-    left: 50%;
-    top: 50%;
-    height: min(74vh, 96vw);
-    height: min(74svh, 96vw);
-    aspect-ratio: 600 / 780;
-    transform: translate(-50%, -50%);
-    will-change: transform;
-    animation: wallIn 1.6s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both;
-  }
-  @media (max-width: 639px) {
-    .wall-stage {
-      --wall-fill: rgb(48 150 122 / 0.15);
-      --wall-stroke: 0.42;
-    }
-  }
-  .wall-piece,
-  .wall-blueprint {
-    position: absolute;
-    overflow: visible;
-  }
-  .wall-piece {
-    transform-origin: 0 0;
-    will-change: transform;
-  }
-  .wall-piece polygon {
-    fill: var(--wall-fill);
-    stroke: rgb(51 153 125);
-    stroke-opacity: var(--wall-stroke);
-    stroke-width: 1;
-    stroke-linejoin: round;
-    vector-effect: non-scaling-stroke;
-  }
-  .wall-blueprint {
     inset: 0;
     width: 100%;
     height: 100%;
+    display: block;
+  }
+
+  /* ── Engine (lib/engine): hidden-before-reveal only when JS runs and motion is allowed ── */
+  .motion [data-split],
+  .motion [data-reveal="fade"] {
+    visibility: hidden;
+  }
+  .split-line {
+    padding-bottom: 0.08em;
+    margin-bottom: -0.08em;
+  }
+  html.lenis,
+  html.lenis body {
+    height: auto;
+  }
+  .lenis:not(.lenis-autoToggle).lenis-stopped {
+    overflow: clip;
+  }
+  .lenis [data-lenis-prevent] {
+    overscroll-behavior: contain;
+  }
+
+  /* The cursor follower: the mark's outline on the shared lagged pointer. It never replaces
+     the native cursor. Over a [data-cursor] target it fills with light and names the action. */
+  #cursor {
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 80;
+    width: 0;
+    height: 0;
+    pointer-events: none;
     opacity: 0;
-    will-change: opacity;
+    transition: opacity 0.3s;
   }
-  .wall-blueprint polygon {
-    fill: none;
-    stroke: rgb(148 163 184 / 0.22);
-    stroke-width: 1;
-    stroke-dasharray: 3 5;
-    vector-effect: non-scaling-stroke;
+  #cursor.is-on {
+    opacity: 1;
   }
-  @keyframes wallIn {
-    from {
-      opacity: 0;
+  #cursor svg {
+    position: absolute;
+    left: -13px;
+    top: -17px;
+    overflow: visible;
+    transition:
+      scale 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
+      translate 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  #cursor polygon {
+    fill: transparent;
+    stroke: var(--light-hi);
+    stroke-width: 1.25;
+    transition: fill 0.3s;
+  }
+  #cursor span {
+    position: absolute;
+    left: 16px;
+    top: 10px;
+    padding: 5px 9px;
+    font-size: 13px;
+    font-weight: 600;
+    font-stretch: 112%;
+    line-height: 16px;
+    white-space: nowrap;
+    color: var(--ink);
+    background: var(--ground);
+    opacity: 0;
+    translate: -6px 0;
+    transition: opacity 0.25s, translate 0.35s cubic-bezier(0.165, 0.84, 0.44, 1);
+  }
+  /* Over a target: the outline shrinks to a lit tile beside the native cursor and names the
+     action in a dark chip, so it never hides the label it's over. */
+  #cursor.is-active svg {
+    scale: 0.55;
+    translate: 14px 18px;
+  }
+  #cursor.is-active polygon {
+    fill: var(--violet);
+    stroke: var(--violet);
+  }
+  #cursor.is-active span {
+    opacity: 1;
+    translate: 14px 18px;
+  }
+  /* a target that names itself: the light, no chip over its letters */
+  #cursor.is-active.is-quiet span {
+    opacity: 0;
+  }
+  @media (hover: none), (pointer: coarse), (prefers-reduced-motion: reduce) {
+    #cursor {
+      display: none;
     }
   }
 
@@ -184,24 +240,13 @@
   @keyframes markLock {
     from {
       opacity: 0;
-      transform: translate(var(--lx, 0), var(--ly, 0));
+      transform: translate(calc(var(--lx, 0px) * var(--lk, 1)), calc(var(--ly, 0px) * var(--lk, 1)));
     }
   }
   @media (prefers-reduced-motion: reduce) {
-    .wall-stage,
     .mark-lock polygon {
       animation: none;
     }
-  }
-
-  /* Section shell */
-  .section {
-    @apply relative mx-auto w-full max-w-6xl px-5 sm:px-8;
-  }
-
-  /* Hairline card */
-  .panel {
-    @apply relative rounded-2xl border border-edge bg-surface/70 backdrop-blur-sm;
   }
 
   /* Eyebrow / mono label */
@@ -209,24 +254,19 @@
     @apply inline-flex items-center gap-2 font-mono text-2xs uppercase tracking-wider2 text-ink-muted;
   }
 
-  /* Gradient text — emerald→electric */
-  .grad-text {
-    @apply bg-gradient-to-r from-emerald-glow via-emerald-accent to-electric-accent bg-clip-text text-transparent;
-  }
-
   /* Chip / tag */
   .chip {
     @apply inline-flex items-center rounded-full border border-edge bg-raised/60 px-2.5 py-1 font-mono text-2xs text-ink-secondary;
   }
 
-  /* ── 3D journey: floating decrypt panel (drei <Html> + framer-motion) ── */
+  /* ── 3D journey: floating decrypt panel (drei <Html>, shown by Presence on CSS) ── */
   .jpanel {
     @apply max-w-[80vw] rounded-xl border border-edge bg-surface/85 p-4 shadow-panel backdrop-blur-md;
     pointer-events: auto;
     box-shadow:
-      0 0 0 1px rgba(52, 211, 153, 0.06) inset,
+      0 0 0 1px rgba(46, 230, 184, 0.06) inset,
       0 8px 40px -12px rgba(0, 0, 0, 0.8),
-      0 0 42px -18px rgba(52, 211, 153, 0.28);
+      0 0 42px -18px rgba(46, 230, 184, 0.28);
   }
   .jpanel::before {
     content: "";
@@ -236,10 +276,10 @@
     padding: 1px;
     background: linear-gradient(
       135deg,
-      rgba(52, 211, 153, 0.4),
+      rgba(46, 230, 184, 0.4),
       transparent 30%,
       transparent 70%,
-      rgba(56, 189, 248, 0.35)
+      rgba(139, 92, 246, 0.4)
     );
     -webkit-mask:
       linear-gradient(#000 0 0) content-box,
@@ -273,10 +313,11 @@
     top: 50%;
     transform: translate(-50%, -50%);
   }
+  /* tall panels scroll inside, then hand the wheel or the thumb back to the page, which
+     drives the camera ("contain" trapped the wheel at the skills vortex) */
   .jpanel-center {
     max-height: 76vh;
     overflow-y: auto;
-    overscroll-behavior: contain;
   }
   .jsheet {
     position: absolute;
@@ -286,79 +327,2966 @@
     max-width: none;
     max-height: 46vh;
     overflow-y: auto;
-    overscroll-behavior: contain;
     -webkit-overflow-scrolling: touch;
   }
 
+  /* The journey's DOM pieces on CSS (framer-motion is gone): a panel rises and settles in, and
+     sinks away on exit (Presence.tsx); lines and labels fade in as they mount. */
+  .jfx {
+    opacity: 0;
+    translate: 0 18px;
+    transition:
+      opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+      translate 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .jfx--sheet {
+    translate: 0 48px;
+  }
+  .jfx.is-in {
+    opacity: 1;
+    translate: 0 0;
+  }
+  .jfade {
+    animation: jFade 0.4s both;
+  }
+  .jfade--late {
+    animation: jFade 0.8s 3.4s both;
+  }
+  @keyframes jFade {
+    from {
+      opacity: 0;
+    }
+  }
+  .jbob {
+    animation: jBob 1.6s ease-in-out infinite;
+  }
+  @keyframes jBob {
+    50% {
+      translate: 0 6px;
+    }
+  }
+  .jboot {
+    transition: opacity 0.7s ease-out;
+  }
+  .jboot.is-leaving {
+    opacity: 0;
+  }
+  .jboot__go {
+    visibility: hidden;
+    opacity: 0;
+    translate: 0 10px;
+    transition:
+      opacity 0.4s,
+      translate 0.4s;
+  }
+  /* the boot log's leader dots go on narrow screens, where they pushed the values onto a line
+     of their own */
+  @media (max-width: 599px) {
+    .jlead {
+      display: none;
+    }
+  }
+  .jboot__go.is-ready {
+    visibility: visible;
+    opacity: 1;
+    translate: 0 0;
+  }
+
   /* hide the virtual scroller's scrollbar (drei ScrollControls) */
-  #journey-gl .no-scrollbar {
+  .journey-root .no-scrollbar {
     scrollbar-width: none;
   }
-  #journey-gl .no-scrollbar::-webkit-scrollbar {
+  .journey-root .no-scrollbar::-webkit-scrollbar {
     display: none;
+  }
+  /* the scroller fills the screen: its focus ring sits inside the edge */
+  .journey-root .no-scrollbar:focus-visible {
+    outline-offset: -6px;
   }
 
   /* Primary CTA button */
+  /* the 3D version's contact gate: the site's chamfered shapes, flooding with the tint */
   .btn-primary {
-    @apply inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-accent px-5 py-2.5 text-sm font-semibold text-void transition-all duration-200 hover:shadow-glow-emerald hover:brightness-110 active:scale-[0.98];
+    @apply inline-flex items-center justify-center gap-2 bg-action px-5 py-2.5 text-sm font-semibold text-white transition-all duration-200 active:scale-[0.98];
+    clip-path: var(--chamfer);
   }
   .btn-ghost {
-    @apply inline-flex items-center justify-center gap-2 rounded-xl border border-edge bg-surface/60 px-5 py-2.5 text-sm font-semibold text-ink transition-all duration-200 hover:border-emerald-accent/50 hover:bg-raised active:scale-[0.98];
+    @apply inline-flex items-center justify-center gap-2 bg-surface/80 px-5 py-2.5 text-sm font-semibold text-ink transition-all duration-200 active:scale-[0.98];
+    clip-path: var(--chamfer);
+  }
+  .btn-primary:focus-visible,
+  .btn-ghost:focus-visible {
+    background: var(--link);
+    color: var(--on-light);
+  }
+  @media (hover: hover) {
+    .btn-primary:hover,
+    .btn-ghost:hover {
+      background: var(--link);
+      color: var(--on-light);
+    }
   }
 
-  /* Opt-in portal to the 3D journey — gradient border, quiet glow */
-  .btn-journey {
-    @apply relative inline-flex items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold text-emerald-glow transition-all duration-200 hover:brightness-110 active:scale-[0.98];
-    border: 1px solid transparent;
-    background:
-      linear-gradient(#0d1319, #0d1319) padding-box,
-      linear-gradient(120deg, rgba(52, 211, 153, 0.75), rgba(56, 189, 248, 0.75)) border-box;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   The screen page (home): poster, frame, buttons, hero (DESIGN.md §5 to §11)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Poster: the mark tile as a low-contrast relief, page-attached like the GL lattice, its
+   origin on the left margin line. Hidden while the WebGL screen is coming or running.
+   Behind the tile, the hero's static light: the open cluster in silhouette. */
+.screen-page {
+  position: relative;
+}
+.screen-page::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  /* the hero's open cluster: jade glass with scarlet panes, and a scarlet halo beside it */
+  background-image: var(--poster-tile),
+    radial-gradient(circle 300px at 77.2% calc(29.8 * 1vh), rgb(46 230 184 / 0.5), rgb(46 230 184 / 0.12) 55%, transparent 100%),
+    radial-gradient(circle 130px at 91% calc(22 * 1vh), rgb(255 61 51 / 0.7), rgb(255 61 51 / 0.18) 60%, transparent 100%);
+  background-image: var(--poster-tile),
+    radial-gradient(circle 300px at 77.2% calc(29.8 * 1svh), rgb(46 230 184 / 0.5), rgb(46 230 184 / 0.12) 55%, transparent 100%),
+    radial-gradient(circle 130px at 91% calc(22 * 1svh), rgb(255 61 51 / 0.7), rgb(255 61 51 / 0.18) 60%, transparent 100%);
+  background-repeat: repeat, no-repeat, no-repeat;
+  background-size: max(72px, calc((100vw - 2 * var(--margin) + 24px) / 15)) auto, auto, auto;
+  background-position: var(--margin) 0, 0 0, 0 0;
+  transition: opacity 0.6s;
+}
+@media (max-width: 767px) {
+  .screen-page::before {
+    background-image: var(--poster-tile),
+      radial-gradient(circle 190px at 75% calc(23 * 1svh), rgb(46 230 184 / 0.5), rgb(46 230 184 / 0.12) 55%, transparent 100%),
+      radial-gradient(circle 90px at 90% calc(18 * 1svh), rgb(255 61 51 / 0.7), rgb(255 61 51 / 0.18) 60%, transparent 100%);
+    background-size: 56px auto, auto, auto;
   }
-  .btn-journey:hover {
-    box-shadow:
-      0 0 24px -6px rgba(52, 211, 153, 0.4),
-      0 0 24px -10px rgba(56, 189, 248, 0.35);
+}
+html.gl-pending .screen-page::before,
+html.gl-on .screen-page::before {
+  opacity: 0;
+}
+.screen-page > main,
+.screen-page > footer {
+  position: relative;
+  z-index: 1;
+}
+/* Each chapter's static light, where its sun rests (poster only). Every glow ends inside its
+   own section (vertical radii in % of the section), so no section edge cuts one into a band. */
+/* Work: jade and violet. Skills: leans violet. Experience: leans scarlet. */
+html:not(.gl-on) .screen-page [data-chapter="2"] {
+  background:
+    radial-gradient(ellipse 260px 12% at 80% 45%, rgb(46 230 184 / 0.1), transparent),
+    radial-gradient(ellipse 560px 14% at 98% 16%, rgb(139 92 246 / 0.16), transparent);
+}
+html:not(.gl-on) .screen-page [data-chapter="3"] {
+  background:
+    radial-gradient(ellipse 60% 38% at 70% 58%, rgb(139 92 246 / 0.16), transparent),
+    radial-gradient(ellipse 620px 30% at 90% 66%, rgb(139 92 246 / 0.15), transparent);
+}
+html:not(.gl-on) .screen-page [data-chapter="4"] {
+  background:
+    radial-gradient(ellipse 380px 22% at 98% 76%, rgb(255 61 51 / 0.24), rgb(255 61 51 / 0.06) 60%, transparent),
+    radial-gradient(ellipse 560px 20% at 2% 22%, rgb(139 92 246 / 0.12), transparent);
+}
+/* Daylight paints itself without GL: the light ground, the screen's faint shadow on it, and
+   the daylight ink set on the section (the driver only flips the global ink over the canvas). */
+html:not(.gl-on) .screen-page [data-chapter="5"] {
+  --ink: #0a0f24;
+  --ink-soft: #0a0f24;
+  --muted: #3d466e;
+  --lit: #0a6e54;
+  --link: #5b34d6;
+  --scarlet-ink: #b5121f;
+  --line: rgb(10 15 36 / 0.14);
+  background:
+    var(--poster-day) var(--margin) 0 / max(72px, calc((100vw - 2 * var(--margin) + 24px) / 15)) auto repeat,
+    radial-gradient(circle 70vmax at 70% 40%, #dcf6ec 20%, #eeeafc);
+}
+/* Contact: a violet and scarlet dusk */
+html:not(.gl-on) .screen-page [data-chapter="6"] {
+  background:
+    radial-gradient(circle 360px at 72% 50%, rgb(139 92 246 / 0.2), transparent),
+    radial-gradient(circle 300px at 80% 42%, rgb(255 61 51 / 0.2), transparent);
+}
+
+/* ── Buttons: a chamfered shape; light floods in from the chamfered corner along 30° ── */
+.btn {
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  font-size: 15px;
+  font-weight: 600;
+  font-stretch: 112%;
+  line-height: 1;
+  white-space: nowrap;
+  transition: scale 0.2s, color 0.3s;
+}
+.btn__shape {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  clip-path: var(--chamfer);
+  background: var(--btn-bg);
+}
+.btn__shape::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--btn-flood);
+  clip-path: polygon(0 0, 0 0, calc(-1 * var(--run)) 100%, 0 100%);
+  transition: clip-path 0.45s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+.btn:focus-visible .btn__shape::after,
+.btn:active .btn__shape::after {
+  clip-path: polygon(0 0, calc(100% + var(--run)) 0, 100% 100%, 0 100%);
+}
+.btn:active {
+  scale: 0.97;
+}
+.btn__arrow {
+  transition: translate 0.35s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+.btn:focus-visible .btn__arrow {
+  translate: 5px 0;
+}
+@media (hover: hover) {
+  .btn:hover .btn__shape::after {
+    clip-path: polygon(0 0, calc(100% + var(--run)) 0, 100% 100%, 0 100%);
+  }
+  .btn:hover .btn__arrow {
+    translate: 5px 0;
+  }
+}
+/* The action: violet glass, white text; under the hand the violet tint floods in and the text
+   turns to the ground's navy (8.1:1). The hero's button is the only solid violet on the first
+   screen; "Download CV" is its outline: a violet edge (4.5:1, 3.6:1 in daylight) round the
+   ground, with the tint as its text (8.1:1). */
+.btn--primary {
+  --btn-bg: var(--action);
+  --btn-flood: var(--link);
+  --run: 96px;
+  padding: 21px 26px;
+  color: var(--on-action);
+}
+.btn--cv {
+  --btn-bg: var(--violet);
+  --btn-flood: var(--link);
+  --run: 70px;
+  padding: 13px 18px;
+  color: var(--link);
+}
+/* the outline: the ground inside a 1.5 px violet edge, chamfered with it */
+.btn--cv .btn__shape::before {
+  content: "";
+  position: absolute;
+  inset: 1.5px;
+  clip-path: var(--chamfer);
+  background: var(--ground);
+}
+.btn--primary:focus-visible,
+.btn--primary:active,
+.btn--cv:focus-visible,
+.btn--cv:active {
+  color: var(--on-light);
+}
+@media (hover: hover) {
+  .btn--primary:hover,
+  .btn--cv:hover {
+    color: var(--on-light);
   }
 }
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
+/* ── The frame: four corners that step aside on scroll down and return on scroll up ── */
+.frame {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  pointer-events: none;
+  font-stretch: 112%;
+}
+html:not(.js) .frame {
+  position: absolute;
+  bottom: auto;
+  height: 100vh;
+  height: 100svh;
+}
+.frame > * {
+  position: absolute;
+  margin: 0;
+  pointer-events: auto;
+  transition: translate 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+/* scrims, so the frame stays legible when it returns over content */
+.frame::before,
+.frame::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: calc(var(--margin) + 76px);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.4s, translate 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+/* the top bar returns over running text: its scrim is solid behind the whole bar */
+.frame::before {
+  top: 0;
+  height: calc(var(--margin) + 100px);
+  background: linear-gradient(var(--ground) 62%, transparent);
+}
+/* the bottom corners sit on a solid band: running text passes under it, never through it */
+.frame::after {
+  bottom: 0;
+  height: calc(var(--margin) + 60px);
+  background: linear-gradient(transparent, var(--ground) 42%);
+}
+html.frame-scrolled .frame::after {
+  opacity: 1;
+}
+html.frame-scrolled .frame::before {
+  opacity: 0.98;
+}
+html.frame-away .frame__tl,
+html.frame-away .frame__tr,
+html.frame-away .frame::before {
+  translate: 0 calc(-100% - var(--margin) - 16px);
+}
+html.frame-away .frame__bl,
+html.frame-away .frame__br,
+html.frame-away .frame::after {
+  translate: 0 calc(100% + var(--margin) + 16px);
+}
+.frame__tl {
+  top: var(--margin);
+  left: var(--margin);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink);
+}
+.frame__mark {
+  width: 20px;
+  height: auto;
+  overflow: visible;
+}
+/* the mark opens along its own lattice normals under the hand (the lock-in, run backwards) */
+.frame__mark polygon {
+  transition: translate 0.45s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+.frame__brand {
+  transition: color 0.3s;
+}
+.frame__brand:focus-visible .frame__mark polygon {
+  translate: var(--lx) var(--ly);
+}
+.frame__brand:active .frame__mark polygon {
+  translate: calc(var(--lx) * 0.4) calc(var(--ly) * 0.4);
+}
+@media (hover: hover) {
+  .frame__brand:hover {
+    color: var(--link);
   }
-  /* Radial spotlight that follows the cursor (Hero moves it with a transform,
-     so it never repaints). Rests at the top centre until the pointer moves. */
-  .spotlight {
+  .frame__brand:hover .frame__mark polygon {
+    translate: var(--lx) var(--ly);
+  }
+}
+.frame__tr {
+  top: var(--margin);
+  right: var(--margin);
+  display: flex;
+  align-items: center;
+  gap: 30px;
+}
+.frame__navwrap {
+  position: relative;
+}
+.frame__nav {
+  display: flex;
+  gap: 28px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.frame__link {
+  display: inline-block;
+  padding: 13px 0;
+  font-size: 14px;
+  color: var(--ink);
+}
+.frame__marker {
+  position: absolute;
+  left: 0;
+  bottom: -4px;
+  width: 10px;
+  height: 13px;
+  background: var(--link);
+  clip-path: polygon(50% 0, 100% 22%, 100% 78%, 50% 100%, 0 78%, 0 22%);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+.frame__menu {
+  display: none;
+  min-height: 44px;
+  padding: 0 2px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink);
+}
+@media (hover: hover) {
+  .frame__menu:hover {
+    text-decoration: underline;
+    text-underline-offset: 0.3em;
+  }
+}
+.frame__bl,
+.frame__br {
+  bottom: var(--margin);
+  font-size: 13px;
+  line-height: 18px;
+  color: var(--muted);
+}
+.frame__bl {
+  left: var(--margin);
+}
+.frame__br {
+  right: var(--margin);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.frame__tile {
+  width: 8px;
+  height: 10px;
+  fill: var(--lit);
+  animation: tileBreathe 3.2s ease-in-out infinite; /* idle life: the availability tile breathes */
+}
+@keyframes tileBreathe {
+  50% {
+    opacity: 0.4;
+  }
+}
+@media (max-width: 1023px) {
+  .frame__navwrap,
+  .frame__tr > .btn--cv {
+    display: none;
+  }
+  .frame__menu {
+    display: inline-flex;
+    align-items: center;
+  }
+}
+@media (max-width: 767px) {
+  .frame__bl,
+  .frame__br,
+  .frame::after {
+    display: none;
+  }
+}
+
+/* The phone menu: a sheet of the ground that opens from the Menu corner. Its edge is a line at
+   the lattice's 30°, swept from the top right to the bottom left by --a (Frame.tsx); the links
+   rise from behind a lattice edge. The current page carries the lit tile. */
+.menu {
+  --a: 200vmax;
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  display: flex;
+  flex-direction: column;
+  gap: 36px;
+  padding: calc(var(--margin) + 72px) var(--margin) var(--margin);
+  background: var(--poster-tile, none) var(--margin) 0 / 56px auto repeat, var(--ground);
+  font-stretch: 112%;
+  clip-path: polygon(calc(100% - var(--a)) 0, 100% 0, 100% calc(var(--a) * 0.5774));
+}
+.menu__foot {
+  margin: auto 0 0;
+}
+.menu__foot .ulink {
+  font-size: 13px;
+}
+.menu[hidden] {
+  display: none;
+}
+.menu__list {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.menu__list a {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 8px 0;
+  font-size: var(--t-xl);
+  font-weight: 300;
+  font-family: var(--font-display);
+  font-stretch: 125%;
+  letter-spacing: -0.035em;
+  word-spacing: 0.065em;
+  line-height: 1;
+  color: var(--ink);
+}
+.menu__mask {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.08em; /* descender room */
+}
+.menu__word {
+  display: block;
+}
+.menu__list a[aria-current="page"]::after {
+  content: "";
+  width: 12px;
+  height: 16px;
+  background: var(--link);
+  clip-path: polygon(50% 0, 100% 22%, 100% 78%, 50% 100%, 0 78%, 0 22%);
+}
+.menu__list a:active .menu__word {
+  color: var(--link);
+}
+.menu__cv {
+  align-self: flex-start;
+}
+.menu__close {
+  position: absolute;
+  top: var(--margin);
+  right: var(--margin);
+  min-height: 44px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+/* ── Hero: poster plus four corners, 100svh ── */
+.hero {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  min-height: 100vh;
+  min-height: 100svh;
+  padding: calc(var(--margin) + 84px) var(--margin) calc(var(--margin) + 58px);
+}
+.hero__h1 {
+  max-width: 9.4em;
+  margin: 0 0 0 -0.05em;
+  font-size: var(--t-mega);
+  font-weight: 300;
+  font-family: var(--font-display);
+  font-stretch: 125%;
+  letter-spacing: -0.04em;
+  word-spacing: 0.07em;
+  line-height: 0.98;
+  color: var(--ink-soft);
+  text-wrap: balance;
+}
+.hero__h1 {
+  --band-core: #effff9; /* the shaft's core: jade light, nearly white */
+}
+.hero__key {
+  color: var(--light);
+}
+/* "Light passes": a band where the shaft crosses the headline. Its stops (--b0 to --b3) are
+   placed from the lattice by lib/screen/hero.ts; --band lights it (the intro sweeps it on). */
+@supports ((background-clip: text) or (-webkit-background-clip: text)) {
+  .hero__h1 {
+    --band: 1;
+    --band-c: color-mix(in srgb, var(--band-core) calc(var(--band) * 100%), var(--ink-soft));
+    background-image: linear-gradient(
+      150deg,
+      var(--ink-soft) var(--b0, 30%),
+      var(--band-c) var(--b1, 40%),
+      var(--band-c) var(--b2, 47%),
+      var(--ink-soft) var(--b3, 57%)
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  html.intro-pending .hero__h1 {
+    --band: 0;
+  }
+  /* Key words in jade: the shaft's band crosses them too (their own stops, from hero.ts; with
+     no script the band sits off them). */
+  .hero__key {
+    --key: var(--light);
+    white-space: nowrap;
+    background-image: linear-gradient(
+      150deg,
+      var(--key) var(--b0, -40%),
+      color-mix(in srgb, var(--band-core) calc(var(--band) * 100%), var(--key)) var(--b1, -30%),
+      color-mix(in srgb, var(--band-core) calc(var(--band) * 100%), var(--key)) var(--b2, -25%),
+      var(--key) var(--b3, -15%)
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+}
+.hero__role {
+  margin: 28px 0 0;
+  font-size: 15px;
+  font-weight: 600;
+  font-family: var(--font-display);
+  font-stretch: 125%;
+  letter-spacing: 0.14em;
+  text-transform: uppercase; /* the only uppercase on the site */
+  color: var(--lit);
+}
+.hero__row {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--gutter);
+  align-items: end;
+  margin-top: 16px;
+}
+.hero__lede {
+  grid-column: 1 / span 5;
+  max-width: 34ch;
+  margin: 0;
+  font-size: var(--t-body);
+  line-height: 1.55;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+.hero__ctas {
+  grid-column: 6 / span 7;
+  justify-self: end;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 12px;
+}
+/* The outline: the ground inside a hairline of the muted ink, chamfered with it. It sits beside
+   the hero's solid violet without competing; under the hand it takes the same violet flood. */
+.btn--line {
+  --btn-bg: rgb(160 170 203 / 0.62);
+  --btn-flood: var(--link);
+  --run: 96px;
+  padding: 21px 26px;
+  color: var(--ink);
+}
+.btn--line .btn__shape::before {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  clip-path: var(--chamfer);
+  background: var(--ground);
+}
+.btn--line:focus-visible,
+.btn--line:active {
+  color: var(--on-light);
+}
+@media (hover: hover) {
+  .btn--line:hover {
+    color: var(--on-light);
+  }
+}
+.hero__facts {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  column-gap: var(--gutter);
+  margin: 44px 0 0;
+  padding: 18px 0 0;
+  border-top: 1px solid var(--line);
+  list-style: none;
+}
+.hero__facts li {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+/* the numbers rise from behind their baseline (HeroMotion): clipped below, free above */
+.hero__fact [data-count] {
+  display: inline-block;
+}
+.hero__fact:has([data-count]) {
+  display: inline-block;
+  clip-path: inset(-0.5em -0.2em 0 -0.2em);
+}
+.hero__fact {
+  font-size: 19px;
+  font-weight: 500;
+  font-stretch: 112%;
+  letter-spacing: -0.01em;
+  word-spacing: 0.04em;
+  line-height: 1.2;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+.hero__note {
+  max-width: 36ch;
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--muted);
+}
+@media (max-width: 767px) {
+  .hero {
+    padding: calc(var(--margin) + 64px) var(--margin) 28px;
+  }
+  .hero__h1 {
+    max-width: 7em;
+    line-height: 1;
+  }
+  .hero__role {
+    margin-top: 22px;
+    font-size: 13px;
+  }
+  .hero__row {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 24px;
+    margin-top: 12px;
+  }
+  .hero__lede {
+    max-width: 30ch;
+  }
+  .hero__ctas {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+  .hero__cta {
+    width: 100%;
+  }
+  .btn--line {
+    padding-block: 16px;
+  }
+  .hero__facts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    row-gap: 18px;
+    margin-top: 28px;
+  }
+}
+
+/* ── The command palette (⌘K): a dark panel opening downward from its top edge ── */
+.palette {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 14vh var(--margin) 0;
+  background: rgb(10 15 36 / 0.78);
+  font-stretch: 112%;
+}
+.motion .palette {
+  visibility: hidden;
+}
+.palette__panel {
+  width: min(100%, 560px);
+  border: 1px solid var(--line);
+  background: var(--face);
+  color: var(--ink);
+}
+.palette__field {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 0 18px;
+  border-bottom: 1px solid var(--line);
+}
+.palette__field input {
+  flex: 1;
+  min-width: 0;
+  padding: 18px 0;
+  border: 0;
+  background: transparent;
+  font-size: 16px;
+  color: var(--ink);
+  outline: none;
+}
+.palette__field input::placeholder {
+  color: var(--muted);
+}
+.palette__field:focus-within {
+  box-shadow: inset 0 -2px 0 var(--light);
+}
+.palette kbd {
+  font-family: var(--font-mono), monospace;
+  font-size: 13px;
+  color: var(--muted);
+}
+.palette__list {
+  max-height: 52vh;
+  margin: 0;
+  padding: 6px 0;
+  overflow-y: auto;
+  list-style: none;
+}
+.palette__opt {
+  position: relative;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 11px 18px 11px 30px;
+  font-size: 15px;
+  cursor: pointer;
+}
+/* the active option: a lit tile at the start, the label steps along the lattice line */
+.palette__opt::before {
+  content: "";
+  position: absolute;
+  left: 13px;
+  top: 50%;
+  width: 8px;
+  height: 10px;
+  margin-top: -5px;
+  background: var(--link);
+  clip-path: polygon(50% 0, 100% 22%, 100% 78%, 50% 100%, 0 78%, 0 22%);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.palette__opt > span:first-child {
+  transition: translate 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+.palette__opt[aria-selected="true"] {
+  background: rgb(139 92 246 / 0.14);
+}
+.palette__opt[aria-selected="true"]::before {
+  opacity: 1;
+}
+.palette__opt[aria-selected="true"] > span:first-child {
+  translate: 4px 0;
+}
+.palette__opt:active {
+  background: rgb(139 92 246 / 0.22);
+}
+.palette__hint {
+  flex: none;
+  font-family: var(--font-mono), monospace;
+  font-size: 13px;
+  color: var(--muted);
+}
+.palette__empty {
+  padding: 28px 18px;
+  font-size: 15px;
+  color: var(--muted);
+}
+.palette__foot {
+  display: flex;
+  justify-content: flex-end;
+  gap: 18px;
+  margin: 0;
+  padding: 10px 18px;
+  border-top: 1px solid var(--line);
+  font-family: var(--font-mono), monospace;
+  font-size: 13px;
+  color: var(--muted);
+}
+@media (hover: none) {
+  .palette__foot {
+    display: none;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Home sections (stage 3). Each in its own layout family (DESIGN.md §11); all text colour
+   comes from the ink set, so it follows the ground when daylight floods the room.
+   ═══════════════════════════════════════════════════════════════════════════ */
+:root {
+  --u: 8px;
+  /* columns 1 to 8 of the 12-column grid, and the column 9 line */
+  --col: calc((100% - 11 * var(--gutter)) / 12);
+}
+.h2 {
+  margin: 0 0 0 -0.05em;
+  font-size: var(--t-xl);
+  font-weight: 300;
+  font-family: var(--font-display);
+  font-stretch: 125%;
+  letter-spacing: -0.035em;
+  word-spacing: 0.065em;
+  line-height: 1;
+  color: var(--ink);
+}
+/* a heading's key words take the chapter's glass: the violet tint (8.1:1) */
+.h2__key {
+  color: var(--link);
+}
+.mono {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-stretch: 87.5%;
+  font-variant-numeric: tabular-nums;
+}
+/* Inline links in text: underlined at rest; the underline thickens and redraws from the left. */
+.ilink {
+  color: var(--ink);
+  text-decoration: none;
+  background:
+    linear-gradient(var(--link) 0 0) left bottom / 0% 2px no-repeat,
+    linear-gradient(currentColor 0 0) left bottom / 100% 1px no-repeat;
+  padding-bottom: 2px;
+  transition: background-size 0.45s cubic-bezier(0.165, 0.84, 0.44, 1), color 0.25s;
+}
+@media (hover: hover) {
+  .ilink:hover {
+    color: var(--link);
+    background-size: 100% 2px, 0% 1px;
+  }
+}
+.ilink:focus-visible {
+  background-size: 100% 2px, 0% 1px;
+}
+.ilink:active {
+  color: var(--link);
+}
+
+/* ── Work: an index list; the hovered row opens its window in the lattice ── */
+.work {
+  position: relative;
+  /* a short foot: the lookup closes Work, and Skills' own head supplies the pause */
+  padding: clamp(120px, 15vw, calc(28 * var(--u))) var(--margin) clamp(48px, 5vw, calc(8 * var(--u)));
+}
+.work__head {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--gutter);
+  align-items: end;
+}
+.work__h2 {
+  grid-column: 1 / span 8;
+}
+.work__h2,
+.work__lede {
+  margin: 0;
+}
+.work__h2 {
+  margin-left: -0.05em;
+  font-size: var(--t-xl);
+  font-weight: 300;
+  font-family: var(--font-display);
+  font-stretch: 125%;
+  letter-spacing: -0.035em;
+  word-spacing: 0.065em;
+  line-height: 1;
+  color: var(--ink);
+}
+.work__lede {
+  grid-column: 9 / span 4;
+  max-width: 40ch;
+  font-size: var(--t-body);
+  line-height: 1.55;
+  color: var(--muted);
+}
+.work__list {
+  position: relative;
+  margin: clamp(56px, 7vw, 112px) 0 0;
+  padding: 0;
+  list-style: none;
+}
+.work__row {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--gutter);
+}
+.work__rule {
+  position: relative;
+  grid-column: 1 / span 8;
+  grid-row: 1;
+  align-self: start;
+  height: 1px;
+  background: var(--line);
+}
+.work__rule::after {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 1px;
+  background: var(--link);
+  scale: 0 1;
+  transform-origin: 0 50%;
+  transition: scale 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+.work__row:last-child::after {
+  content: "";
+  grid-column: 1 / span 8;
+  grid-row: 2;
+  height: 1px;
+  background: var(--line);
+}
+.work__text {
+  grid-column: 1 / span 8;
+  grid-row: 1;
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  column-gap: var(--gutter);
+  padding: 26px 0 30px;
+}
+.work__title {
+  grid-column: 1 / span 5;
+  margin: 0;
+  font-size: var(--t-l);
+  font-weight: 400;
+  font-stretch: 112%;
+  letter-spacing: -0.025em;
+  word-spacing: 0.055em;
+  line-height: 1.06;
+}
+.work__link {
+  color: var(--ink);
+  outline: none;
+}
+/* the whole row is the link; its focus ring is drawn on the row */
+.work__link::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+}
+.work__link:focus-visible::after {
+  outline: 2px solid var(--lit);
+  outline-offset: -2px;
+}
+/* titles rise from behind their rule: clipped below, free to slide sideways */
+.work__mask {
+  display: block;
+  clip-path: inset(-0.4em -48px -0.16em -0.4em);
+}
+.work__name {
+  display: inline-block;
+  transition: translate 0.45s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+.work__tag {
+  grid-column: 1 / span 5;
+  max-width: 52ch;
+  margin: 10px 0 0;
+  font-size: var(--t-body);
+  line-height: 1.5;
+  color: var(--muted);
+}
+.work__meta {
+  grid-column: 6 / span 3;
+  grid-row: 1 / span 2;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-content: start;
+  gap: 18px;
+  margin: 0;
+  padding-top: 0.55em;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-stretch: 87.5%;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+.work__year {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-soft);
+  transition: color 0.3s;
+}
+/* the open row: the name steps 12 px along the lattice line, the rule lights from the left */
+.work__row.is-open .work__name,
+.work__row:focus-within .work__name {
+  translate: 12px 0;
+}
+.work__row.is-open .work__rule::after,
+.work__row:focus-within .work__rule::after {
+  scale: 1 1;
+}
+.work__row.is-open .work__year,
+.work__row:focus-within .work__year {
+  color: var(--ink);
+}
+@media (hover: hover) {
+  html:not(.js) .work__row:hover .work__name {
+    translate: 12px 0;
+  }
+  html:not(.js) .work__row:hover .work__rule::after {
+    scale: 1 1;
+  }
+}
+.work__row:active .work__name {
+  translate: 6px 0;
+}
+.work__row:active .work__rule::after {
+  scale: 1 1;
+}
+
+/* The figure: the weave in its frame, and what one cell is. */
+.work__fig {
+  margin: 0;
+}
+.work__frame {
+  aspect-ratio: 8 / 5;
+  color: rgb(235 238 248 / 0.1); /* the background lattice's hairlines */
+  /* Off-screen weaves skip style, layout and paint: they hold three quarters of the page's
+     elements (cells and their <use> shadow trees), so every page-wide restyle (the daylight
+     flip) and every frame's layerize stays small. The frame's size comes from its aspect
+     ratio, never from its contents, so skipping them moves nothing. */
+  content-visibility: auto;
+}
+html:not(.gl-on) .work__frame {
+  clip-path: var(--chamfer);
+  background:
+    radial-gradient(ellipse 70% 80% at 70% 30%, rgb(139 92 246 / 0.22), transparent 70%),
+    var(--face);
+}
+.weave {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+/* The pipeline cover's names (FlowWeave): sized in the drawing's own units, on a halo of the
+   ground so they read over any light that comes through the window. In a frame too narrow to
+   read them (the tablet work list) the cells stand alone and the caption names the parts. */
+.work__frame,
+.case__frame {
+  container-type: inline-size;
+}
+.weave__labels text {
+  text-anchor: middle;
+  word-spacing: 0.14em; /* Archivo's space closes up at the phone's size: keep the words apart */
+  paint-order: stroke;
+  stroke: #0a0f24;
+  stroke-width: 4px;
+  stroke-linejoin: round;
+}
+.weave__name {
+  font-size: 13.5px;
+  font-weight: 500;
+  fill: #ebeef8;
+}
+.weave__stage {
+  font-family: var(--font-mono), monospace;
+  font-size: 11px;
+  fill: #2ee6b8;
+}
+@container (max-width: 299px) {
+  .weave__labels {
+    display: none;
+  }
+}
+.work__cap {
+  max-width: 46ch;
+  margin-top: 12px;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--ink-soft);
+}
+.work__note {
+  max-width: 62ch;
+  margin: 40px 0 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+/* Desktop with a fine pointer: the figure is the window beside the open row, from the column 9
+   line to the margin, vertically centred on the row (the first and last rows hold it inside
+   the list). Its caption sits on the ground so it reads over any light. */
+@media (hover: hover) and (pointer: fine) and (min-width: 1024px) {
+  .work__fig {
     position: absolute;
-    left: 0;
+    left: calc(var(--col) * 8 + var(--gutter) * 8);
+    right: 0;
+    top: 50%;
+    z-index: 2;
+    translate: 0 calc(-50% + var(--dy, 0px));
+    pointer-events: none;
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.3s, visibility 0s 0.3s;
+  }
+  .work__row:first-child .work__fig {
     top: 0;
-    width: 480px;
-    height: 480px;
-    background: radial-gradient(
-      circle closest-side,
-      rgba(52, 211, 153, 0.08),
-      transparent
-    );
-    transform: translate(calc(50vw - 240px), -240px);
-    will-change: transform;
+    translate: 0 calc(-12% + var(--dy, 0px));
   }
-  .mask-fade-x {
-    -webkit-mask-image: linear-gradient(
-      to right,
-      transparent,
-      #000 8%,
-      #000 92%,
-      transparent
-    );
-    mask-image: linear-gradient(
-      to right,
-      transparent,
-      #000 8%,
-      #000 92%,
-      transparent
-    );
+  .work__row:nth-last-child(-n + 2) .work__fig {
+    top: auto;
+    bottom: 0;
+    translate: 0 var(--dy, 0px);
   }
-  .mask-fade-b {
-    -webkit-mask-image: linear-gradient(to bottom, #000 60%, transparent);
-    mask-image: linear-gradient(to bottom, #000 60%, transparent);
+  .work__row.is-open .work__fig,
+  .work__row:focus-within .work__fig {
+    visibility: visible;
+    opacity: 1;
+    transition: opacity 0.3s;
+  }
+  html:not(.js) .work__row:hover .work__fig {
+    visibility: visible;
+    opacity: 1;
+  }
+  .work__cap {
+    padding: 7px 10px 8px;
+    margin-top: 10px;
+    background: var(--ground);
+  }
+}
+/* Tablets: the weave sits beside the row, always shown. */
+@media (min-width: 768px) and (not ((hover: hover) and (pointer: fine) and (min-width: 1024px))) {
+  .work__text {
+    grid-column: 1 / span 8;
+  }
+  .work__fig {
+    grid-column: 9 / span 4;
+    grid-row: 1;
+    align-self: start;
+    padding: 26px 0 30px;
+  }
+}
+/* Phones: one column; the weave follows the row's text and opens at the reading line. */
+@media (max-width: 767px) {
+  .work__head {
+    display: block;
+  }
+  .work__lede {
+    margin-top: 20px;
+  }
+  .work__row,
+  .work__text {
+    display: block;
+  }
+  .work__text {
+    padding: 22px 0 16px;
+  }
+  .work__row:last-child::after {
+    display: block;
+  }
+  .work__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 14px;
+    padding-top: 12px;
+  }
+  .work__year {
+    text-align: left;
+  }
+  .work__fig {
+    padding-bottom: 28px;
+  }
+  .work__name {
+    transition: none;
+  }
+}
+
+/* A quiet button: a faint chamfered fill that floods with light from the corner (Look up, Copy). */
+.btn--ghost {
+  --btn-bg: rgb(139 92 246 / 0.18);
+  --btn-flood: var(--link);
+  --run: 60px;
+  min-height: 48px;
+  padding: 0 20px;
+  color: var(--ink);
+  transition: scale 0.2s, color 0.3s;
+}
+.btn--ghost:focus-visible,
+.btn--ghost:active {
+  color: var(--on-light);
+}
+@media (hover: hover) {
+  .btn--ghost:hover {
+    color: var(--on-light);
+  }
+}
+
+/* ── Check an indicator: the foot of Work ── */
+.lookup {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--gutter);
+  row-gap: 40px;
+  margin-top: clamp(80px, 10vw, 144px);
+  padding-top: 32px;
+  border-top: 1px solid var(--line);
+}
+.lookup__ask {
+  grid-column: 1 / span 5;
+}
+.lookup__out {
+  grid-column: 7 / span 6;
+}
+.lookup__h3 {
+  margin: 0;
+  font-size: var(--t-l);
+  font-weight: 400;
+  font-stretch: 112%;
+  letter-spacing: -0.025em;
+  word-spacing: 0.055em;
+  line-height: 1.06;
+  color: var(--ink);
+}
+.lookup__lede {
+  max-width: 46ch;
+  margin: 16px 0 0;
+  font-size: var(--t-body);
+  line-height: 1.55;
+  color: var(--muted);
+}
+.lookup__form {
+  display: flex;
+  gap: 12px;
+  margin-top: 28px;
+}
+.lookup__input {
+  flex: 1;
+  min-width: 0;
+  min-height: 48px;
+  padding: 0 16px;
+  border: 1px solid var(--line);
+  background: var(--ground);
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-stretch: 87.5%;
+  font-size: 15px;
+  color: var(--ink);
+  transition: border-color 0.25s;
+}
+.lookup__input::placeholder {
+  color: var(--muted);
+}
+@media (hover: hover) {
+  .lookup__input:hover {
+    border-color: rgb(180 154 255 / 0.5);
+  }
+}
+.lookup__input:focus-visible {
+  outline: 2px solid var(--lit);
+  outline-offset: 2px;
+  border-color: var(--light);
+}
+.lookup__hits {
+  display: grid;
+  gap: 16px;
+  margin: 0 0 32px;
+  padding: 0;
+  list-style: none;
+}
+.lookup__hit {
+  margin: 0 0 32px;
+  padding: 20px 22px 22px;
+  border-left: 2px solid var(--light);
+  background: var(--face);
+}
+.lookup__hits .lookup__hit {
+  margin: 0;
+}
+.lookup__hit--none {
+  border-left-color: var(--line);
+}
+.lookup__hit p {
+  margin: 0;
+}
+.lookup__type,
+.lookup__all {
+  font-size: 13px;
+  color: var(--muted);
+}
+.lookup__value {
+  margin-top: 6px !important;
+  font-size: 17px;
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+.lookup__value code,
+.lookup__chip code {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-stretch: 87.5%;
+}
+.lookup__verdict {
+  margin-top: 10px !important;
+  font-weight: 600;
+  color: var(--ink);
+}
+.lookup__note {
+  max-width: 60ch;
+  margin-top: 8px !important;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--ink-soft);
+}
+.lookup__case {
+  display: inline-block;
+  margin-top: 14px;
+  font-size: 15px;
+  font-weight: 600;
+}
+.lookup__all {
+  margin: 0;
+}
+.lookup__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 8px;
+  margin: 14px 0 0;
+  padding: 0;
+  list-style: none;
+}
+/* each indicator: a small tile; the ones the lookup found are lit (signal) */
+/* An indicator is signal: under the hand, light floods the chip along 30° from its corner. */
+.lookup__chip {
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  padding: 0 10px;
+  background: rgb(235 238 248 / 0.05);
+  font-size: 13px;
+  color: var(--ink-soft);
+  clip-path: polygon(7px 0, 100% 0, 100% calc(100% - 4px), calc(100% - 7px) 100%, 0 100%, 0 4px);
+  transition: background-color 0.25s, color 0.3s;
+}
+.lookup__chip::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--link);
+  clip-path: polygon(0 0, 0 0, -56px 100%, 0 100%);
+  transition: clip-path 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+@media (hover: hover) {
+  .lookup__chip:hover {
+    color: var(--on-light);
+  }
+  .lookup__chip:hover::before {
+    clip-path: polygon(0 0, calc(100% + 56px) 0, 100% 100%, 0 100%);
+  }
+}
+.lookup__chip:focus-visible {
+  outline: none;
+  background: var(--light);
+  color: var(--on-light);
+}
+.lookup__chip:active,
+.lookup__chip.is-lit {
+  background: var(--light);
+  color: var(--on-light);
+}
+@media (max-width: 1023px) {
+  .lookup__ask,
+  .lookup__out {
+    grid-column: 1 / -1;
+  }
+}
+
+/* ── Skills: a gallery wall; the middle column hangs lower, like the lattice's offset rows ── */
+.skills {
+  position: relative;
+  padding: calc(16 * var(--u)) var(--margin) calc(18 * var(--u));
+}
+.skills__head {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--gutter);
+  align-items: end;
+}
+.skills__h2 {
+  grid-column: 1 / span 8;
+}
+.skills__lede {
+  grid-column: 9 / span 4;
+  max-width: 36ch;
+  margin: 0;
+  font-size: var(--t-body);
+  line-height: 1.55;
+  color: var(--muted);
+}
+.skills__wall {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  column-gap: var(--gutter);
+  margin-top: clamp(56px, 7vw, 104px);
+}
+.skills__col {
+  display: grid;
+  align-content: start;
+  gap: clamp(48px, 6vw, 88px);
+  padding-right: calc(var(--gutter) * 2);
+}
+.skills__col:nth-child(2) {
+  margin-top: clamp(64px, 9vw, 150px);
+}
+.skills__group {
+  position: relative;
+  color: var(--ink);
+}
+/* the group's tiles: one per case study that evidences it, locked in side by side */
+.skills__cells {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+.skills__tile {
+  --lk: 4;
+  display: block;
+  width: 22px;
+  height: auto;
+  color: var(--ink-soft);
+  overflow: visible;
+  transition: color 0.35s;
+}
+/* the tile locks in when its group arrives (JS adds .is-in; without JS it's already locked) */
+.motion .skills__group:not(.is-in) .skills__tile polygon {
+  animation-play-state: paused;
+}
+.skills__group.is-lit .skills__tile,
+.skills__group:focus-within .skills__tile {
+  color: var(--link);
+}
+.skills__h3 {
+  margin: 0;
+  font-size: var(--t-m);
+  font-weight: 500;
+  font-stretch: 112%;
+  letter-spacing: -0.01em;
+  word-spacing: 0.04em;
+  line-height: 1.2;
+}
+.skills__tools {
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--t-body);
+  line-height: 1.7;
+  color: var(--ink-soft);
+}
+.skills__shown {
+  margin: 22px 0 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+.skills__evidence {
+  display: grid;
+  gap: 6px;
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 15px;
+  line-height: 1.45;
+}
+.skills__evidence .ilink {
+  display: inline-block;
+  padding: 3px 0 4px;
+}
+/* a lit group: its evidence links light (signal) */
+.skills__group.is-lit .ilink,
+.skills__group:focus-within .ilink {
+  background-size: 100% 2px, 0% 1px;
+}
+@media (max-width: 1023px) {
+  .skills__wall {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .skills__col {
+    display: contents;
+  }
+  .skills__col:nth-child(2) {
+    margin-top: 0;
+  }
+  .skills__group {
+    margin-bottom: 56px;
+    padding-right: var(--gutter);
+  }
+  .skills__group:nth-child(even) {
+    margin-top: 0;
+  }
+}
+@media (max-width: 767px) {
+  .skills {
+    padding: calc(12 * var(--u)) var(--margin);
+  }
+  .skills__head {
+    display: block;
+  }
+  .skills__lede {
+    margin-top: 18px;
+  }
+  .skills__wall {
+    display: block;
+  }
+  .skills__group {
+    margin-bottom: 48px;
+    padding-right: 0;
+  }
+}
+
+/* ── Experience: a sticky narrative. Chapters on columns 1 to 6; on desktop the stage on
+   columns 8 to 12 holds the current chapter's period while the screen turns behind it. ── */
+.xp {
+  position: relative;
+  /* a short foot: About's own centring supplies the pause before daylight (a 20u foot left
+     ~470 px of bare daylight under the certifications) */
+  padding: calc(16 * var(--u)) var(--margin) calc(6 * var(--u));
+}
+.xp__body {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--gutter);
+  margin-top: clamp(48px, 6vw, 96px);
+}
+.xp__chapters {
+  grid-column: 1 / span 6;
+}
+.xp__ch {
+  min-height: 62svh;
+  padding: 28px 0 64px;
+  border-top: 1px solid var(--line);
+}
+.xp__ch:last-child {
+  min-height: 0;
+}
+.xp__when {
+  margin: 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+.xp__h3 {
+  margin: 18px 0 0;
+  font-size: var(--t-l);
+  font-weight: 400;
+  font-stretch: 112%;
+  letter-spacing: -0.025em;
+  word-spacing: 0.055em;
+  line-height: 1.06;
+  color: var(--ink);
+}
+.xp__where,
+.xp__result {
+  margin: 12px 0 0;
+  font-size: var(--t-body);
+  line-height: 1.5;
+  color: var(--ink-soft);
+}
+.xp__flag {
+  display: inline-block;
+  margin: 14px 0 0;
+  padding: 4px 10px 5px;
+  border: 1px solid var(--line);
+  font-size: 13px;
+  color: var(--ink);
+}
+.xp__points {
+  display: grid;
+  gap: 12px;
+  max-width: 60ch;
+  margin: 24px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.xp__points li {
+  position: relative;
+  padding-left: 22px;
+  font-size: var(--t-body);
+  line-height: 1.55;
+  color: var(--ink-soft);
+}
+/* each point hangs from a small tile on the lattice line */
+.xp__points li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.55em;
+  width: 7px;
+  height: 9px;
+  background: var(--muted);
+  clip-path: polygon(50% 0, 100% 22%, 100% 78%, 50% 100%, 0 78%, 0 22%);
+}
+.xp__certs {
+  display: grid;
+  gap: 18px;
+  margin: 24px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.xp__certs li {
+  display: grid;
+  gap: 3px;
+}
+.xp__cert {
+  font-size: var(--t-body);
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--ink);
+}
+.xp__issuer {
+  font-size: 15px;
+  color: var(--ink-soft);
+}
+.xp__detail {
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--muted);
+}
+.xp__aside {
+  grid-column: 8 / span 5;
+}
+.xp__stage {
+  position: sticky;
+  top: 26vh;
+  padding-top: 28px;
+}
+.xp__periods {
+  display: grid;
+}
+.xp__period {
+  grid-area: 1 / 1;
+  display: grid;
+  gap: 18px;
+  margin: 0;
+  visibility: hidden;
+  clip-path: inset(-0.2em -0.2em -0.2em -0.2em);
+}
+.xp__period:first-child {
+  visibility: visible;
+}
+.xp__big {
+  display: block;
+  font-size: var(--t-xl);
+  font-weight: 300;
+  font-family: var(--font-display);
+  font-stretch: 125%;
+  letter-spacing: -0.035em;
+  word-spacing: 0.065em;
+  line-height: 1;
+  color: var(--ink);
+  text-wrap: balance;
+}
+.xp__kind {
+  display: block;
+  font-size: 15px;
+  font-weight: 600;
+  font-stretch: 112%;
+  color: var(--scarlet-ink);
+}
+.xp__index {
+  display: flex;
+  gap: 12px;
+  margin: 40px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.xp__index polygon {
+  fill: transparent;
+  stroke: var(--muted);
+  stroke-width: 1.5;
+  transition: fill 0.35s, stroke 0.35s;
+}
+.xp__index .is-past polygon {
+  fill: var(--muted);
+}
+.xp__index .is-on polygon {
+  fill: var(--scarlet-ink);
+  stroke: var(--scarlet-ink);
+}
+@media (max-width: 1023px) {
+  .xp__chapters {
+    grid-column: 1 / -1;
+  }
+  .xp__ch {
+    min-height: 0;
+    padding-bottom: 48px;
+  }
+  .xp__aside {
+    display: none;
+  }
+}
+@media (max-width: 767px) {
+  .xp {
+    padding: calc(12 * var(--u)) var(--margin);
+  }
+}
+
+/* ── About: a statement in daylight. The room floods; one first-person statement is set across
+   columns 2 to 11 and read in, word by word, as the reading line passes. ── */
+.about {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--gutter);
+  /* sized to its statement, not the screen: a full-height About centred its lines and left
+     ~300 px of bare daylight above them */
+  align-content: start;
+  padding: calc(12 * var(--u)) var(--margin) calc(18 * var(--u));
+}
+.about__h2 {
+  grid-column: 1 / -1;
+  margin: 0;
+  font-size: var(--t-m);
+  font-weight: 400;
+  font-family: var(--font-display);
+  font-stretch: 125%;
+  letter-spacing: -0.01em;
+  word-spacing: 0.04em;
+  line-height: 1.2;
+  color: var(--ink);
+}
+.about__statement {
+  grid-column: 2 / span 10;
+  max-width: 44ch;
+  margin: clamp(32px, 4.5vw, 64px) 0 0 -0.04em;
+  font-size: var(--t-l);
+  font-weight: 400;
+  font-stretch: 112%;
+  letter-spacing: -0.02em;
+  word-spacing: 0.05em;
+  line-height: 1.22;
+  color: var(--ink);
+  text-wrap: pretty;
+}
+.about__statement.is-reading .about__w {
+  color: var(--muted);
+  transition: color 0.35s;
+}
+.about__statement.is-reading .about__w.is-read {
+  color: var(--ink);
+}
+.about__where {
+  grid-column: 2 / span 10;
+  margin: clamp(28px, 3.5vw, 48px) 0 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+@media (max-width: 767px) {
+  .about {
+    display: block;
+    padding: calc(14 * var(--u)) var(--margin);
+  }
+  .about__statement {
+    margin-left: 0;
+  }
+}
+
+/* ── Contact: the finale. Night again; the lantern of open cells gathers round one action,
+   and the heading is that action. ── */
+.contact {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--gutter);
+  align-content: center;
+  min-height: 100svh;
+  padding: calc(18 * var(--u)) var(--margin) calc(14 * var(--u));
+}
+.contact__line {
+  grid-column: 1 / span 7;
+  max-width: 30ch;
+  margin: 0;
+  font-size: var(--t-m);
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+  word-spacing: 0.04em;
+  color: var(--ink-soft);
+}
+.contact__h2 {
+  grid-column: 1 / -1;
+  margin: clamp(20px, 2.5vw, 36px) 0 0;
+  font-size: min(var(--t-mega), 12vw);
+  font-weight: 300;
+  font-family: var(--font-display);
+  font-stretch: 125%;
+  letter-spacing: -0.04em;
+  word-spacing: 0.07em;
+  line-height: 1;
+}
+/* The one primary action: green rule at rest; under the hand the light floods it along 30°
+   from the chamfered corner, the arrow travels, and it leans toward the pointer. */
+.contact__cta {
+  --run: 2em;
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.24em;
+  margin-left: -0.21em;
+  padding: 0.08em 0.2em 0.14em 0.16em;
+  color: var(--ink);
+  text-decoration: none;
+  transition: color 0.3s, scale 0.2s;
+}
+.contact__flood {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  clip-path: polygon(28px 0, 100% 0, 100% calc(100% - 16px), calc(100% - 28px) 100%, 0 100%, 0 16px);
+}
+.contact__flood::before {
+  content: "";
+  position: absolute;
+  left: 0.16em;
+  right: 0.2em;
+  bottom: 0;
+  height: 3px;
+  background: var(--violet);
+}
+.contact__flood::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--action);
+  clip-path: polygon(0 0, 0 0, calc(-1 * var(--run)) 100%, 0 100%);
+  transition: clip-path 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+.contact__arrow {
+  font-weight: 300;
+  color: var(--link);
+  transition: translate 0.4s cubic-bezier(0.165, 0.84, 0.44, 1), color 0.3s;
+}
+.contact__cta:focus-visible,
+.contact__cta:active {
+  color: var(--on-action);
+}
+.contact__cta:focus-visible .contact__flood::after,
+.contact__cta:active .contact__flood::after {
+  clip-path: polygon(0 0, calc(100% + var(--run)) 0, 100% 100%, 0 100%);
+}
+.contact__cta:focus-visible .contact__arrow {
+  color: var(--on-action);
+  translate: 0.08em 0;
+}
+.contact__cta:active {
+  scale: 0.98;
+}
+@media (hover: hover) {
+  .contact__cta:hover {
+    color: var(--on-action);
+  }
+  .contact__cta:hover .contact__flood::after {
+    clip-path: polygon(0 0, calc(100% + var(--run)) 0, 100% 100%, 0 100%);
+  }
+  .contact__cta:hover .contact__arrow {
+    color: var(--on-action);
+    translate: 0.08em 0;
+  }
+}
+.contact__foot {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--gutter);
+  align-items: center;
+  margin-top: clamp(40px, 6vw, 88px);
+  padding-top: 24px;
+  border-top: 1px solid var(--line);
+}
+.contact__address {
+  grid-column: 1 / span 7;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px 24px;
+}
+.contact__email {
+  font-size: 15px;
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+.btn--copy.is-copied {
+  color: var(--on-light);
+}
+.btn--copy.is-copied .btn__shape {
+  background: var(--light);
+}
+html:not(.js) .btn--copy {
+  display: none;
+}
+.contact__links {
+  grid-column: 9 / span 4;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 28px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+/* Utility links: the colour lifts and the arrow nudges along its own direction. */
+.ulink {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  font-size: 15px;
+  font-weight: 500;
+  font-stretch: 112%;
+  color: var(--ink-soft);
+  text-decoration: none;
+  transition: color 0.25s;
+}
+/* The skip link waits above the viewport at full size and slides in on focus (never a 1 px box). */
+.skip-link {
+  position: fixed;
+  left: 16px;
+  top: 16px;
+  z-index: 100;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  background: var(--light-hi);
+  color: var(--on-light);
+  translate: 0 calc(-100% - 32px);
+  transition: translate 0.25s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+.skip-link:focus {
+  translate: 0 0;
+}
+@media (prefers-reduced-motion: reduce) {
+  .skip-link {
+    transition: none;
+  }
+}
+.ulink__arrow {
+  display: inline-block;
+  transition: translate 0.35s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+.ulink:focus-visible {
+  color: var(--ink);
+}
+.ulink:focus-visible .ulink__arrow--out {
+  translate: 3.5px -3.5px;
+}
+.ulink:focus-visible .ulink__arrow--down {
+  translate: 0 5px;
+}
+@media (hover: hover) {
+  .ulink:hover {
+    color: var(--link);
+  }
+  .ulink:hover .ulink__arrow--out {
+    translate: 3.5px -3.5px;
+  }
+  .ulink:hover .ulink__arrow--down {
+    translate: 0 5px;
+  }
+}
+@media (max-width: 1023px) {
+  .contact__address,
+  .contact__links {
+    grid-column: 1 / -1;
+  }
+  .contact__links {
+    margin-top: 16px;
+  }
+}
+@media (max-width: 767px) {
+  .contact {
+    display: block;
+    padding: calc(14 * var(--u)) var(--margin) calc(10 * var(--u));
+  }
+  .contact__foot {
+    display: block;
+  }
+}
+
+/* ── Footer: the small print, shared with the case pages. Utility links change colour. ── */
+.foot {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--gutter);
+  row-gap: 24px;
+  padding: 32px var(--margin) calc(var(--margin) + 12px);
+  border-top: 1px solid var(--line);
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+.foot__who {
+  grid-column: 1 / span 6;
+}
+.foot__name {
+  margin: 0;
+  font-size: 14px;
+  color: var(--ink-soft);
+}
+.foot__credits {
+  max-width: 58ch;
+  margin: 6px 0 0;
+}
+.foot__colophon {
+  max-width: 46ch;
+  margin: 16px 0 0;
+  font-size: var(--t-body);
+  line-height: 1.5;
+  color: var(--ink-soft);
+}
+.foot__nav {
+  grid-column: 8 / span 5;
+}
+.foot__nav ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 22px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.foot__link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  font-size: 14px;
+  color: var(--ink-soft);
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: 4px;
+  transition: color 0.25s, text-decoration-color 0.25s;
+}
+.foot__link:focus-visible {
+  color: var(--link);
+  text-decoration-color: var(--link);
+}
+@media (hover: hover) {
+  .foot__link:hover {
+    color: var(--link);
+    text-decoration-color: var(--link);
+  }
+}
+.foot__hint {
+  margin: 8px 0 0;
+  font-size: 13px;
+}
+@media (hover: none) {
+  .foot__hint {
+    display: none;
+  }
+}
+@media (max-width: 767px) {
+  .foot__who,
+  .foot__nav {
+    grid-column: 1 / -1;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Case pages (stage 4, DESIGN.md §11): an engagement report on its own screen. Headings hang
+   on column 1, text on the column 5 line; the head pairs the title with the hero figure, the
+   case's evidence weave in the screen's window.
+   ═══════════════════════════════════════════════════════════════════════════ */
+/* The poster's light sits behind the hero figure (no hero cluster here). */
+.case-page::before {
+  background-image: var(--poster-tile),
+    radial-gradient(circle 340px at 78% calc(34 * 1svh), rgb(139 92 246 / 0.2), transparent 100%),
+    radial-gradient(circle 220px at 70% calc(28 * 1svh), rgb(46 230 184 / 0.12), transparent 100%);
+}
+@media (max-width: 767px) {
+  .case-page::before {
+    background-image: var(--poster-tile),
+      radial-gradient(circle 220px at 80% calc(62 * 1svh), rgb(139 92 246 / 0.2), transparent 100%);
+  }
+}
+.case {
+  padding: calc(var(--margin) + 104px) var(--margin) 0;
+}
+/* The head is the first screen, so the frame's bottom corners sit on its empty foot and never
+   on running text. */
+.case__head {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  grid-template-rows: auto auto auto 1fr;
+  column-gap: var(--gutter);
+  align-items: start;
+  min-height: calc(100svh - var(--margin) - 104px);
+  padding-bottom: 72px;
+}
+.case__back {
+  grid-column: 1 / -1;
+  margin: 0 0 clamp(16px, 2.5vw, 40px);
+}
+.ulink__arrow--back {
+  order: -1;
+}
+.ulink:focus-visible .ulink__arrow--back {
+  translate: -5px 0;
+}
+@media (hover: hover) {
+  .ulink:hover .ulink__arrow--back {
+    translate: -5px 0;
+  }
+}
+.nowrap {
+  white-space: nowrap;
+}
+.case__h1 {
+  grid-column: 1 / span 7;
+  margin: 0 0 0 -0.05em;
+  font-size: var(--t-xl);
+  font-weight: 300;
+  font-family: var(--font-display);
+  font-stretch: 125%;
+  letter-spacing: -0.035em;
+  word-spacing: 0.065em;
+  line-height: 1;
+  color: var(--ink);
+  text-wrap: balance;
+}
+.case__tagline {
+  grid-column: 1 / span 6;
+  margin: 28px 0 0;
+  max-width: 40ch;
+  font-size: var(--t-m);
+  letter-spacing: -0.01em;
+  word-spacing: 0.04em;
+  line-height: 1.35;
+  color: var(--ink-soft);
+}
+.case__meta {
+  grid-column: 1 / span 6;
+  display: grid;
+  gap: 14px;
+  margin: 40px 0 0;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+}
+.case__meta div {
+  display: grid;
+  grid-template-columns: 9.5em 1fr;
+  gap: 16px;
+}
+.case__meta dt {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-stretch: 87.5%;
+  font-size: 13px;
+  line-height: 22px;
+  color: var(--muted);
+}
+.case__meta dd {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 18px;
+  margin: 0;
+  font-size: 15px;
+  line-height: 22px;
+  color: var(--ink);
+}
+.case__fig {
+  grid-column: 8 / span 5;
+  grid-row: 2 / span 3;
+  margin: 8px 0 0;
+}
+.case__frame {
+  aspect-ratio: 8 / 5;
+  color: rgb(235 238 248 / 0.1); /* the background lattice's hairlines */
+}
+.case__fig--light .case__frame {
+  aspect-ratio: 8 / 2;
+}
+html:not(.gl-on) .case__frame {
+  clip-path: var(--chamfer);
+  background:
+    radial-gradient(ellipse 70% 80% at 70% 30%, rgb(139 92 246 / 0.22), transparent 70%),
+    var(--face);
+}
+.case__cap {
+  max-width: 46ch;
+  margin-top: 14px;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--ink-soft);
+}
+
+/* The sections: the heading on column 1 (it stays while its text passes), the text from the
+   column 5 line, at a reading measure. */
+.case__sec {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--gutter);
+  padding-top: clamp(80px, 9vw, 144px);
+}
+.case__h2 {
+  grid-column: 1 / span 4;
+  align-self: start;
+  position: sticky;
+  top: calc(var(--margin) + 72px);
+  margin: 0;
+  font-size: var(--t-l);
+  font-weight: 400;
+  font-stretch: 112%;
+  letter-spacing: -0.025em;
+  word-spacing: 0.055em;
+  line-height: 1.05;
+  color: var(--ink);
+}
+.case__body {
+  grid-column: 5 / span 8;
+  max-width: 64ch;
+  font-size: var(--t-body);
+  line-height: 1.6;
+  color: var(--ink-soft);
+}
+.case__body :where(p) {
+  margin: 0;
+}
+.case__body > * + *,
+.case__detail > * + * {
+  margin-top: 1.1em;
+}
+.case__lead {
+  font-size: var(--t-m);
+  letter-spacing: -0.01em;
+  word-spacing: 0.04em;
+  line-height: 1.4;
+  color: var(--ink);
+}
+.case__detail {
+  margin-top: 56px;
+  padding-top: 24px;
+  border-top: 1px solid var(--line);
+}
+.case__h3 {
+  margin: 0;
+  font-size: 19px;
+  font-weight: 500;
+  font-stretch: 112%;
+  letter-spacing: -0.01em;
+  word-spacing: 0.04em;
+  line-height: 1.3;
+  color: var(--ink);
+}
+.case__list {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 0;
+  padding: 0;
+  list-style: none;
+}
+.case__list li {
+  position: relative;
+  padding-left: 24px;
+}
+/* each point hangs from a small closed cell of the lattice */
+.case__list li::before {
+  content: "";
+  position: absolute;
+  left: 2px;
+  top: 0.55em;
+  width: 9px;
+  height: 11px;
+  background: var(--muted);
+  opacity: 0.6;
+  clip-path: polygon(50% 0, 100% 22%, 100% 78%, 50% 100%, 0 78%, 0 22%);
+}
+
+/* Evidence: each number with how it was measured. */
+/* a lead line before the facts (A-TIOC's "The platform is private…") keeps clear of their rule */
+.case__lead + .case__facts {
+  margin-top: 40px;
+}
+.case__facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: var(--gutter);
+  margin: 0;
+  border-top: 1px solid var(--line);
+}
+.case__fact {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 22px 0 24px;
+  border-bottom: 1px solid var(--line);
+}
+.case__fact dt {
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.35;
+  color: var(--ink);
+}
+.case__fact dd {
+  margin: 0;
+}
+.case__value {
+  order: -1;
+  font-size: var(--t-l);
+  font-weight: 300;
+  font-family: var(--font-display);
+  font-stretch: 125%;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.03em;
+  word-spacing: 0.06em;
+  line-height: 1.05;
+  color: var(--ink);
+}
+.case__method {
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--muted);
+}
+.case__stack {
+  margin-top: 48px;
+}
+.case__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 14px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.case__tags li {
+  padding: 7px 14px 7px 16px;
+  font-size: 13px;
+  line-height: 16px;
+  color: var(--ink);
+  background: rgb(235 238 248 / 0.07);
+  clip-path: var(--chamfer);
+}
+.case__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 32px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.case__cta {
+  margin-top: 36px;
+}
+
+/* Next case study: the title rides along x under the hand, its arrow travels. */
+.case__next {
+  margin-top: clamp(112px, 12vw, 192px);
+  padding: 0 var(--margin);
+}
+.case__nextlink {
+  display: block;
+  padding: 36px 0 clamp(72px, 9vw, 128px);
+  border-top: 1px solid var(--line);
+  color: var(--ink);
+}
+.case__nextlabel {
+  display: block;
+  margin-bottom: 18px;
+  font-size: 13px;
+  color: var(--muted);
+}
+.case__nextmask {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.08em;
+}
+.case__nexttitle {
+  display: inline-block;
+  margin-left: -0.05em;
+  font-size: var(--t-xl);
+  font-weight: 300;
+  font-family: var(--font-display);
+  font-stretch: 125%;
+  letter-spacing: -0.035em;
+  word-spacing: 0.065em;
+  line-height: 1.05;
+  transition: translate 0.45s cubic-bezier(0.165, 0.84, 0.44, 1), color 0.3s;
+}
+.case__nextarrow {
+  display: inline-block;
+  margin-left: 0.3em;
+  font-size: 0.6em;
+  transition: translate 0.45s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+.case__nextlink:focus-visible .case__nexttitle,
+.case__nextlink:active .case__nexttitle {
+  translate: 12px 0;
+  color: var(--link);
+}
+@media (hover: hover) {
+  .case__nextlink:hover .case__nexttitle {
+    translate: 12px 0;
+    color: var(--link);
+  }
+  .case__nextlink:hover .case__nextarrow {
+    translate: 6px 0;
+  }
+}
+
+/* Tablet and phone: one column; the figure follows the meta. */
+@media (max-width: 1023px) {
+  .case__h1,
+  .case__tagline,
+  .case__meta,
+  .case__fig {
+    grid-column: 1 / -1;
+  }
+  .case__head {
+    grid-template-rows: none;
+    min-height: 0;
+    padding-bottom: 0;
+  }
+  .case__fig {
+    grid-row: auto;
+    margin-top: 40px;
+  }
+  .case__h2 {
+    grid-column: 1 / -1;
+    position: static;
+    margin-bottom: 24px;
+  }
+  .case__body {
+    grid-column: 1 / -1;
+  }
+}
+@media (max-width: 767px) {
+  .case {
+    padding-top: calc(var(--margin) + 76px);
+  }
+  .case__meta div {
+    grid-template-columns: 1fr;
+    gap: 2px;
+  }
+  .case__facts {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Phones and tablets carry each weave inline: a navy plate under it, so the lit screen
+   behind can't land a bright cell among the data's cells. (Construct OS stays light only.) */
+@media not ((hover: hover) and (pointer: fine) and (min-width: 1024px)) {
+  html.gl-on .work__frame:not(.work__frame--light) {
+    clip-path: var(--chamfer);
+    background: rgb(10 15 36 / 0.86);
+  }
+}
+
+/* The Construct OS strip, on phones and tablets: light only, so a short band, not a tall
+   empty frame. The desktop window keeps its size. */
+@media not ((hover: hover) and (pointer: fine) and (min-width: 1024px)) {
+  .work__frame--light {
+    aspect-ratio: 8 / 2;
+  }
+}
+
+/* The A-TIOC pipeline: four stages whose top edges step at 30° (the mark's roofline). */
+.flow {
+  margin: 48px 0 0;
+}
+.flow__stages {
+  --rise: calc(var(--gutter) * 0.5774); /* the gutter at 30° */
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  column-gap: var(--gutter);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.flow__stage {
+  position: relative;
+  padding-top: 22px;
+  border-top: 1px solid var(--line);
+}
+.flow__stage:nth-child(even) {
+  margin-top: var(--rise);
+}
+/* the hairline crosses each gutter at the lattice's angle, down then up */
+.flow__stage + .flow__stage::before {
+  content: "";
+  position: absolute;
+  left: calc(-1 * var(--gutter));
+  width: calc(var(--gutter) / 0.866);
+  height: 1px;
+  background: var(--line);
+  transform-origin: 0 0;
+}
+.flow__stage:nth-child(even)::before {
+  top: calc(-1px - var(--rise));
+  rotate: 30deg;
+}
+.flow__stage:nth-child(odd)::before {
+  top: calc(var(--rise) - 1px);
+  rotate: -30deg;
+}
+.flow__kind {
+  display: block;
+  margin-bottom: 18px;
+  font-size: 13px;
+  color: var(--muted);
+}
+.flow__nodes {
+  display: grid;
+  gap: 20px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.flow__node {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr);
+  column-gap: 12px;
+  align-items: start;
+}
+.flow__cell {
+  grid-row: span 2;
+  width: 22px;
+  height: 28px;
+}
+.flow__name {
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.35;
+  color: var(--ink);
+}
+.flow__detail {
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--muted);
+}
+.flow__cap {
+  margin-top: 22px;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--ink-soft);
+}
+@media (max-width: 767px) {
+  .flow__stages {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    row-gap: 32px;
+  }
+  .flow__stage:nth-child(3)::before {
+    display: none;
+  }
+}
+
+/* The ATT&CK figure: the Enterprise matrix as closed cells under each tactic, the nine mapped
+   techniques lit and named, an ICS appendix, and the light's path through the attack. */
+.case__wide {
+  padding-top: clamp(72px, 8vw, 128px);
+}
+.attack {
+  margin: 0;
+}
+.attack__scene {
+  padding: 8px 0 24px;
+}
+.attack__matrix {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(16, minmax(0, 1fr));
+  column-gap: 6px;
+}
+.attack__col--ics {
+  padding-left: 6px;
+  border-left: 1px solid var(--line);
+}
+.attack__tactic {
+  position: relative;
+  z-index: 1; /* the light's path passes behind the names, never through them */
+  display: block;
+  min-height: 52px;
+  font-size: 13px;
+  font-stretch: 75%; /* Archivo's narrow width, so every tactic fits its column */
+  line-height: 16px;
+  color: var(--muted);
+}
+.attack__tiles {
+  display: grid;
+  gap: 3px;
+  margin: 6px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.attack__tile {
+  position: relative;
+  z-index: 1;
+  height: 8px;
+  background: rgb(235 238 248 / 0.09);
+}
+.attack__tile.is-lit {
+  display: flex;
+  flex-wrap: wrap;
+  height: auto;
+  padding: 5px 6px;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-stretch: 87.5%;
+  font-size: 13px;
+  line-height: 15px;
+  color: var(--on-light);
+  background: var(--light);
+  clip-path: polygon(6px 0, 100% 0, 100% calc(100% - 4px), calc(100% - 6px) 100%, 0 100%, 0 4px);
+  transition: background-color 0.3s;
+}
+.attack__tile.is-reached {
+  background: var(--light-hi);
+}
+.attack__path {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+.attack__path path {
+  fill: none;
+  stroke: var(--light);
+  stroke-width: 2;
+  stroke-linejoin: miter;
+}
+.attack__stages {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  column-gap: var(--gutter);
+  margin: 36px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.attack__stage {
+  display: grid;
+  align-content: start;
+  gap: 4px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  transition: color 0.3s, border-color 0.3s;
+}
+.attack__stage.is-current,
+.attack__scene.is-still .attack__stage {
+  color: var(--ink-soft);
+  border-top-color: var(--light);
+}
+.attack__no,
+.attack__tech {
+  font-size: 13px;
+}
+.attack__label {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--ink);
+}
+.attack__detail {
+  font-size: 13px;
+  line-height: 1.45;
+}
+.attack__stage.is-current .attack__tech,
+.attack__scene.is-still .attack__tech {
+  color: var(--lit);
+}
+.attack__cap {
+  max-width: 72ch;
+  margin-top: 28px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--ink-soft);
+}
+.attack__table {
+  width: 100%;
+  max-width: 1120px;
+  margin-top: 28px;
+  border-collapse: collapse;
+  font-size: 15px;
+  line-height: 1.45;
+}
+.attack__table th,
+.attack__table td {
+  padding: 12px 20px 12px 0;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  vertical-align: top;
+}
+.attack__table thead th {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--muted);
+}
+.attack__table tbody th {
+  font-weight: 500;
+  color: var(--ink);
+}
+.attack__table td {
+  color: var(--ink-soft);
+}
+.attack__notice {
+  max-width: 80ch;
+  margin: 20px 0 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+/* Pinned on large screens: clear of the frame's top bar when it returns. */
+@media (min-width: 1024px) and (min-height: 800px) {
+  .attack__scene {
+    padding-top: calc(var(--margin) + 64px);
+  }
+}
+/* Below 1024 px the tactics become rows, their cells a strip. */
+@media (max-width: 1023px) {
+  .attack__matrix {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: 14px;
+  }
+  .attack__tactic {
+    justify-self: start;
+    min-height: 0;
+    padding-right: 8px;
+    font-stretch: 100%;
+    background: var(--ground);
+  }
+  .attack__tiles {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .attack__tile {
+    width: 8px;
+    height: 12px;
+  }
+  .attack__tile.is-lit {
+    width: auto;
+  }
+  .attack__col--ics {
+    padding: 12px 0 0;
+    border-left: 0;
+    border-top: 1px solid var(--line);
+  }
+  .attack__stages {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    row-gap: 20px;
+  }
+}
+@media (max-width: 767px) {
+  .attack__stages {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .attack__table thead {
+    display: none;
+  }
+  .attack__table tr {
+    display: block;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .attack__table th,
+  .attack__table td {
+    display: block;
+    padding: 2px 0;
+    border: 0;
+  }
+}
+
+/* The page transition's curtain: the screen, closed. The poster's lattice relief on the ground,
+   cut to a hexagon in the mark's outline that grows a ring at a time (transition.ts); a thin rim
+   of jade light runs round its edge. Above everything but the skip link. */
+#curtain {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  pointer-events: none;
+  visibility: hidden;
+}
+.curtain__panel,
+.curtain__rim {
+  position: absolute;
+  inset: 0;
+}
+.curtain__panel {
+  background:
+    var(--poster-tile) var(--margin) 0 / max(72px, calc((100vw - 2 * var(--margin) + 24px) / 15)) auto repeat,
+    radial-gradient(circle 60vmax at 70% 30%, #121a3a, var(--ground));
+}
+.curtain__rim {
+  background: var(--light);
+  opacity: 0.85;
+}
+@media (max-width: 767px) {
+  .curtain__panel {
+    background:
+      var(--poster-tile) var(--margin) 0 / 56px auto repeat,
+      radial-gradient(circle 60vmax at 70% 30%, #121a3a, var(--ground));
+  }
+}
+
+/* The 404: the screen shut, one line set large, one way home. */
+.missing-page::before {
+  background-image: var(--poster-tile);
+}
+.missing {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--gutter);
+  align-content: center;
+  min-height: 100vh;
+  min-height: 100svh;
+  padding: calc(var(--margin) + 72px) var(--margin) calc(var(--margin) + 48px);
+}
+.missing > * {
+  grid-column: 1 / span 9;
+}
+.missing__code {
+  margin: 0 0 24px;
+  font-size: 13px;
+  color: var(--muted);
+}
+.missing__h1 {
+  margin: 0 0 0 -0.05em;
+  font-size: var(--t-mega);
+  font-weight: 300;
+  font-family: var(--font-display);
+  font-stretch: 125%;
+  letter-spacing: -0.04em;
+  word-spacing: 0.07em;
+  line-height: 0.98;
+  color: var(--ink);
+  text-wrap: balance;
+}
+.missing__line {
+  margin: 32px 0 0;
+  font-size: var(--t-m);
+  line-height: 1.35;
+  color: var(--ink-soft);
+}
+.missing__cta {
+  justify-self: start;
+  margin-top: 40px;
+}
+/* /journey: the way home, and (under reduced motion) the way in */
+.missing__ctas {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+  margin-top: 40px;
+}
+/* The card's status line is chosen by the head script's flags before React runs, so it never
+   changes size on hydration: no JavaScript, loading, or waiting under reduced motion. */
+.jline--load,
+.jline--ask,
+.jstart {
+  display: none;
+}
+html.js .jline--nojs {
+  display: none;
+}
+html.js.motion .jline--load,
+html.js:not(.motion) .jline--ask {
+  display: inline;
+}
+html.js:not(.motion) .jstart {
+  display: inline-flex;
+}
+.jstart:disabled {
+  cursor: progress;
+}
+/* The site's buttons, set small for the 3D version's airlock and controls. */
+/* /journey without its post effects (phones, or the quality ladder's last levels): the canvas
+   fades into the void at its edges, standing in for the composer's vignette at no GPU cost. */
+.journey-root.fx-off canvas {
+  -webkit-mask-image: radial-gradient(ellipse 78% 74% at 50% 50%, #000 52%, rgb(0 0 0 / 0.22) 100%);
+  mask-image: radial-gradient(ellipse 78% 74% at 50% 50%, #000 52%, rgb(0 0 0 / 0.22) 100%);
+}
+.btn.btn--hud {
+  min-height: 40px;
+  padding: 0 14px;
+  gap: 10px;
+  font-size: 13px;
+}
+@media (max-width: 767px) {
+  .missing > * {
+    grid-column: 1 / -1;
   }
 }

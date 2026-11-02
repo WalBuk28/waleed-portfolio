@@ -123,7 +123,13 @@ export function CameraRig() {
 
     // ── velocity-reactive FOV (wider base on portrait screens) ──
     const speed = Math.min(scroll.delta * 60, 1);
-    const base = state.size.width < state.size.height ? 70 : 55;
+    // On a portrait phone a fixed vertical FOV left about 36° across, cropping the laptop at
+    // both edges: widen it so at least ~46° fits across (capped at 84°).
+    const aspect = state.size.width / state.size.height;
+    const base =
+      aspect < 1
+        ? THREE.MathUtils.clamp(2 * THREE.MathUtils.radToDeg(Math.atan(Math.tan(THREE.MathUtils.degToRad(23)) / aspect)), 70, 84)
+        : 55;
     const fov = base + speed * 13;
     if (Math.abs(camera.fov - fov) > 0.01) {
       camera.fov = THREE.MathUtils.damp(camera.fov, fov, 4, dt);

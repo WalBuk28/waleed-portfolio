@@ -6,6 +6,7 @@ import { useFrame } from "@react-three/fiber";
 import { useCursor, useScroll } from "@react-three/drei";
 import { easing } from "maath";
 import { C } from "../palette";
+import { PoolLight, type PoolLightHandle } from "../lights";
 import { ANCHORS, SECTIONS, facing } from "../journey";
 import { ART, lockIocs } from "../content";
 import { journey } from "../state";
@@ -32,7 +33,7 @@ export function CipherLock() {
   const root = useRef<THREE.Group>(null!);
   const shardRefs = useRef<THREE.Mesh[]>([]);
   const coreMat = useRef<THREE.MeshStandardMaterial>(null!);
-  const coreLight = useRef<THREE.PointLight>(null!);
+  const coreLight = useRef<PoolLightHandle>(null!);
   const shackle = useRef<THREE.Group>(null!);
   const iocGroup = useRef<THREE.Group>(null!);
   const iocMats = useRef<THREE.MeshBasicMaterial[]>([]);
@@ -118,10 +119,10 @@ export function CipherLock() {
           <mesh key={i} ref={(m) => void (shardRefs.current[i] = m!)} position={s.home}>
             <boxGeometry args={s.size} />
             <meshStandardMaterial
-              color="#241017"
+              color="#1f0f22"
               metalness={0.8}
               roughness={0.4}
-              emissive="#4c1120"
+              emissive="#4a0d18"
               emissiveIntensity={0.4}
             />
           </mesh>
@@ -153,7 +154,7 @@ export function CipherLock() {
           <icosahedronGeometry args={[0.2, 1]} />
           <meshStandardMaterial
             ref={coreMat}
-            color="#2b0a12"
+            color="#260a14"
             emissive={C.crit}
             emissiveIntensity={0.35}
             roughness={0.3}
@@ -183,9 +184,9 @@ export function CipherLock() {
       </group>
 
       <GlowSprite color={C.critMark} scale={2.6} opacity={0.16} />
-      <pointLight ref={coreLight} color={C.crit} intensity={3.6} distance={6} decay={2} position={[0, 0.2, 0.9]} />
-      <pointLight color={C.electricDeep} intensity={2} distance={5} decay={2} position={[-1.4, 0.8, 1]} />
-      <TextPlane text="96 FINDINGS · 4 SAMPLES" height={0.085} color="#fda4af" position={[0, -1.05, 0.2]} />
+      <PoolLight ref={coreLight} color={C.crit} intensity={3.6} distance={6} position={[0, 0.2, 0.9]} />
+      <PoolLight color={C.electricDeep} intensity={2} distance={5} position={[-1.4, 0.8, 1]} />
+      <TextPlane text="96 FINDINGS · 4 ARTEFACTS" height={0.085} color="#ff6140" position={[0, -1.05, 0.2]} />
 
       <Panel position={[-1.5, 0.5, 0]} visible={show} width={330} align="right">
         <PanelHeader

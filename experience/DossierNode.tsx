@@ -6,6 +6,7 @@ import { useFrame } from "@react-three/fiber";
 import { useCursor, useScroll } from "@react-three/drei";
 import { easing } from "maath";
 import { C } from "./palette";
+import { PoolLight } from "./lights";
 import { ANCHORS, SECTIONS, facing } from "./journey";
 import { certifications, education, profile } from "./content";
 import { journey } from "./state";
@@ -31,7 +32,11 @@ export function DossierNode() {
 
   const quat = useMemo(() => facing(ANCHORS.dossier, SEC.center), []);
   const stats = useMemo(
-    () => profile.stats.map((s) => ({ head: `${s.value}${s.suffix}`, label: s.label.toUpperCase() })),
+    () =>
+      profile.stats.map((s) => ({
+        head: `${typeof s.value === "number" ? s.value.toLocaleString("en-GB") : s.value}${s.suffix ?? ""}`,
+        label: s.label.toUpperCase(),
+      })),
     []
   );
 
@@ -86,13 +91,13 @@ export function DossierNode() {
               position={[Math.cos(a) * 1.15, Math.sin(a * 2) * 0.28, Math.sin(a) * 1.15]}
             >
               <TextPlane text={s.head} height={0.16} color={i % 2 ? C.electricGlow : C.emeraldGlow} position={[0, 0.07, 0]} />
-              <TextPlane text={s.label} height={0.05} color="#9fb1c1" position={[0, -0.08, 0]} />
+              <TextPlane text={s.label} height={0.05} color="#b9c0d8" position={[0, -0.08, 0]} />
             </group>
           );
         })}
       </group>
 
-      <pointLight color={C.emerald} intensity={3} distance={5} decay={2} position={[0, 0.4, 1]} />
+      <PoolLight color={C.emerald} intensity={3} distance={5} position={[0, 0.4, 1]} />
       <TextPlane text="OPERATOR // WALBUK28" height={0.08} color={C.emeraldGlow} position={[0, -1.05, 0]} />
 
       <Panel position={[-1.35, 0.3, 0]} visible={show} width={380} align="right">
@@ -109,7 +114,8 @@ export function DossierNode() {
             <li key={c.name} className="flex items-baseline gap-2 text-2xs text-ink-secondary">
               <span className="text-electric-accent">◈</span>
               <span>
-                <span className="text-ink">{c.name}</span> — {c.issuer} · {c.date}
+                <span className="text-ink">{c.name}</span> · {c.issuer}
+                {c.date && ` · ${c.date}`}
               </span>
             </li>
           ))}

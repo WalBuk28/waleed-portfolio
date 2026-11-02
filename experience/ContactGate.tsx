@@ -6,6 +6,7 @@ import { useFrame } from "@react-three/fiber";
 import { useCursor, useScroll } from "@react-three/drei";
 import { easing } from "maath";
 import { C } from "./palette";
+import { PoolLight } from "./lights";
 import { GATE_POS, SECTIONS, UP, camAt } from "./journey";
 import { allCases, profile } from "./content";
 import { EV, emit, journey } from "./state";
@@ -85,12 +86,12 @@ export function ContactGate() {
         <GlowSprite ref={iris} color={C.emeraldGlow} scale={2.4} opacity={0.5} position={[0, 0, 0.08]} />
         <mesh position={[0, 0, -0.03]} raycast={() => null}>
           <circleGeometry args={[0.55, 48]} />
-          <meshBasicMaterial color="#031015" toneMapped={false} />
+          <meshBasicMaterial color="#060a1c" toneMapped={false} />
         </mesh>
       </group>
 
       <TextPlane text="UPLINK READY" height={0.14} color={C.emeraldGlow} position={[0, 1.98, 0]} />
-      <pointLight color={C.emerald} intensity={6} distance={9} decay={2} position={[0, 0, 1.5]} />
+      <PoolLight color={C.emerald} intensity={6} distance={9} position={[0, 0, 1.5]} />
 
       {/* contact + index panel */}
       <Panel position={[0, 1.45, 0]} visible={show} width={430} align="center" z={[38, 0]}>
@@ -101,7 +102,7 @@ export function ContactGate() {
           </p>
           <h3 className="font-display text-xl font-bold text-ink">Establish uplink</h3>
           <p className="mx-auto mt-1.5 max-w-[34ch] text-xs leading-relaxed text-ink-secondary">
-            {profile.availability} — {profile.location}.
+            {profile.availability}. {profile.location}.
           </p>
 
           <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
@@ -138,7 +139,7 @@ export function ContactGate() {
             </ul>
           </div>
 
-          <div className="mt-4 flex items-center justify-between border-t border-edge pt-3">
+          <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-edge pt-3">
             <button
               onClick={() => emit(EV.flat)}
               className="font-mono text-2xs uppercase tracking-wider2 text-ink-muted transition-colors hover:text-ink"

@@ -5,6 +5,7 @@ import * as THREE from "three";
 import { useFrame } from "@react-three/fiber";
 import { C } from "./palette";
 import { journey } from "./state";
+import { thin } from "./quality";
 import { streamCurve, streamPathTexture } from "./journey";
 
 // ── Core tube: light pulses race down the fiber ──────────────────────────────
@@ -152,6 +153,7 @@ export function DataStream() {
     tubeMat.current.uniforms.uEnergy.value = energy;
     tubeMat.current.uniforms.uDive.value = THREE.MathUtils.smoothstep(journey.offset, 0.075, 0.15);
     ptsMat.current.uniforms.uTime.value = t;
+    thin(ptsGeo);
   });
 
   return (

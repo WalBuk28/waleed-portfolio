@@ -6,6 +6,7 @@ import { useFrame, useThree } from "@react-three/fiber";
 import { RoundedBox, useCursor, useScroll } from "@react-three/drei";
 import { easing } from "maath";
 import { C } from "../palette";
+import { PoolLight } from "../lights";
 import { ANCHORS, SECTIONS, facing } from "../journey";
 import { ART } from "../content";
 import { journey } from "../state";
@@ -50,7 +51,7 @@ export function ServerRack() {
       const c = i % LED_COLS;
       m.setPosition(-0.28 + c * 0.075, -0.78 + u * 0.31, 0.445);
       leds.current.setMatrixAt(i, m);
-      leds.current.setColorAt(i, ledColor.set("#0a232b"));
+      leds.current.setColorAt(i, ledColor.set("#14183a"));
     }
     leds.current.instanceMatrix.needsUpdate = true;
     if (leds.current.instanceColor) leds.current.instanceColor.needsUpdate = true;
@@ -82,7 +83,7 @@ export function ServerRack() {
       ledClock.current = 0;
       for (let i = 0; i < UNITS * LED_COLS; i++) {
         const on = Math.random() < (hovered ? 0.55 : 0.3);
-        ledColor.set(on ? LED_COLORS[i % LED_COLORS.length] : "#0a232b");
+        ledColor.set(on ? LED_COLORS[i % LED_COLORS.length] : "#14183a");
         leds.current.setColorAt(i, ledColor);
       }
       leds.current.instanceColor.needsUpdate = true;
@@ -181,9 +182,9 @@ export function ServerRack() {
           </mesh>
         ))}
       </group>
-      <TextPlane text="AIR-GAPPED · 100% LOCAL" height={0.09} color={C.emeraldGlow} position={[0, -1.32, 0.3]} />
+      <TextPlane text="AIR-GAPPED · LOCAL MODELS" height={0.09} color={C.emeraldGlow} position={[0, -1.32, 0.3]} />
 
-      <pointLight color={C.emerald} intensity={5} distance={7} decay={2} position={[0, 0.4, 1.2]} />
+      <PoolLight color={C.emerald} intensity={5} distance={7} position={[0, 0.4, 1.2]} />
 
       {/* synced DOM panel */}
       <Panel position={[1.55, 0.55, 0]} visible={show} width={330}>

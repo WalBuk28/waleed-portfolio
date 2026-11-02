@@ -1,127 +1,107 @@
-"use client";
+import { certifications, education, experience } from "@/lib/data";
+import { ExperienceMotion } from "./experience/ExperienceMotion";
 
-import { Briefcase, GraduationCap, Award } from "lucide-react";
-import {
-  experience,
-  certifications,
-  education,
-} from "@/lib/data";
-import { SectionHeading } from "./ui/SectionHeading";
-import { Reveal, RevealGroup, RevealItem } from "./ui/Reveal";
+const [internship, simulations] = experience;
 
+// The four chapters, in reading order. `period` is echoed large on the sticky stage (desktop).
+const chapters = [
+  { key: "internship", period: internship.period, kind: internship.kind },
+  { key: "simulations", period: simulations.period, kind: simulations.kind },
+  { key: "degree", period: education.period, kind: "Degree" },
+  { key: "certifications", period: "ISC2 CC, May 2026", kind: "Certifications" },
+];
+
+/**
+ * Experience (DESIGN.md §11, sticky narrative): four chapters scroll on the left while, on
+ * desktop, a sticky stage on the right sets the current chapter's period large and lights its
+ * place in a four-tile index. Behind them the screen turns on its hinge. The stage only echoes
+ * what the chapters say (aria-hidden), so every fact is in the chapters' own text.
+ */
 export function Experience() {
   return (
-    <section id="experience" className="section scroll-mt-24 py-24">
-      <SectionHeading
-        eyebrow="Track record"
-        title="Experience & credentials"
-        intro="Hands-on security work across industry programs, backed by a cybersecurity degree and professional certifications."
-      />
+    <section id="experience" data-chapter="4" className="xp" aria-labelledby="xp-title">
+      <h2 id="xp-title" className="h2 xp__h2" data-split data-quiet>
+        Experience
+      </h2>
+      <div className="xp__body">
+        <div className="xp__chapters">
+          <article className="xp__ch" data-reveal="fade" data-xp="0" data-quiet="box">
+            <p className="xp__when mono">
+              {internship.period} · {internship.kind}
+            </p>
+            <h3 className="xp__h3">{internship.role}</h3>
+            <p className="xp__where">
+              {internship.company} · {internship.location}
+            </p>
+            <ul className="xp__points">
+              {internship.points.map((p) => (
+                <li key={p}>{p}</li>
+              ))}
+            </ul>
+          </article>
 
-      <div className="mt-12 grid gap-12 lg:grid-cols-[1.3fr_0.7fr] lg:gap-14">
-        {/* Timeline */}
-        <div>
-          <div className="mb-6 flex items-center gap-2 font-mono text-2xs uppercase tracking-wider2 text-ink-muted">
-            <Briefcase className="h-3.5 w-3.5 text-emerald-accent" />
-            Professional experience
-          </div>
+          <article className="xp__ch" data-reveal="fade" data-xp="1" data-quiet="box">
+            <p className="xp__when mono">
+              {simulations.period} · {simulations.location}
+            </p>
+            <h3 className="xp__h3">{simulations.role}</h3>
+            <p className="xp__where">{simulations.company}</p>
+            <p className="xp__flag">{simulations.kind}</p>
+            <ul className="xp__points">
+              {simulations.points.map((p) => (
+                <li key={p}>{p}</li>
+              ))}
+            </ul>
+          </article>
 
-          <RevealGroup className="relative space-y-6 border-l border-edge pl-6">
-            {experience.map((job) => (
-              <RevealItem key={job.company + job.role}>
-                <div className="relative">
-                  {/* node */}
-                  <span className="absolute -left-[31px] top-1.5 grid h-4 w-4 place-items-center rounded-full border border-emerald-accent/40 bg-base">
-                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-accent" />
+          <article className="xp__ch" data-reveal="fade" data-xp="2" data-quiet="box">
+            <p className="xp__when mono">{education.period}</p>
+            <h3 className="xp__h3">{education.degree}</h3>
+            <p className="xp__where">{education.school}</p>
+            <p className="xp__result">{education.result}</p>
+          </article>
+
+          <article className="xp__ch" data-reveal="fade" data-xp="3" data-quiet="box">
+            <p className="xp__when mono">Held, and SC-900 in progress</p>
+            <h3 className="xp__h3">Certifications</h3>
+            <ul className="xp__certs">
+              {certifications.map((c) => (
+                <li key={c.name}>
+                  <span className="xp__cert">{c.name}</span>
+                  <span className="xp__issuer">
+                    {c.issuer}
+                    {c.date ? ` · ${c.date}` : ""}
                   </span>
-
-                  <div className="panel p-5">
-                    <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
-                      <h3 className="font-display text-base font-semibold text-ink">
-                        {job.role}
-                      </h3>
-                      <span className="font-mono text-2xs text-ink-muted">
-                        {job.period}
-                      </span>
-                    </div>
-                    <div className="mt-1 flex flex-wrap items-center gap-2 text-sm text-ink-secondary">
-                      <span className="text-emerald-accent">{job.company}</span>
-                      <span className="text-ink-muted">·</span>
-                      <span className="text-ink-muted">{job.location}</span>
-                      <span className="chip ml-1">{job.kind}</span>
-                    </div>
-                    <ul className="mt-3 space-y-1.5">
-                      {job.points.map((p) => (
-                        <li
-                          key={p}
-                          className="flex gap-2 text-sm leading-relaxed text-ink-secondary"
-                        >
-                          <span className="mt-2 h-1 w-1 flex-none rounded-full bg-electric-accent" />
-                          {p}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-              </RevealItem>
-            ))}
-          </RevealGroup>
+                  {c.detail && <span className="xp__detail">{c.detail}</span>}
+                </li>
+              ))}
+            </ul>
+          </article>
         </div>
 
-        {/* Education + certs */}
-        <div className="space-y-8">
-          <Reveal>
-            <div className="mb-6 flex items-center gap-2 font-mono text-2xs uppercase tracking-wider2 text-ink-muted">
-              <GraduationCap className="h-3.5 w-3.5 text-electric-accent" />
-              Education
-            </div>
-            <div className="panel p-5">
-              <h3 className="font-display text-base font-semibold text-ink">
-                {education.degree}
-              </h3>
-              <p className="mt-1 text-sm text-electric-accent">
-                {education.school}
-              </p>
-              <p className="mt-2 text-sm text-ink-secondary">
-                {education.result}
-              </p>
-              <p className="mt-1 font-mono text-2xs text-ink-muted">
-                {education.period}
-              </p>
-            </div>
-          </Reveal>
-
-          <Reveal delay={0.05}>
-            <div className="mb-6 flex items-center gap-2 font-mono text-2xs uppercase tracking-wider2 text-ink-muted">
-              <Award className="h-3.5 w-3.5 text-emerald-accent" />
-              Certifications
-            </div>
-            <div className="space-y-2.5">
-              {certifications.map((c) => (
-                <div
-                  key={c.name}
-                  className="panel p-4 transition-colors hover:border-emerald-accent/30"
-                >
-                  <div className="flex items-baseline justify-between gap-3">
-                    <h4 className="text-sm font-semibold text-ink">{c.name}</h4>
-                    <span className="whitespace-nowrap font-mono text-2xs text-ink-muted">
-                      {c.date}
-                    </span>
-                  </div>
-                  <p className="mt-0.5 text-xs text-emerald-accent">
-                    {c.issuer}
-                  </p>
-                  {c.detail && (
-                    <p className="mt-1.5 text-xs leading-relaxed text-ink-muted">
-                      {c.detail}
-                    </p>
-                  )}
+        <div className="xp__aside" aria-hidden="true">
+          <div className="xp__stage" data-quiet="sticky">
+            <div className="xp__periods">
+              {chapters.map((c, i) => (
+                <div key={c.key} className="xp__period" data-period={i}>
+                  <span className="xp__big">{c.period}</span>
+                  <span className="xp__kind">{c.kind}</span>
                 </div>
               ))}
             </div>
-          </Reveal>
+            <ol className="xp__index">
+              {chapters.map((c, i) => (
+                <li key={c.key} data-step={i}>
+                  <svg viewBox="-14 -18 28 36" width="14" height="18">
+                    <polygon points="0,-17 13,-9.5 13,9.5 0,17 -13,9.5 -13,-9.5" />
+                  </svg>
+                </li>
+              ))}
+            </ol>
+          </div>
         </div>
       </div>
+      <ExperienceMotion />
     </section>
   );
 }

@@ -6,6 +6,7 @@ import { useFrame } from "@react-three/fiber";
 import { useCursor, useScroll } from "@react-three/drei";
 import { easing } from "maath";
 import { C } from "./palette";
+import { PoolLight } from "./lights";
 import { ANCHORS, facing } from "./journey";
 import { experience } from "./content";
 import { journey } from "./state";
@@ -20,12 +21,12 @@ const WINDOWS: [number, number][] = [
   [0.788, 0.826],
 ];
 const BADGE_T = [0.7, 0.735, 0.77, 0.805];
-const SHORT = ["RTC", "TELSTRA", "MASTERCARD", "DELOITTE"];
+const SHORT = ["RTC", "FORAGE"];
 
 /**
- * Field operations — four holographic access badges checkpointed along the
- * stream, one per engagement (Receptive Tech, Telstra, Mastercard,
- * Deloitte). Each authenticates as the camera reaches it.
+ * Field operations — holographic access badges checkpointed along the
+ * stream, one per experience entry (the Receptive Tech internship, then the
+ * Forage virtual job simulations). Each authenticates as the camera reaches it.
  */
 export function ExperienceRelay() {
   const scroll = useScroll();
@@ -107,11 +108,11 @@ function Badge({ index, xp }: { index: number; xp: (typeof experience)[number] }
           <meshBasicMaterial ref={ringMat} color={color} transparent opacity={0.4} blending={THREE.AdditiveBlending} toneMapped={false} />
         </mesh>
         <TextPlane text={SHORT[index]} height={0.11} color={hot ? C.emeraldGlow : C.electricGlow} position={[0, 0.08, 0.045]} />
-        <TextPlane text={xp.kind.toUpperCase()} height={0.06} color="#9fb1c1" position={[0, -0.12, 0.045]} />
+        <TextPlane text={xp.kind.toUpperCase()} height={0.06} color="#b9c0d8" position={[0, -0.12, 0.045]} />
         <TextPlane text="ACCESS GRANTED" height={0.05} color={color} position={[0, -0.62, 0]} />
       </group>
       <GlowSprite color={color} scale={1.6} opacity={0.22} />
-      <pointLight color={color} intensity={2} distance={4} decay={2} position={[0, 0, 0.8]} />
+      <PoolLight color={color} intensity={2} distance={4} position={[0, 0, 0.8]} />
 
       <Panel
         position={[side * -0.95, 0.2, 0]}
@@ -122,7 +123,7 @@ function Badge({ index, xp }: { index: number; xp: (typeof experience)[number] }
         <PanelHeader
           eyebrow={`${xp.kind} · ${xp.period}`}
           title={xp.company}
-          tagline={`${xp.role} — ${xp.location}`}
+          tagline={`${xp.role} · ${xp.location}`}
           accent={hot ? "emerald" : "electric"}
         />
         <ul className="space-y-1.5">

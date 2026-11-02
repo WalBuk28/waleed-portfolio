@@ -8,6 +8,7 @@ import { C } from "./palette";
 import { camAt } from "./journey";
 import { dotTexture } from "./text";
 import { journey } from "./state";
+import { thin } from "./quality";
 
 /**
  * The void: linear fog that swallows what's ahead (each zone *reveals*
@@ -39,6 +40,7 @@ export function Ambient() {
   // section lines never streak across the void from below
   useFrame(() => {
     grid.current.visible = journey.offset < 0.1;
+    thin(dust);
   });
 
   return (
@@ -53,10 +55,10 @@ export function Ambient() {
           args={[30, 30]}
           cellSize={0.55}
           cellThickness={0.6}
-          cellColor="#0d2530"
+          cellColor="#1a1f45"
           sectionSize={2.75}
           sectionThickness={1}
-          sectionColor="#0f3d33"
+          sectionColor="#0b4a3b"
           fadeDistance={14}
           fadeStrength={2.4}
           infiniteGrid
@@ -66,7 +68,7 @@ export function Ambient() {
       <points geometry={dust} frustumCulled={false} raycast={() => null}>
         <pointsMaterial
           map={dotTexture()}
-          color="#2b5a6b"
+          color="#3b3a7a"
           size={0.05}
           sizeAttenuation
           transparent

@@ -10,11 +10,11 @@ const H = 640;
 const LINE_H = 34;
 const MAX_LINES = 14;
 const TONE: Record<string, string> = {
-  ok: "#34d399",
-  warn: "#fbbf24",
-  crit: "#f87171",
-  info: "#7dd3fc",
-  dim: "#5f7080",
+  ok: "#2ee6b8",
+  warn: "#ff6140",
+  crit: "#ff3b47",
+  info: "#b49aff",
+  dim: "#6b74a0",
 };
 
 /**
@@ -41,7 +41,10 @@ export function useTerminalTexture() {
     state.current.canvas = canvas;
     state.current.ctx = canvas.getContext("2d");
     const tex = new THREE.CanvasTexture(canvas);
-    tex.colorSpace = THREE.SRGBColorSpace;
+    // Plain RGBA, decoded from sRGB in the screen's shader (decodeSrgbMap). Uploaded as an sRGB
+    // texture, every redraw took Chrome's slow path on the Intel iGPU (ANGLE on Mesa): 22 ms of
+    // GPU time, one frame in five over budget while the hero was on screen (stage 5 profile).
+    tex.colorSpace = THREE.NoColorSpace;
     tex.anisotropy = 4;
     tex.generateMipmaps = false;
     tex.minFilter = THREE.LinearFilter;
@@ -82,28 +85,41 @@ export function useTerminalTexture() {
   return { texture, update };
 }
 
+/**
+ * For the material that shows the terminal: the texture is uploaded as plain RGBA, so decode it
+ * from sRGB here (three does the same for video textures, for the same reason).
+ */
+export function decodeSrgbMap(shader: { fragmentShader: string }) {
+  shader.fragmentShader = shader.fragmentShader.replace(
+    "#include <map_fragment>",
+    /* glsl */ `#ifdef USE_MAP
+      diffuseColor *= sRGBTransferEOTF( texture2D( map, vMapUv ) );
+    #endif`
+  );
+}
+
 function draw(s: { canvas: HTMLCanvasElement | null; ctx: CanvasRenderingContext2D | null; lines: { text: string; tone: string }[]; scriptIdx: number; chars: number; time?: number }, time: number) {
   const ctx = s.ctx!;
   const mono = monoFamily();
 
   const bg = ctx.createLinearGradient(0, 0, 0, H);
-  bg.addColorStop(0, "#050b10");
-  bg.addColorStop(1, "#07131a");
+  bg.addColorStop(0, "#070b1c");
+  bg.addColorStop(1, "#0d1330");
   ctx.fillStyle = bg;
   ctx.fillRect(0, 0, W, H);
 
   // window chrome
-  ctx.fillStyle = "#0a141c";
+  ctx.fillStyle = "#0e1530";
   ctx.fillRect(0, 0, W, 46);
-  for (const [i, c] of ["#f87171", "#fbbf24", "#34d399"].entries()) {
+  for (const [i, c] of ["#ff3b47", "#ff6140", "#2ee6b8"].entries()) {
     ctx.fillStyle = c;
     ctx.beginPath();
     ctx.arc(28 + i * 26, 23, 6.5, 0, Math.PI * 2);
     ctx.fill();
   }
   ctx.font = `500 19px ${mono}`;
-  ctx.fillStyle = "#5f7080";
-  ctx.fillText("walsec@a-tioc:~ — tshark -i eth0 · soc/live", 110, 30);
+  ctx.fillStyle = "#6b74a0";
+  ctx.fillText("walsec@a-tioc:~ · tshark -i eth0 · soc/live", 110, 30);
 
   // lines
   ctx.font = `500 22px ${mono}`;
@@ -117,7 +133,7 @@ function draw(s: { canvas: HTMLCanvasElement | null; ctx: CanvasRenderingContext
     ctx.fillText(line.text, 26, y);
     if ((line as { cursor?: boolean }).cursor && Math.floor(time * 2.4) % 2 === 0) {
       const w = ctx.measureText(line.text).width;
-      ctx.fillStyle = "#5eead4";
+      ctx.fillStyle = "#a8f7e0";
       ctx.fillRect(30 + w, y - 19, 12, 24);
     }
   });

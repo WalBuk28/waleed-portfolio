@@ -1,11 +1,11 @@
 import type { Config } from "tailwindcss";
 
 /**
- * Design tokens — dark, cyber-minimalist.
- *
- * Two colour tiers (validated against the dark surface #0f151b):
- *  - accent tier (UI text accents, glows, key lines): emerald.400 / electric.400
- *  - mark tier (data fills: meters, diagram nodes, severity): *.600-ish deep steps
+ * Tokens for the pages not yet rebuilt (case pages until stage 4), in the coloured-glass palette
+ * (DESIGN.md §4): midnight navy, jade for light and signal, violet for the one action.
+ * `emerald` is now jade and `electric` is now violet; the names stay until stage 4 retires them.
+ * Two tiers: accent (text, lines, glows) and mark (fills under navy text, 5:1 or better).
+ * `threat` is severity data and keeps its own colours.
  */
 const config: Config = {
   content: [
@@ -17,27 +17,30 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        void: "#05080c", // page deep end (footer / hero vignette)
-        base: "#090d12", // page background
-        surface: "#0f151b", // cards / panels
-        raised: "#141c24", // hover / elevated panels
-        edge: "rgba(148,163,184,0.14)", // hairline borders
+        void: "#070b1c", // page deep end (footer / hero vignette)
+        base: "#0a0f24", // page background: midnight navy
+        surface: "#111934", // cards / panels
+        raised: "#18213f", // hover / elevated panels
+        edge: "rgba(160,170,203,0.14)", // hairline borders
         ink: {
-          DEFAULT: "#e6edf3",
-          secondary: "#9fb1c1",
-          muted: "#5f7080",
+          DEFAULT: "#ebeef8",
+          secondary: "#b9c0d8",
+          muted: "#a0aacb", // DESIGN.md muted: 8.2:1 on the ground
         },
+        action: "#7d49f5", // the one action fill: white text 5.1:1
         emerald: {
-          glow: "#5eead4",
-          accent: "#34d399", // UI accent tier
-          mark: "#059669", // data-mark tier (validated)
-          deep: "#065f46",
+          // jade
+          glow: "#a8f7e0",
+          accent: "#2ee6b8", // 11.9:1 on the ground
+          mark: "#1fb38f", // navy text on it 7.4:1
+          deep: "#0b5e4a",
         },
         electric: {
-          glow: "#7dd3fc",
-          accent: "#38bdf8", // UI accent tier
-          mark: "#0284c7", // data-mark tier (validated)
-          deep: "#075985",
+          // violet
+          glow: "#d4c6ff",
+          accent: "#b49aff", // 8.1:1 on the ground
+          mark: "#9b7bff", // navy text on it 6.2:1
+          deep: "#4c2fa8",
         },
         threat: {
           warn: "#fbbf24", // text/icon tier
@@ -47,7 +50,7 @@ const config: Config = {
         },
       },
       fontFamily: {
-        display: ["var(--font-display)", "system-ui", "sans-serif"],
+        display: ["var(--font-sans)", "system-ui", "sans-serif"],
         sans: ["var(--font-sans)", "system-ui", "sans-serif"],
         mono: ["var(--font-mono)", "ui-monospace", "monospace"],
       },
@@ -62,8 +65,8 @@ const config: Config = {
           "linear-gradient(to right, rgba(148,163,184,0.05) 1px, transparent 1px), linear-gradient(to bottom, rgba(148,163,184,0.05) 1px, transparent 1px)",
       },
       boxShadow: {
-        "glow-emerald": "0 0 24px -6px rgba(52,211,153,0.35)",
-        "glow-electric": "0 0 24px -6px rgba(56,189,248,0.35)",
+        "glow-emerald": "0 0 24px -6px rgba(46,230,184,0.35)",
+        "glow-electric": "0 0 24px -6px rgba(139,92,246,0.4)",
         panel: "0 1px 0 0 rgba(255,255,255,0.04) inset, 0 8px 32px -12px rgba(0,0,0,0.6)",
       },
       animation: {

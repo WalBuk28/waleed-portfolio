@@ -2,7 +2,7 @@
 
 import { ReactNode } from "react";
 import { Html, useScroll } from "@react-three/drei";
-import { AnimatePresence, motion } from "framer-motion";
+import { Presence } from "./Presence";
 import { journey } from "../state";
 
 // constant screen position: pins the Html wrapper to the sticky layer's
@@ -15,7 +15,7 @@ const pinTopLeft = () => [0, 0] as [number, number];
  * anchor every frame; we portal it into ScrollControls' *sticky* layer
  * (`scroll.fixed`), which lives INSIDE the scroll element — so panels are
  * clickable while wheel events still bubble to the native scroller.
- * Framer Motion handles the decrypt-in / dissolve-out.
+ * Presence (CSS transitions) handles the rise-in and the sink-away.
  *
  * Touch devices: world-anchored divs overflow short viewports (content
  * flows down from the anchor and gets clipped), so panels become a
@@ -55,19 +55,9 @@ export function Panel({
         zIndexRange={z}
         style={{ pointerEvents: "none" }}
       >
-        <AnimatePresence>
-          {visible && (
-            <motion.div
-              initial={{ opacity: 0, y: 48 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 48 }}
-              transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-              className="jpanel jsheet"
-            >
-              {children}
-            </motion.div>
-          )}
-        </AnimatePresence>
+        <Presence show={visible} className="jpanel jsheet jfx--sheet" exitMs={400}>
+          {children}
+        </Presence>
       </Html>
     );
   }
@@ -84,19 +74,9 @@ export function Panel({
         style={{ pointerEvents: "none" }}
       >
         <div className="jcenter" style={{ width, maxWidth: "84vw" }}>
-          <AnimatePresence>
-            {visible && (
-              <motion.div
-                initial={{ opacity: 0, y: 16, scale: 0.96, filter: "blur(8px)" }}
-                animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
-                exit={{ opacity: 0, y: -12, scale: 0.98, filter: "blur(6px)" }}
-                transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
-                className="jpanel jpanel-center w-full"
-              >
-                {children}
-              </motion.div>
-            )}
-          </AnimatePresence>
+          <Presence show={visible} className="jpanel jpanel-center w-full" exitMs={450}>
+            {children}
+          </Presence>
         </div>
       </Html>
     );
@@ -112,21 +92,11 @@ export function Panel({
       zIndexRange={z}
       style={{ pointerEvents: "none" }}
     >
-      {/* alignment lives on the wrapper — framer-motion owns the inner transform */}
+      {/* alignment lives on the wrapper; the panel's own rise uses the translate property */}
       <div style={{ width, maxWidth: "80vw", transform: shift }}>
-        <AnimatePresence>
-          {visible && (
-            <motion.div
-              initial={{ opacity: 0, y: 18, filter: "blur(8px)" }}
-              animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-              exit={{ opacity: 0, y: -12, filter: "blur(6px)" }}
-              transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-              className="jpanel w-full"
-            >
-              {children}
-            </motion.div>
-          )}
-        </AnimatePresence>
+        <Presence show={visible} className="jpanel w-full">
+          {children}
+        </Presence>
       </div>
     </Html>
   );
@@ -158,13 +128,14 @@ export function PanelHeader({
   );
 }
 
-export function MetricGrid({ metrics }: { metrics: { value: string; label: string }[] }) {
+export function MetricGrid({ metrics }: { metrics: { value: string; label: string; sub?: string }[] }) {
   return (
     <div className="mb-3 grid grid-cols-2 gap-2">
       {metrics.slice(0, 4).map((m) => (
         <div key={m.label} className="rounded-lg border border-edge bg-void/50 px-2.5 py-2">
           <div className="font-mono text-sm font-bold text-emerald-glow">{m.value}</div>
           <div className="mt-0.5 text-2xs leading-tight text-ink-muted">{m.label}</div>
+          {m.sub && <div className="mt-0.5 text-2xs leading-tight text-ink-muted">{m.sub}</div>}
         </div>
       ))}
     </div>

@@ -1,69 +1,78 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Sora, JetBrains_Mono } from "next/font/google";
+import { Archivo, Martian_Mono } from "next/font/google";
 import { profile } from "@/lib/data";
-import { Providers } from "@/components/Providers";
 import { Analytics } from "@vercel/analytics/next";
+import { Engine } from "@/lib/engine/next";
+import { posterTile } from "@/components/screen/poster";
 import "./globals.css";
 
-const inter = Inter({
+// Two OFL families, self-hosted by next/font (DESIGN.md §5). Archivo carries display and text
+// through its width axis; Martian Mono sets data only (IDs, CVEs, dates), so it isn't preloaded.
+const archivo = Archivo({
   subsets: ["latin"],
+  axes: ["wdth"],
   variable: "--font-sans",
   display: "swap",
 });
-const sora = Sora({
+const martian = Martian_Mono({
   subsets: ["latin"],
-  variable: "--font-display",
-  weight: ["500", "600", "700", "800"],
-  display: "swap",
-});
-const mono = JetBrains_Mono({
-  subsets: ["latin"],
+  axes: ["wdth"],
   variable: "--font-mono",
   display: "swap",
+  preload: false,
 });
 
 const url = "https://walsec.com";
-const description =
-  "Cybersecurity Engineer & Developer specialising in threat intelligence, network forensics and SOC automation — building the software to back it up.";
+const title = `${profile.name} (${profile.cvName}), ${profile.role} in Dubai`;
+// At most 160 characters. The full name is in the keywords, authors and JSON-LD.
+const description = `${profile.name} (${profile.cvName}), SOC Analyst in Dubai. BSc Cyber Security, First Class Honours. Ten case studies, with the evidence and repos behind them.`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(url),
   title: {
-    default: `${profile.fullName} — ${profile.role}`,
+    default: title,
     template: `%s · ${profile.name}`,
   },
   description,
   keywords: [
-    "Cybersecurity Engineer",
+    "SOC Analyst",
+    "Blue team",
     "Threat Intelligence",
     "Network Forensics",
     "SOC Automation",
-    "Penetration Testing",
     "Malware Analysis",
     "MITRE ATT&CK",
+    "Dubai",
     "Waleed Bukhari",
+    "Muhammad Waleed",
+    "Syed Muhammad Waleed Bukhari",
   ],
   authors: [{ name: profile.fullName, url }],
   creator: profile.fullName,
   openGraph: {
     type: "website",
     url,
-    title: `${profile.fullName} — ${profile.role}`,
+    title,
     description,
     siteName: "WalSec",
   },
   twitter: {
     card: "summary_large_image",
-    title: `${profile.fullName} — ${profile.role}`,
+    title,
     description,
   },
   robots: { index: true, follow: true },
 };
 
 export const viewport: Viewport = {
-  themeColor: "#090d12",
+  themeColor: "#0a0f24",
   colorScheme: "dark",
 };
+
+// Runs before first paint. `motion` gates hidden-before-reveal styles (content stays visible
+// without JS and under reduced motion); `gl-pending` hides the poster while the WebGL screen
+// may still arrive; `intro-pending` marks the first visit of the session (the intro plays).
+const flags = `(function(){var c=document.documentElement.classList;c.add('js');var m=!matchMedia('(prefers-reduced-motion: reduce)').matches;if(!m)return;c.add('motion');var n=navigator.connection;if(!(n&&n.saveData)&&'WebGLRenderingContext' in window)c.add('gl-pending');try{if(!sessionStorage.getItem('walsec-intro'))c.add('intro-pending')}catch(e){}})()`;
 
 export default function RootLayout({
   children,
@@ -73,18 +82,36 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${sora.variable} ${mono.variable}`}
+      className={`${archivo.variable} ${martian.variable}`}
       suppressHydrationWarning
     >
-      <body className="bg-base text-ink">
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: flags }} />
+      </head>
+      <body className="text-ink">
         <a
           href="#main"
-          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-lg focus:bg-emerald-accent focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-void"
+          className="skip-link"
         >
           Skip to content
         </a>
-        <Providers>{children}</Providers>
-        <Analytics />
+        {/* Persistent layers: the WebGL screen's host and the cursor follower. */}
+        <div id="gl" aria-hidden="true" />
+        <div id="cursor" aria-hidden="true" data-ground>
+          <svg viewBox="-14 -18 28 36" width="26" height="34">
+            <polygon points="0,-17 13,-9.5 13,9.5 0,17 -13,9.5 -13,-9.5" />
+          </svg>
+          <span data-cursor-label />
+        </div>
+        {children}
+        {/* The page transition's curtain: the screen, closed (lib/engine/transition.ts). */}
+        <div id="curtain" aria-hidden="true" style={{ "--poster-tile": posterTile() } as React.CSSProperties}>
+          <div className="curtain__rim" />
+          <div className="curtain__panel" />
+        </div>
+        {/* Vercel serves the analytics script; elsewhere (local review) it would 404. */}
+        {process.env.VERCEL === "1" && <Analytics />}
+        <Engine />
       </body>
     </html>
   );

@@ -1,19 +1,40 @@
-import { JourneyGate } from "@/experience";
-import { FlatSite } from "@/components/FlatSite";
-import { WallBackdrop } from "@/components/brand/WallBackdrop";
+import type { CSSProperties } from "react";
+import type { Metadata } from "next";
+import { Frame } from "@/components/frame/Frame";
+import { Palette } from "@/components/frame/Palette";
+import { Hero } from "@/components/hero/Hero";
+import { CaseStudies } from "@/components/CaseStudies";
+import { Skills } from "@/components/Skills";
+import { Experience } from "@/components/Experience";
+import { About } from "@/components/About";
+import { Contact } from "@/components/Contact";
+import { Footer } from "@/components/Footer";
+import { posterTile } from "@/components/screen/poster";
+import { paletteItems } from "@/lib/palette";
+
+export const metadata: Metadata = {
+  alternates: { canonical: "/" },
+};
 
 /**
- * The 2D site stays server-rendered inside the gate (SEO, no-JS, a11y);
- * capable browsers get the cinematic 3D journey layered over it.
- *
- * The scroll-driven WalSec backdrop is homepage-only — /journey renders the
- * same FlatSite without it.
+ * The home page is one screen (DESIGN.md §8): each section declares its chapter, and the
+ * driver lights the WebGL screen behind them from the reading position. Without WebGL,
+ * JavaScript or motion, the poster tile and each chapter's static light stand in.
  */
 export default function Home() {
   return (
-    <JourneyGate>
-      <WallBackdrop />
-      <FlatSite />
-    </JourneyGate>
+    <div className="screen-page" data-screen="home" style={{ "--poster-tile": posterTile(), "--poster-day": posterTile("rgba(10,15,36,0.025)") } as CSSProperties}>
+      <Frame />
+      <Palette items={paletteItems()} />
+      <main id="main" tabIndex={-1}>
+        <Hero />
+        <CaseStudies />
+        <Skills />
+        <Experience />
+        <About />
+        <Contact />
+      </main>
+      <Footer />
+    </div>
   );
 }
