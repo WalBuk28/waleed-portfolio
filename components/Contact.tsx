@@ -52,7 +52,7 @@ export function Contact() {
             </a>
           </li>
           <li>
-            <a className="ulink" href={profile.cv} download="Muhammad_Waleed_CV.pdf" data-cursor="Download">
+            <a className="ulink" href={profile.cv} download="Syed_Muhammad_Waleed_Bukhari_CV.pdf" data-cursor="Download">
               Download CV
               <span className="ulink__arrow ulink__arrow--down" aria-hidden="true">
                 ↓

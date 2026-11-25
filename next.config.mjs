@@ -47,6 +47,16 @@ const nextConfig = {
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
   },
+  // The CV moved to his full name (25 Nov 2026); links already sent out keep working.
+  async redirects() {
+    return [
+      {
+        source: "/Muhammad_Waleed_CV.pdf",
+        destination: "/Syed_Muhammad_Waleed_Bukhari_CV.pdf",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;

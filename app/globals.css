@@ -675,6 +675,15 @@ html.frame-away .frame::after {
   font-weight: 600;
   color: var(--ink);
 }
+.frame__name {
+  line-height: 1.2;
+}
+/* the full name doesn't fit beside "Menu" on narrow phones: it stacks in two lines */
+@media (max-width: 419px) {
+  .frame__name > span {
+    display: block;
+  }
+}
 .frame__mark {
   width: 20px;
   height: auto;
@@ -2622,6 +2631,8 @@ html:not(.gl-on) .case__frame {
   font-size: var(--t-body);
   line-height: 1.6;
   color: var(--ink-soft);
+  /* defanged URLs and export lists are single long words; on a 320 px phone they must wrap */
+  overflow-wrap: break-word;
 }
 .case__body :where(p) {
   margin: 0;

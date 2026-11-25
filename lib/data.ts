@@ -6,9 +6,9 @@
 // =============================================================================
 
 export const profile = {
-  name: "Waleed Bukhari",
+  // His name is served in full and only in full (Waleed, 25 Nov 2026; docs/FACTS.md).
+  name: "Syed Muhammad Waleed Bukhari",
   fullName: "Syed Muhammad Waleed Bukhari",
-  cvName: "Muhammad Waleed",
   role: "SOC Analyst",
   handle: "WalBuk28",
   tagline: "I turn raw packets, malware and threat feeds into decisions a SOC can act on.",
@@ -17,7 +17,8 @@ export const profile = {
   linkedin: "https://linkedin.com/in/muhammad-waleed-b43997202",
   github: "https://github.com/WalBuk28",
   site: "https://walsec.com",
-  cv: "/Muhammad_Waleed_CV.pdf",
+  // The old /Muhammad_Waleed_CV.pdf redirects here (next.config.mjs).
+  cv: "/Syed_Muhammad_Waleed_Bukhari_CV.pdf",
   availability: "Open to SOC Analyst and blue-team roles",
   summary:
     "BSc (Hons) Cyber Security, First Class Honours, from De Montfort University, studied at DMU Dubai. I work on threat intelligence, network forensics and SOC automation, and I write the software to back it up: an offline SIEM-Lite with a local LLM, an ML phishing detector and C++ security tooling. My industry experience is a cyber security internship at Receptive Tech Communications (Lahore, 2025), where I tuned SIEM correlation rules and alert thresholds, ran vulnerability scans and drafted playbooks. I've also completed virtual job simulations (Forage) with Telstra, Mastercard and Deloitte.",
