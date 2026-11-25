@@ -37,6 +37,9 @@ const jsonLd = {
       "@type": "Person",
       "@id": `${url}/#person`,
       name: profile.name,
+      // Search alias only, never displayed: a search for the short name still finds him
+      // (Waleed, 25 Nov 2026; docs/FACTS.md).
+      alternateName: profile.searchAlias,
       url,
       image: `${url}/opengraph-image`,
       jobTitle: profile.role,
@@ -89,6 +92,7 @@ export const metadata: Metadata = {
     "MITRE ATT&CK",
     "Dubai",
     profile.name,
+    profile.searchAlias,
   ],
   authors: [{ name: profile.fullName, url }],
   creator: profile.fullName,

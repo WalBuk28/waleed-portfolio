@@ -9,6 +9,9 @@ export const profile = {
   // His name is served in full and only in full (Waleed, 25 Nov 2026; docs/FACTS.md).
   name: "Syed Muhammad Waleed Bukhari",
   fullName: "Syed Muhammad Waleed Bukhari",
+  // Never shown on the page: only in keywords and the JSON-LD alternateName, so a search for
+  // the short name still finds the site (Waleed, 25 Nov 2026).
+  searchAlias: "Waleed Bukhari",
   role: "SOC Analyst",
   handle: "WalBuk28",
   tagline: "I turn raw packets, malware and threat feeds into decisions a SOC can act on.",
