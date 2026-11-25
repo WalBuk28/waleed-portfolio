@@ -153,7 +153,11 @@ export function Frame({ page = "home", label }: { page?: FramePage; label?: stri
       <header className="frame" data-ground>
         <a className="frame__tl frame__brand" href={home ? "#top" : "/"} data-quiet="fixed">
           <WalSecMark className="frame__mark" color="currentColor" />
-          <span>{profile.name}</span>
+          {/* The full name in two halves, so narrow phones can stack it beside the menu. */}
+          <span className="frame__name">
+            <span>{profile.name.split(" ").slice(0, 2).join(" ")}</span>{" "}
+            <span>{profile.name.split(" ").slice(2).join(" ")}</span>
+          </span>
         </a>
         <nav className="frame__tr" aria-label="Sections">
           <div className="frame__navwrap" data-quiet="fixed">
@@ -173,7 +177,7 @@ export function Frame({ page = "home", label }: { page?: FramePage; label?: stri
             </ul>
             <span ref={marker} className="frame__marker" aria-hidden="true" />
           </div>
-          <a className="btn btn--cv" href={profile.cv} download="Muhammad_Waleed_CV.pdf" data-cursor="Download">
+          <a className="btn btn--cv" href={profile.cv} download="Syed_Muhammad_Waleed_Bukhari_CV.pdf" data-cursor="Download">
             <span className="btn__shape" aria-hidden="true" />
             Download CV
           </a>
@@ -222,7 +226,7 @@ export function Frame({ page = "home", label }: { page?: FramePage; label?: stri
             </li>
           ))}
         </ul>
-        <a className="btn btn--cv menu__cv" href={profile.cv} download="Muhammad_Waleed_CV.pdf">
+        <a className="btn btn--cv menu__cv" href={profile.cv} download="Syed_Muhammad_Waleed_Bukhari_CV.pdf">
           <span className="btn__shape" aria-hidden="true" />
           Download CV
         </a>

@@ -32,7 +32,7 @@ export async function generateMetadata({
     title: study.title,
     description: study.description,
     // The page's own tags, not the site-wide security keywords.
-    keywords: [...study.tags, profile.name, profile.cvName],
+    keywords: [...study.tags, profile.name],
     alternates: { canonical: path },
     openGraph: {
       type: "article",

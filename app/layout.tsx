@@ -23,9 +23,54 @@ const martian = Martian_Mono({
 });
 
 const url = "https://walsec.com";
-const title = `${profile.name} (${profile.cvName}), ${profile.role} in Dubai`;
-// At most 160 characters. The full name is in the keywords, authors and JSON-LD.
-const description = `${profile.name} (${profile.cvName}), SOC Analyst in Dubai. BSc Cyber Security, First Class Honours. Ten case studies, with the evidence and repos behind them.`;
+// His name appears in full and only in full (docs/FACTS.md), in the title, metadata and JSON-LD.
+const title = `${profile.name}, ${profile.role} in Dubai`;
+// At most 160 characters.
+const description = `${profile.name}, SOC Analyst in Dubai. BSc Cyber Security, First Class Honours. Ten case studies, with the evidence and repos behind them.`;
+
+// Structured data (schema.org) so search engines tie the name to the role, the degree and the
+// profiles he links. Only facts from docs/FACTS.md.
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Person",
+      "@id": `${url}/#person`,
+      name: profile.name,
+      url,
+      image: `${url}/opengraph-image`,
+      jobTitle: profile.role,
+      email: `mailto:${profile.email}`,
+      address: { "@type": "PostalAddress", addressLocality: "Dubai", addressCountry: "AE" },
+      alumniOf: {
+        "@type": "CollegeOrUniversity",
+        name: "De Montfort University",
+        sameAs: "https://www.dmu.ac.uk/",
+      },
+      hasCredential: {
+        "@type": "EducationalOccupationalCredential",
+        credentialCategory: "degree",
+        name: "BSc (Hons) Cyber Security, First Class Honours",
+      },
+      knowsAbout: [
+        "Security operations",
+        "Threat intelligence",
+        "Network forensics",
+        "Malware analysis",
+        "MITRE ATT&CK",
+        "SIEM",
+      ],
+      sameAs: [profile.github, profile.linkedin],
+    },
+    {
+      "@type": "WebSite",
+      "@id": `${url}/#website`,
+      url,
+      name: "WalSec",
+      author: { "@id": `${url}/#person` },
+    },
+  ],
+};
 
 export const metadata: Metadata = {
   metadataBase: new URL(url),
@@ -43,9 +88,7 @@ export const metadata: Metadata = {
     "Malware Analysis",
     "MITRE ATT&CK",
     "Dubai",
-    "Waleed Bukhari",
-    "Muhammad Waleed",
-    "Syed Muhammad Waleed Bukhari",
+    profile.name,
   ],
   authors: [{ name: profile.fullName, url }],
   creator: profile.fullName,
@@ -89,6 +132,11 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: flags }} />
       </head>
       <body className="text-ink">
+        <script
+          type="application/ld+json"
+          // Escape "<" so no string in the data can close the script tag.
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }}
+        />
         <a
           href="#main"
           className="skip-link"

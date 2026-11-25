@@ -14,7 +14,7 @@ export function paletteItems(): PaletteItem[] {
       href: `/work/${c.slug}`,
       keywords: `${c.title} ${c.slug} ${c.tags.join(" ")}`.toLowerCase(),
     })),
-    { id: "email", label: "Email Waleed", hint: "Contact", href: `mailto:${profile.email}`, keywords: "email contact mail" },
+    { id: "email", label: "Email me", hint: "Contact", href: `mailto:${profile.email}`, keywords: "email contact mail" },
     { id: "cv", label: "Download CV", hint: "File", href: profile.cv, keywords: "cv resume download pdf" },
     { id: "github", label: `GitHub: @${profile.handle}`, hint: "External", href: profile.github, keywords: "github code repo source" },
     { id: "linkedin", label: "LinkedIn", hint: "External", href: profile.linkedin, keywords: "linkedin connect" },

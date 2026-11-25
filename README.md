@@ -1,4 +1,4 @@
-# Waleed Bukhari — Portfolio (v3 · Dark Spatial Journey)
+# Syed Muhammad Waleed Bukhari — Portfolio (v3 · Dark Spatial Journey)
 
 A world-class, cyber-inspired portfolio for **Syed Muhammad Waleed Bukhari**,
 Cybersecurity Engineer & Developer. Built to showcase threat-intelligence,
